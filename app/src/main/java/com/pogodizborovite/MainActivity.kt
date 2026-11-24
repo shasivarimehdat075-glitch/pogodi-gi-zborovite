@@ -40,7 +40,7 @@ val categories = listOf(
   Puzzle("ПЛАНИНА","Висока природна форма на земјиште.","ПРИРОДА","https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900"),
   Puzzle("СОНЦЕ","Ѕвезда што ја осветлува Земјата.","ПРИРОДА","https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=900"),
   Puzzle("РЕКА","Природна вода што тече низ корито.","ПРИРОДА","https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=900"),
-  Puzzle("ШУМА","Голема површина покриена со многу дрвја.","ПРИРОДА","https://images.unsplash.com/photo-144森林?w=900")
+  Puzzle("ШУМА","Голема површина покриена со многу дрвја.","ПРИРОДА","https://images.unsplash.com/photo-1448375240586-882707db888b?w=900")
  )),
  GameCategory("ПРЕВОЗ","🚗", listOf(
   Puzzle("АВТОМОБИЛ","Возило со четири тркала.","ПРЕВОЗ","https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=900"),
