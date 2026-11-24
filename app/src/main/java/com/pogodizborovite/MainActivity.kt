@@ -87,7 +87,7 @@ val categories = listOf(
  GameCategory("ПРЕВОЗ","🚗", listOf(
   Puzzle("АВТОМОБИЛ","Возило со четири тркала.","ПРЕВОЗ","https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=900"),
   Puzzle("ВЕЛОСИПЕД","Превозно средство со две тркала и педали.","ПРЕВОЗ","https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=900"),
-  Puzzle("ВОЗ","Превозно средство што се движи по шини.","ПРЕВОЗ","https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=900"),
+  Puzzle("ВОЗ","Превозно средство што се движи по шини.","ПРЕВОЗ","https://loremflickr.com/900/600/railway%20station?lock=77123"),
   Puzzle("МОТОЦИКЛ","Моторно возило на две тркала.","ПРЕВОЗ","https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=900"),
   Puzzle("ТРАМВАЈ","Градско превозно средство што се движи по шини.","ПРЕВОЗ","https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=900"),
   Puzzle("ХЕЛИКОПТЕР","Летало со ротори што може да полетува вертикално.","ПРЕВОЗ","https://images.unsplash.com/photo-1474302770737-173ee21bab63?w=900"),
