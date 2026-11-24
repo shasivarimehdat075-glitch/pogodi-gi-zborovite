@@ -42,7 +42,17 @@ val categories = listOf(
   Puzzle("КОЗА","Домашно животно што се качува по карпи.","ЖИВОТНИ","https://loremflickr.com/900/600/goat?lock=1006"),
   Puzzle("ЖЕЛКА","Животно со тврд оклоп на грбот.","ЖИВОТНИ","https://loremflickr.com/900/600/turtle?lock=1007"),
   Puzzle("ПАПАГАЛ","Шарена птица што може да имитира звуци.","ЖИВОТНИ","https://loremflickr.com/900/600/parrot?lock=1008"),
-  Puzzle("ОРЕЛ","Голема граблива птица со силни канџи.","ЖИВОТНИ","https://loremflickr.com/900/600/eagle?lock=1009")
+  Puzzle("ОРЕЛ","Голема граблива птица со силни канџи.","ЖИВОТНИ","https://loremflickr.com/900/600/eagle?lock=1009"),
+  Puzzle("СЛОН","Големо животно со долга сурла и големи уши.","ЖИВОТНИ","https://loremflickr.com/900/600/elephant?lock=11215"),
+  Puzzle("ЖИРАФА","Високо африканско животно со долг врат.","ЖИВОТНИ","https://loremflickr.com/900/600/giraffe?lock=13290"),
+  Puzzle("НОСОРОГ","Големо животно со дебела кожа и рог на носот.","ЖИВОТНИ","https://loremflickr.com/900/600/rhinoceros?lock=14371"),
+  Puzzle("НИЛСКИ КОЊ","Големо африканско животно што живее во вода и покрај неа.","ЖИВОТНИ","https://loremflickr.com/900/600/hippopotamus?lock=16477"),
+  Puzzle("КЕНГУР","Австралиско животно што скока и го носи младенчето во торба.","ЖИВОТНИ","https://loremflickr.com/900/600/kangaroo?lock=13306"),
+  Puzzle("ПИНГВИН","Птица што не лета, но одлично плива во студени мориња.","ЖИВОТНИ","https://loremflickr.com/900/600/penguin?lock=14342"),
+  Puzzle("БУВ","Ноќна птица со големи очи.","ЖИВОТНИ","https://loremflickr.com/900/600/owl?lock=10142"),
+  Puzzle("ПАУН","Птица позната по големата шарена опашка.","ЖИВОТНИ","https://loremflickr.com/900/600/peacock?lock=11207"),
+  Puzzle("ЕЖ","Мало животно покриено со боцки.","ЖИВОТНИ","https://loremflickr.com/900/600/hedgehog?lock=9091"),
+  Puzzle("ВЕРВЕРИЦА","Мало животно што се качува по дрвја и собира ореви.","ЖИВОТНИ","https://loremflickr.com/900/600/squirrel?lock=16436")
  )),
  GameCategory("ОВОШЈЕ И ХРАНА","🍎", listOf(
   Puzzle("ЈАБОЛКО","Црвено или зелено овошје што расте на дрво.","ОВОШЈЕ","https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=900"),
@@ -62,7 +72,17 @@ val categories = listOf(
   Puzzle("ДОМАТ","Црвен плод што често се користи во салати.","ОВОШЈЕ И ХРАНА","https://loremflickr.com/900/600/tomato?lock=1106"),
   Puzzle("КРАСТАВИЦА","Зелен долг зеленчук што често се јаде свеж.","ОВОШЈЕ И ХРАНА","https://loremflickr.com/900/600/cucumber?lock=1107"),
   Puzzle("КОМПИР","Скробест зеленчук што се вари или пече.","ОВОШЈЕ И ХРАНА","https://loremflickr.com/900/600/potato?lock=1108"),
-  Puzzle("ОРИЗ","Мали зрна што се готват како прилог или јадење.","ОВОШЈЕ И ХРАНА","https://loremflickr.com/900/600/rice?lock=1109")
+  Puzzle("ОРИЗ","Мали зрна што се готват како прилог или јадење.","ОВОШЈЕ И ХРАНА","https://loremflickr.com/900/600/rice?lock=1109"),
+  Puzzle("МАНДАРИНА","Мало цитрусно овошје што лесно се лупи.","ОВОШЈЕ И ХРАНА","https://loremflickr.com/900/600/mandarin%20orange?lock=23426"),
+  Puzzle("ЛОЗОВ ЛИСТ","Лист што се користи за виткање сарми.","ОВОШЈЕ И ХРАНА","https://loremflickr.com/900/600/grape%20leaf?lock=23494"),
+  Puzzle("СМОКВА","Слатко овошје со мека внатрешност и многу ситни семки.","ОВОШЈЕ И ХРАНА","https://loremflickr.com/900/600/fig%20fruit?lock=20295"),
+  Puzzle("КАЛИНКА","Овошје со црвени зрнца внатре.","ОВОШЈЕ И ХРАНА","https://loremflickr.com/900/600/pomegranate?lock=21332"),
+  Puzzle("ДИЊА","Големо слатко летно овошје со миризлива внатрешност.","ОВОШЈЕ И ХРАНА","https://loremflickr.com/900/600/melon?lock=18166"),
+  Puzzle("ПИПЕРКА","Зеленчук што може да биде црвен, жолт или зелен.","ОВОШЈЕ И ХРАНА","https://loremflickr.com/900/600/bell%20pepper?lock=21349"),
+  Puzzle("КРОМИД","Зеленчук што често се сече за готвење и предизвикува солзи.","ОВОШЈЕ И ХРАНА","https://loremflickr.com/900/600/onion?lock=20304"),
+  Puzzle("ЛУК","Зачинест зеленчук со силен мирис, составен од чешниња.","ОВОШЈЕ И ХРАНА","https://loremflickr.com/900/600/garlic?lock=17160"),
+  Puzzle("СИРЕЊЕ","Млечен производ што се прави од млеко.","ОВОШЈЕ И ХРАНА","https://loremflickr.com/900/600/cheese?lock=20285"),
+  Puzzle("ЛЕБ","Основна храна што се пече од брашно и вода.","ОВОШЈЕ И ХРАНА","https://loremflickr.com/900/600/bread?lock=17137")
  )),
  GameCategory("ПРИРОДА","🌳", listOf(
   Puzzle("ПЛАНИНА","Висока природна форма на земјиште.","ПРИРОДА","https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900"),
@@ -82,7 +102,17 @@ val categories = listOf(
   Puzzle("ВЕТЕР","Движење на воздухот.","ПРИРОДА","https://loremflickr.com/900/600/wind?lock=1206"),
   Puzzle("МОРЕ","Голема солена водена површина.","ПРИРОДА","https://loremflickr.com/900/600/sea?lock=1207"),
   Puzzle("ПЕСОК","Ситни зрнца што често ги има на плажа.","ПРИРОДА","https://loremflickr.com/900/600/sand?lock=1208"),
-  Puzzle("ЅВЕЗДА","Светло небесно тело што се гледа ноќе.","ПРИРОДА","https://loremflickr.com/900/600/star?lock=1209")
+  Puzzle("ЅВЕЗДА","Светло небесно тело што се гледа ноќе.","ПРИРОДА","https://loremflickr.com/900/600/star?lock=1209"),
+  Puzzle("ДОЛИНА","Ниско земјиште меѓу ридови или планини.","ПРИРОДА","https://loremflickr.com/900/600/valley?lock=13290"),
+  Puzzle("РИД","Издигнат дел од земјиштето, понизок од планина.","ПРИРОДА","https://loremflickr.com/900/600/hill?lock=10148"),
+  Puzzle("ВИНУГА","Природна ледена маса што бавно се движи низ планина.","ПРИРОДА","https://loremflickr.com/900/600/glacier?lock=13285"),
+  Puzzle("КАНЈОН","Длабока и тесна долина со стрмни карпести страни.","ПРИРОДА","https://loremflickr.com/900/600/canyon?lock=13282"),
+  Puzzle("ВИСТИНСКИ КАМЕН","Цврст природен материјал од кој се градат карпи.","ПРИРОДА","https://loremflickr.com/900/600/stone%20rock?lock=21733"),
+  Puzzle("МОЛЊА","Силен електричен блесок за време на бура.","ПРИРОДА","https://loremflickr.com/900/600/lightning?lock=12231"),
+  Puzzle("ВИНОЖИТО","Шарен лак на небото што се појавува по дожд.","ПРИРОДА","https://loremflickr.com/900/600/rainbow?lock=15403"),
+  Puzzle("МАГЛА","Ситни капки вода во воздухот што ја намалуваат видливоста.","ПРИРОДА","https://loremflickr.com/900/600/fog?lock=12226"),
+  Puzzle("ИЗВОР","Место каде што водата природно излегува од земјата.","ПРИРОДА","https://loremflickr.com/900/600/spring%20water?lock=12247"),
+  Puzzle("КРАЈБРЕЖЈЕ","Појасот на копно покрај море или езеро.","ПРИРОДА","https://loremflickr.com/900/600/coastline?lock=17443")
  )),
  GameCategory("ПРЕВОЗ","🚗", listOf(
   Puzzle("АВТОМОБИЛ","Возило со четири тркала.","ПРЕВОЗ","https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=900"),
@@ -102,7 +132,17 @@ val categories = listOf(
   Puzzle("ЕДРИЛИЦА","Пловило што се движи со помош на ветер.","ПРЕВОЗ","https://loremflickr.com/900/600/sailboat?lock=1306"),
   Puzzle("СКУТЕР","Мало моторно возило на две тркала.","ПРЕВОЗ","https://loremflickr.com/900/600/scooter?lock=1307"),
   Puzzle("ПРИКОЛКА","Возило без мотор што го влече друго возило.","ПРЕВОЗ","https://loremflickr.com/900/600/trailer?lock=1308"),
-  Puzzle("БАГЕР","Работна машина што копа земја.","ПРЕВОЗ","https://loremflickr.com/900/600/excavator?lock=1309")
+  Puzzle("БАГЕР","Работна машина што копа земја.","ПРЕВОЗ","https://loremflickr.com/900/600/excavator?lock=1309"),
+  Puzzle("ТРОЛЕЈБУС","Градско електрично возило што се напојува преку жици.","ПРЕВОЗ","https://loremflickr.com/900/600/trolleybus?lock=15453"),
+  Puzzle("ТРКАЛО","Кружен дел што му помага на возилото да се движи.","ПРЕВОЗ","https://loremflickr.com/900/600/wheel?lock=12309"),
+  Puzzle("ПОДМОРНИЦА","Пловило што може да се движи под површината на водата.","ПРЕВОЗ","https://loremflickr.com/900/600/submarine?lock=16518"),
+  Puzzle("ЖИЧНИЦА","Превозно средство што се движи високо над земјата по кабел.","ПРЕВОЗ","https://loremflickr.com/900/600/cable%20car?lock=13360"),
+  Puzzle("САНКА","Превозно средство што се лизга по снег.","ПРЕВОЗ","https://loremflickr.com/900/600/sled?lock=11240"),
+  Puzzle("КАРАВАН","Приколка или возило опремено за патување и престој.","ПРЕВОЗ","https://loremflickr.com/900/600/caravan?lock=13321"),
+  Puzzle("КОЧИЈА","Старо превозно средство што го влечат коњи.","ПРЕВОЗ","https://loremflickr.com/900/600/horse%20carriage?lock=12287"),
+  Puzzle("БУЛДОЖЕР","Тешка машина што турка земја и урнатини.","ПРЕВОЗ","https://loremflickr.com/900/600/bulldozer?lock=14396"),
+  Puzzle("КОМБЕ","Помало моторно возило за превоз на луѓе или товар.","ПРЕВОЗ","https://loremflickr.com/900/600/van?lock=11242"),
+  Puzzle("ТРАКТОР","Работно возило што се користи најчесто во земјоделство.","ПРЕВОЗ","https://loremflickr.com/900/600/tractor?lock=13372")
  )),
  GameCategory("СПОРТ","⚽", listOf(
   Puzzle("ФУДБАЛ","Спорт што се игра со топка и нозе.","СПОРТ","https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=900"),
@@ -122,7 +162,17 @@ val categories = listOf(
   Puzzle("ЏУДО","Боречки спорт со фрлања и зафати.","СПОРТ","https://loremflickr.com/900/600/judo?lock=1406"),
   Puzzle("ЈАВАЊЕ","Спортска активност на коњ.","СПОРТ","https://loremflickr.com/900/600/horse%20riding?lock=1407"),
   Puzzle("КАЈАК","Веслачки спорт со тесен чамец.","СПОРТ","https://loremflickr.com/900/600/kayak?lock=1408"),
-  Puzzle("КЛИЗГАЊЕ","Движење по мраз со лизгалки.","СПОРТ","https://loremflickr.com/900/600/ice%20skating?lock=1409")
+  Puzzle("КЛИЗГАЊЕ","Движење по мраз со лизгалки.","СПОРТ","https://loremflickr.com/900/600/ice%20skating?lock=1409"),
+  Puzzle("ПИНГ-ПОНГ","Игра со мали рекети и топче на маса.","СПОРТ","https://loremflickr.com/900/600/table%20tennis?lock=13449"),
+  Puzzle("КУГЛАЊЕ","Спорт во кој се соборуваат кегли со тешка топка.","СПОРТ","https://loremflickr.com/900/600/bowling?lock=12322"),
+  Puzzle("СТРЕЛАШТВО","Спорт во кој се погодува цел со лак или оружје.","СПОРТ","https://loremflickr.com/900/600/archery%20target%20sport?lock=15525"),
+  Puzzle("ФЕХТУВАЊЕ","Боречки спорт со мечеви и заштитна опрема.","СПОРТ","https://loremflickr.com/900/600/fencing?lock=14444"),
+  Puzzle("РЕГБИ","Тимски спорт со овална топка.","СПОРТ","https://loremflickr.com/900/600/rugby?lock=10233"),
+  Puzzle("КРИКЕТ","Тимски спорт со палка и топка, популарен во многу земји.","СПОРТ","https://loremflickr.com/900/600/cricket?lock=11307"),
+  Puzzle("СНОУБОРД","Зимски спорт со една широка даска на снег.","СПОРТ","https://loremflickr.com/900/600/snowboard?lock=13418"),
+  Puzzle("СУРФАЊЕ","Спорт во кој се вози на бранови со даска.","СПОРТ","https://loremflickr.com/900/600/surfing?lock=12351"),
+  Puzzle("МАРАТОН","Долга трка во трчање на 42 километри.","СПОРТ","https://loremflickr.com/900/600/marathon%20running?lock=12353"),
+  Puzzle("КАРЛИНГ","Зимски тимски спорт во кој камења се лизгаат по мраз.","СПОРТ","https://loremflickr.com/900/600/curling?lock=12341")
  )),
  GameCategory("МЕСТА","🏙️", listOf(
   Puzzle("УЧИЛИШТЕ","Место каде што децата учат.","МЕСТА","https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=900"),
@@ -142,7 +192,17 @@ val categories = listOf(
   Puzzle("БАНКА","Место каде што се чуваат и управуваат пари.","МЕСТА","https://loremflickr.com/900/600/bank%20building?lock=1506"),
   Puzzle("ПОШТА","Место каде што се испраќаат писма и пакети.","МЕСТА","https://loremflickr.com/900/600/post%20office?lock=1507"),
   Puzzle("ПАРК","Јавно зелено место за прошетка и одмор.","МЕСТА","https://loremflickr.com/900/600/city%20park?lock=1508"),
-  Puzzle("ФАРМА","Место каде што се одгледуваат животни или растенија.","МЕСТА","https://loremflickr.com/900/600/farm?lock=1509")
+  Puzzle("ФАРМА","Место каде што се одгледуваат животни или растенија.","МЕСТА","https://loremflickr.com/900/600/farm?lock=1509"),
+  Puzzle("БЕНЗИНСКА ПУМПА","Место каде што возилата полнат гориво.","МЕСТА","https://loremflickr.com/900/600/gas%20station?lock=19727"),
+  Puzzle("АПТЕКА","Место каде што се купуваат лекови и медицински производи.","МЕСТА","https://loremflickr.com/900/600/pharmacy?lock=11288"),
+  Puzzle("ПЕКАРНИЦА","Продавница каде што се продава свеж леб и печива.","МЕСТА","https://loremflickr.com/900/600/bakery?lock=14449"),
+  Puzzle("СУПЕРМАРКЕТ","Голема продавница за храна и секојдневни производи.","МЕСТА","https://loremflickr.com/900/600/supermarket?lock=16573"),
+  Puzzle("ПОЖАРНА СТАНИЦА","Место од каде што пожарникарите излегуваат на интервенции.","МЕСТА","https://loremflickr.com/900/600/fire%20station?lock=19734"),
+  Puzzle("ПОЛИЦИСКА СТАНИЦА","Место каде што работи полицијата.","МЕСТА","https://loremflickr.com/900/600/police%20station?lock=21855"),
+  Puzzle("ГРАДИНКА","Место каде што престојуваат и учат мали деца.","МЕСТА","https://loremflickr.com/900/600/kindergarten?lock=13374"),
+  Puzzle("АВТОБУСКА СТАНИЦА","Место каде што пристигнуваат и поаѓаат автобуси.","МЕСТА","https://loremflickr.com/900/600/bus%20station?lock=21831"),
+  Puzzle("ЗООЛОШКА ГРАДИНА","Место каде што посетителите гледаат различни животни.","МЕСТА","https://loremflickr.com/900/600/zoo?lock=20770"),
+  Puzzle("БАЗЕН","Место исполнето со вода за пливање.","МЕСТА","https://loremflickr.com/900/600/swimming%20pool?lock=10226")
  ))
 )
 fun normalizeAnswer(value:String):String {
