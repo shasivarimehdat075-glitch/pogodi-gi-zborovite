@@ -27,32 +27,38 @@ val categories = listOf(
  GameCategory("ЖИВОТНИ","🐾", listOf(
   Puzzle("КУЧЕ","Домашно животно што лае.","ЖИВОТНИ","https://images.unsplash.com/photo-1552053831-71594a27632d?w=900"),
   Puzzle("МАЧКА","Домашно животно што мјаука.","ЖИВОТНИ","https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=900"),
-  Puzzle("СЛОН","Големо животно со долга сурла.","ЖИВОТНИ","https://images.unsplash.com/photo-1549366021-9f761d450615?w=900")
+  Puzzle("ЛАВ","Голема дива мачка што живее во Африка.","ЖИВОТНИ","https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=900"),
+  Puzzle("ЖИРАФА","Животно со многу долг врат.","ЖИВОТНИ","https://images.unsplash.com/photo-1547721064-da6cfb341d50?w=900")
  )),
  GameCategory("ОВОШЈЕ И ХРАНА","🍎", listOf(
   Puzzle("ЈАБОЛКО","Црвено или зелено овошје што расте на дрво.","ОВОШЈЕ","https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=900"),
   Puzzle("БАНАНА","Жолто овошје што го лупиме пред јадење.","ОВОШЈЕ","https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=900"),
-  Puzzle("ЛЕБ","Основна храна што се прави од брашно.","ХРАНА","https://images.unsplash.com/photo-1509440159596-0249088772ff?w=900")
+  Puzzle("ПОРТОКАЛ","Тркалесто цитрусно овошје со портокалова кора.","ОВОШЈЕ","https://images.unsplash.com/photo-1547514701-42782101795e?w=900"),
+  Puzzle("ГРОЗЈЕ","Мали плодови што растат во грозд.","ОВОШЈЕ","https://images.unsplash.com/photo-1537640538966-79f369143f8f?w=900")
  )),
  GameCategory("ПРИРОДА","🌳", listOf(
   Puzzle("ПЛАНИНА","Висока природна форма на земјиште.","ПРИРОДА","https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900"),
   Puzzle("СОНЦЕ","Ѕвезда што ја осветлува Земјата.","ПРИРОДА","https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=900"),
-  Puzzle("ЦВЕТ","Шарен дел од растение што често мириса убаво.","ПРИРОДА","https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=900")
+  Puzzle("РЕКА","Природна вода што тече низ корито.","ПРИРОДА","https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=900"),
+  Puzzle("ШУМА","Голема површина покриена со многу дрвја.","ПРИРОДА","https://images.unsplash.com/photo-144森林?w=900")
  )),
  GameCategory("ПРЕВОЗ","🚗", listOf(
   Puzzle("АВТОМОБИЛ","Возило со четири тркала.","ПРЕВОЗ","https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=900"),
   Puzzle("ВЕЛОСИПЕД","Превозно средство со две тркала и педали.","ПРЕВОЗ","https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=900"),
-  Puzzle("АВИОН","Летало што превезува патници низ воздухот.","ПРЕВОЗ","https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=900")
+  Puzzle("ВОЗ","Превозно средство што се движи по шини.","ПРЕВОЗ","https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=900"),
+  Puzzle("БРОД","Големо превозно средство што плови по вода.","ПРЕВОЗ","https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=900")
  )),
  GameCategory("СПОРТ","⚽", listOf(
   Puzzle("ФУДБАЛ","Спорт што се игра со топка и нозе.","СПОРТ","https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=900"),
   Puzzle("КОШАРКА","Спорт во кој топката се фрла во кош.","СПОРТ","https://images.unsplash.com/photo-1519861531473-9200262188bf?w=900"),
-  Puzzle("ТЕНИС","Спорт што се игра со рекет и топче.","СПОРТ","https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=900")
+  Puzzle("ПЛИВАЊЕ","Спортска активност што се изведува во вода.","СПОРТ","https://images.unsplash.com/photo-1530549387789-4c1017266635?w=900"),
+  Puzzle("БОКС","Боречки спорт со ракавици.","СПОРТ","https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=900")
  )),
  GameCategory("МЕСТА","🏙️", listOf(
   Puzzle("УЧИЛИШТЕ","Место каде што децата учат.","МЕСТА","https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=900"),
   Puzzle("БИБЛИОТЕКА","Место каде што се позајмуваат книги.","МЕСТА","https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=900"),
-  Puzzle("ПЛАЖА","Место покрај море со песок.","МЕСТА","https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=900")
+  Puzzle("БОЛНИЦА","Место каде што лекарите лекуваат болни луѓе.","МЕСТА","https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=900"),
+  Puzzle("МУЗЕЈ","Место каде што се изложуваат историски и уметнички предмети.","МЕСТА","https://images.unsplash.com/photo-1565060169194-19fabf63012e?w=900")
  ))
 )
 fun normalizeAnswer(value:String):String {
