@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import java.util.Locale
+import kotlinx.coroutines.delay
 
 data class Puzzle(val word:String,val clue:String,val category:String,val photo:String)
 data class GameCategory(val title:String,val emoji:String,val puzzles:List<Puzzle>)
@@ -66,6 +67,7 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
  var answer by remember { mutableStateOf("") }; var score by remember { mutableIntStateOf(0) }
  var solved by remember { mutableStateOf(false) }; var hint by remember { mutableStateOf(false) }
  var message by remember { mutableStateOf("Избери категорија за да започнеш!") }
+ LaunchedEffect(solved) { if (solved && selected >= 0) { delay(900); val cat=categories[selected]; if (level+1 < cat.puzzles.size) { level++; message="Внеси го точниот збор!" } else { selected=-1; message="Категоријата е завршена! Браво! 🎉" }; answer=""; solved=false; hint=false } }
  MaterialTheme(colorScheme=darkColorScheme(primary=Color(0xFF8DE1D2))){
  Column(Modifier.fillMaxSize().background(Color(0xFF101B3D)).verticalScroll(rememberScrollState()).padding(18.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(14.dp)){
  Text("🧩 ПОГОДИ ГИ ЗБОРОВИТЕ",color=Color.White,fontSize=24.sp,fontWeight=FontWeight.ExtraBold,textAlign=TextAlign.Center)
@@ -99,7 +101,7 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
     Button(onClick={if(normalizeAnswer(answer)==normalizeAnswer(p.word)){score+=if(hint)5 else 10;solved=true;message="БРАВО! ТОЧЕН ОДГОВОР! 🎉"}else{message="Не е точно. Обиди се повторно!"}},enabled=!solved,modifier=Modifier.fillMaxWidth()){Text("ПРОВЕРИ")}
     OutlinedButton(onClick={hint=true;message="ПРВА БУКВА: "+p.word.first()},enabled=!solved&&!hint){Text("💡 ПОМОШ")}
     Text(message,color=Color(0xFFFFD782),textAlign=TextAlign.Center)
-    if(solved) Button(onClick={if(level+1<cat.puzzles.size){level++}else{selected=-1};answer="";solved=false;hint=false;message="Внеси го точниот збор!"},modifier=Modifier.fillMaxWidth()){Text(if(level+1<cat.puzzles.size)"СЛЕДНО НИВО →" else "ЗАВРШИ КАТЕГОРИЈА")}
+    if(solved) Text("СЛЕДНОТО НИВО СЕ ОТВОРА АВТОМАТСКИ…",color=Color(0xFF8DE1D2),fontWeight=FontWeight.Bold,textAlign=TextAlign.Center)
    }
   }
  }
