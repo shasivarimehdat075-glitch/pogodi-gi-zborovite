@@ -14,6 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.Locale
 
 data class Puzzle(val word:String,val clue:String,val category:String)
 val puzzles = listOf(
@@ -25,6 +26,25 @@ val puzzles = listOf(
  Puzzle("СОНЦЕ","Ѕвезда што ја осветлува Земјата.","ПРИРОДА"),
  Puzzle("РАДОСТ","Чувство кога сме многу среќни.","ЧУВСТВА")
 )
+
+// Accept both Macedonian Cyrillic and common Latin transliteration.
+fun normalizeAnswer(value: String): String {
+    var s = value.trim().lowercase(Locale.ROOT)
+        .replace("dzh", "џ").replace("dž", "џ")
+        .replace("gj", "ѓ").replace("zh", "ж").replace("dz", "ѕ")
+        .replace("lj", "љ").replace("nj", "њ").replace("kj", "ќ")
+        .replace("ch", "ч").replace("sh", "ш")
+    val latin = mapOf(
+        'a' to 'а', 'b' to 'б', 'v' to 'в', 'g' to 'г', 'd' to 'д',
+        'e' to 'е', 'z' to 'з', 'i' to 'и', 'j' to 'ј', 'k' to 'к',
+        'l' to 'л', 'm' to 'м', 'n' to 'н', 'o' to 'о', 'p' to 'п',
+        'r' to 'р', 's' to 'с', 't' to 'т', 'u' to 'у', 'f' to 'ф',
+        'h' to 'х', 'c' to 'ц'
+    )
+    s = s.map { latin[it] ?: it }.joinToString("")
+    return s.uppercase(Locale.ROOT).filter { it.isLetter() }
+}
+
 class MainActivity:ComponentActivity(){ override fun onCreate(savedInstanceState:Bundle?){super.onCreate(savedInstanceState);setContent { GameScreen() }}}
 @Composable fun GameScreen(){
  var level by remember { mutableIntStateOf(0) }; var answer by remember { mutableStateOf("") }
@@ -42,8 +62,8 @@ class MainActivity:ComponentActivity(){ override fun onCreate(savedInstanceState
  Text("Кој збор е ова?",color=Color.White,fontSize=21.sp,fontWeight=FontWeight.Bold)
  Text(p.clue,color=Color.White,fontSize=17.sp,textAlign=TextAlign.Center)
  Text("БРОЈ НА БУКВИ: "+p.word.length,color=Color(0xFFFFD782))
- OutlinedTextField(value=answer,onValueChange={answer=it.uppercase()},label={Text("Твојот одговор")},enabled=!solved,singleLine=true)
- Button(onClick={if(answer.trim()==p.word){score+=if(hint)5 else 10;solved=true;message="БРАВО! ТОЧЕН ОДГОВОР! 🎉"}else{message="Не е точно. Обиди се повторно!"}},enabled=!solved,modifier=Modifier.fillMaxWidth()){Text("ПРОВЕРИ")}
+ OutlinedTextField(value=answer,onValueChange={answer=it.uppercase()},label={Text("Твојот одговор (кирилица или латиница)")},enabled=!solved,singleLine=true)
+ Button(onClick={if(normalizeAnswer(answer)==normalizeAnswer(p.word)){score+=if(hint)5 else 10;solved=true;message="БРАВО! ТОЧЕН ОДГОВОР! 🎉"}else{message="Не е точно. Обиди се повторно!"}},enabled=!solved,modifier=Modifier.fillMaxWidth()){Text("ПРОВЕРИ")}
  OutlinedButton(onClick={hint=true;message="ПРВА БУКВА: "+p.word.first()},enabled=!solved && !hint){Text("💡 ПОМОШ")}
  Text(message,color=Color(0xFFFFD782),textAlign=TextAlign.Center)
  if(solved) Button(onClick={level++;answer="";solved=false;hint=false;message="Внеси го точниот збор!"},modifier=Modifier.fillMaxWidth()){Text("СЛЕДНО НИВО →")}
