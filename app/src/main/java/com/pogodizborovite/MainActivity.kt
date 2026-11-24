@@ -141,7 +141,7 @@ val categories = listOf(
   Puzzle("МРАЗ","Тенок слој замрзната вода на студена површина.","ПРИРОДА","https://loremflickr.com/900/600/frost?lock=31195"),
   Puzzle("СЕНКА","Темна површина создадена кога нешто ја блокира светлината.","ПРИРОДА","https://loremflickr.com/900/600/tree%20shadow?lock=32245"),
   Puzzle("ПРИЛИВ","Покачување на нивото на морската вода.","ПРИРОДА","https://loremflickr.com/900/600/ocean%20tide?lock=33300"),
-  Puzzle("ОСЕКА", "Период кога нивото на морската вода се намалува.","ПРЕВОЗ","https://loremflickr.com/900/600/low%20tide%20shore?lock=30246"),
+  Puzzle("ОСЕКА", "Период кога нивото на морската вода се намалува.","ПРИРОДА","https://loremflickr.com/900/600/low%20tide%20shore?lock=30246"),
   Puzzle("СЕВЕРНА СВЕТЛИНА","Шарени светлосни појави на небото во поларните области.","ПРИРОДА","https://loremflickr.com/900/600/aurora%20borealis?lock=42764")
  )),
  GameCategory("ПРЕВОЗ","🚗", listOf(
