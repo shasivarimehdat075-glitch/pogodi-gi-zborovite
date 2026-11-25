@@ -1285,26 +1285,39 @@ private class BackgroundMusicPlayer(private val volume:Float) {
  }
 }
 
+
+private fun radioUiText(lang:String,key:String):String {
+ val values=mapOf(
+  "mk" to mapOf("country" to "РАДИО ЗЕМЈА","preparing" to "Се подготвува…"),
+  "fr" to mapOf("country" to "PAYS DE LA RADIO","preparing" to "Préparation…"),
+  "sq" to mapOf("country" to "SHTETI I RADIOS","preparing" to "Duke u përgatitur…"),
+  "en" to mapOf("country" to "RADIO COUNTRY","preparing" to "Preparing…")
+ )
+ return values[lang]?.get(key) ?: values["mk"]!!.getValue(key)
+}
+private fun radioCountryName(code:String,lang:String):String {
+ if(code.isBlank()) return mapOf("fr" to "Tous les pays","sq" to "Të gjitha shtetet","en" to "All countries")[lang] ?: "Сите земји"
+ if(code=="XK") return mapOf("mk" to "Косово","fr" to "Kosovo","sq" to "Kosovë","en" to "Kosovo")[lang] ?: "Kosovo"
+ val locale=Locale.forLanguageTag(lang)
+ return Locale("",code).getDisplayCountry(locale).ifBlank { code }
+}
+private fun translateRadioStatus(status:String,lang:String):String {
+ val translations=mapOf(
+  "Се бараат радио станици…" to listOf("Се бараат радио станици…","Recherche de stations radio…","Po kërkohen stacione radio…","Searching for radio stations…"),
+  "Нема радио станици" to listOf("Нема радио станици","Aucune station radio","Nuk ka stacione radio","No radio stations"),
+  "Пробај друга земја" to listOf("Пробај друга земја","Essaie un autre pays","Provo një shtet tjetër","Try another country"),
+  "Паузирано" to listOf("Паузирано","En pause","Në pauzë","Paused"),
+  "Се репродуцира" to listOf("Се репродуцира","Lecture en cours","Po luhet","Playing"),
+  "Се поврзува…" to listOf("Се поврзува…","Connexion…","Duke u lidhur…","Connecting…"),
+  "Станицата не работи – се бара друга…" to listOf("Станицата не работи – се бара друга…","La station ne fonctionne pas – recherche d’une autre…","Stacioni nuk punon – po kërkohet një tjetër…","Station unavailable – finding another…"),
+  "Не може да се пушти – следна станица" to listOf("Не може да се пушти – следна станица","Impossible de lire – station suivante","Nuk mund të luhet – stacioni tjetër","Can't play – next station")
+ )
+ val index=when(lang){"fr"->1;"sq"->2;"en"->3;else->0}
+ return translations[status]?.get(index) ?: status
+}
+
 private data class RadioStation(val name:String,val url:String)
 private data class RadioCountry(val name:String,val code:String)
-private data class RadioGenre(val name:String,val tag:String)
-private val radioGenres = listOf(
- RadioGenre("Сите категории",""),
- RadioGenre("Поп","pop"), RadioGenre("Рок","rock"),
- RadioGenre("Хип-хоп / Рап","hip hop"),
- RadioGenre("Традиционална / Фолк","folk"),
- RadioGenre("Балканска музика","balkan"),
- RadioGenre("Народна музика","folk"),
- RadioGenre("Џез","jazz"), RadioGenre("Класична","classical"),
- RadioGenre("Електронска / Денс","electronic"),
- RadioGenre("Кантри","country"), RadioGenre("Регe","reggae"),
- RadioGenre("Метал","metal"), RadioGenre("Латинска","latin"),
- RadioGenre("Арапска / Ориентална","arabic"),
- RadioGenre("Религиозна","religious"),
- RadioGenre("Вести","news"), RadioGenre("Разговорна","talk"),
- RadioGenre("Спорт","sport"), RadioGenre("Култура","culture"),
- RadioGenre("Oldies / Ретро","oldies"), RadioGenre("Детска","children")
-)
 private val radioCountries = listOf(
  RadioCountry("Македонија","MK"), RadioCountry("Франција","FR"), RadioCountry("Албанија","AL"), RadioCountry("Косово","XK"),
  RadioCountry("Босна и Херцеговина","BA"), RadioCountry("Србија","RS"), RadioCountry("Хрватска","HR"), RadioCountry("Црна Гора","ME"),
@@ -1370,11 +1383,11 @@ class OnlineHipHopRadio(context: Context, private val onState:(String,String,Boo
   requestJob?.cancel()
   requestJob = scope.launch {
    if (stations.isEmpty()) {
-    onState("$countryName – $genreName","Се бараат радио станици…",false)
+    onState(countryName,"Се бараат радио станици…",false)
     stations = withContext(Dispatchers.IO) { findStations() }
    }
    if (stations.isEmpty()) {
-    onState("Нема станица: $genreName","Пробај друга категорија или земја",false)
+    onState("Нема радио станици","Пробај друга земја",false)
    } else {
     currentIndex = if (currentIndex < 0) 0 else currentIndex % stations.size
     startStation()
