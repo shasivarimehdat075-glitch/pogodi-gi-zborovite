@@ -1319,23 +1319,11 @@ private fun translateRadioStatus(status:String,lang:String):String {
 private data class RadioStation(val name:String,val url:String)
 private data class RadioCountry(val name:String,val code:String)
 private val radioCountries = listOf(
- RadioCountry("Македонија","MK"), RadioCountry("Франција","FR"), RadioCountry("Албанија","AL"), RadioCountry("Косово","XK"),
- RadioCountry("Босна и Херцеговина","BA"), RadioCountry("Србија","RS"), RadioCountry("Хрватска","HR"), RadioCountry("Црна Гора","ME"),
- RadioCountry("Словенија","SI"), RadioCountry("Бугарија","BG"), RadioCountry("Грција","GR"), RadioCountry("Романија","RO"),
- RadioCountry("Германија","DE"), RadioCountry("Швајцарија","CH"), RadioCountry("Австрија","AT"), RadioCountry("Италија","IT"),
- RadioCountry("Шпанија","ES"), RadioCountry("Португалија","PT"), RadioCountry("Обединето Кралство","GB"), RadioCountry("Ирска","IE"),
- RadioCountry("Белгија","BE"), RadioCountry("Холандија","NL"), RadioCountry("Луксембург","LU"), RadioCountry("Полска","PL"),
- RadioCountry("Чешка","CZ"), RadioCountry("Словачка","SK"), RadioCountry("Унгарија","HU"), RadioCountry("Украина","UA"),
- RadioCountry("Русија","RU"), RadioCountry("Турција","TR"), RadioCountry("Шведска","SE"), RadioCountry("Норвешка","NO"),
- RadioCountry("Данска","DK"), RadioCountry("Финска","FI"), RadioCountry("Исланд","IS"), RadioCountry("САД","US"),
- RadioCountry("Канада","CA"), RadioCountry("Мексико","MX"), RadioCountry("Бразил","BR"), RadioCountry("Аргентина","AR"),
- RadioCountry("Чиле","CL"), RadioCountry("Колумбија","CO"), RadioCountry("Јапонија","JP"), RadioCountry("Јужна Кореја","KR"),
- RadioCountry("Кина","CN"), RadioCountry("Индија","IN"), RadioCountry("Пакистан","PK"), RadioCountry("Бангладеш","BD"),
- RadioCountry("Австралија","AU"), RadioCountry("Нов Зеланд","NZ"), RadioCountry("Египет","EG"), RadioCountry("Мароко","MA"),
- RadioCountry("Алжир","DZ"), RadioCountry("Тунис","TN"), RadioCountry("Јужна Африка","ZA"), RadioCountry("Нигерија","NG"),
- RadioCountry("Сенегал","SN"), RadioCountry("Обединети Арапски Емирати","AE"), RadioCountry("Саудиска Арабија","SA"),
- RadioCountry("Сите земји","")
-)
+  RadioCountry("Македонија","MK"),
+  RadioCountry("Франција","FR"),
+  RadioCountry("Албанија","AL"),
+  RadioCountry("Косово","XK")
+ )
 
 class OnlineHipHopRadio(context: Context, private val onState:(String,String,Boolean)->Unit) {
  private val appContext = context.applicationContext
