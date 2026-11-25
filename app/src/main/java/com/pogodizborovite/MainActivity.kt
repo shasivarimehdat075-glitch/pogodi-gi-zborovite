@@ -358,27 +358,53 @@ fun normalizeAnswer(value:String):String {
 }
 
 private fun startBackgroundMusic(): AudioTrack {
+ // Original upbeat, gentle game soundtrack: warm chords, plucked melody and soft rhythm.
  val sampleRate = 22050
- val seconds = 12
+ val seconds = 16
  val total = sampleRate * seconds
  val pcm = ShortArray(total)
- val notes = listOf(
-  Triple(261.63, 0.0, 2.8), Triple(329.63, 0.0, 2.8), Triple(392.00, 0.0, 2.8),
-  Triple(293.66, 3.0, 2.8), Triple(369.99, 3.0, 2.8), Triple(440.00, 3.0, 2.8),
-  Triple(220.00, 6.0, 2.8), Triple(261.63, 6.0, 2.8), Triple(329.63, 6.0, 2.8),
-  Triple(246.94, 9.0, 2.8), Triple(293.66, 9.0, 2.8), Triple(369.99, 9.0, 2.8)
+ val chordProgression = listOf(
+  listOf(261.63, 329.63, 392.00), // C
+  listOf(220.00, 261.63, 329.63), // Am
+  listOf(174.61, 220.00, 261.63), // F
+  listOf(196.00, 246.94, 293.66)  // G
  )
+ val melody = listOf(
+  523.25, 587.33, 659.25, 587.33, 523.25, 392.00, 440.00, 523.25,
+  587.33, 659.25, 783.99, 659.25, 587.33, 523.25, 440.00, 392.00
+ )
+ val beatSeconds = 0.5
  for (i in 0 until total) {
   val t = i.toDouble() / sampleRate
+  val beat = (t / beatSeconds).toInt()
+  val chord = chordProgression[(t / 4.0).toInt().coerceIn(0, 3)]
   var value = 0.0
-  for ((frequency, start, length) in notes) {
-   val local = t - start
-   if (local >= 0.0 && local < length) {
-    val envelope = (1.0 - kotlin.math.exp(-local * 3.0)) * kotlin.math.exp(-local * 0.8)
-    value += 0.13 * envelope * (kotlin.math.sin(2.0 * Math.PI * frequency * local) + 0.18 * kotlin.math.sin(4.0 * Math.PI * frequency * local))
-   }
+  // Soft sustained chord pad.
+  for (f in chord) {
+   value += 0.075 * kotlin.math.sin(2.0 * Math.PI * f * t)
+   value += 0.018 * kotlin.math.sin(2.0 * Math.PI * f * 2.0 * t)
   }
-  val edge = minOf(1.0, t / 0.5, (seconds - t) / 0.5).coerceAtLeast(0.0)
+  // Gentle bass pulse on each beat.
+  val bassFreq = chord[0] / 2.0
+  val beatPhase = t % beatSeconds
+  val bassEnv = kotlin.math.exp(-beatPhase * 5.0)
+  value += 0.13 * bassEnv * kotlin.math.sin(2.0 * Math.PI * bassFreq * t)
+  // Bright but soft plucked notes, two notes per second.
+  val noteIndex = (t / 0.5).toInt() % melody.size
+  val noteTime = t % 0.5
+  val noteEnv = kotlin.math.exp(-noteTime * 5.5)
+  val noteFreq = melody[noteIndex]
+  value += 0.16 * noteEnv * (
+   kotlin.math.sin(2.0 * Math.PI * noteFreq * noteTime) +
+   0.24 * kotlin.math.sin(2.0 * Math.PI * noteFreq * 2.0 * noteTime)
+  )
+  // Very quiet soft percussion pulse, without harsh clicks.
+  val percussionEnv = kotlin.math.exp(-beatPhase * 22.0)
+  val noiseLike = kotlin.math.sin(2.0 * Math.PI * 1800.0 * beatPhase) *
+   kotlin.math.sin(2.0 * Math.PI * 73.0 * t)
+  value += 0.018 * percussionEnv * noiseLike
+  // Seamless loop fade at the boundary.
+  val edge = minOf(1.0, t / 0.35, (seconds - t) / 0.35).coerceAtLeast(0.0)
   pcm[i] = (value * edge * 32767.0).toInt().coerceIn(-32768, 32767).toShort()
  }
  val track = AudioTrack.Builder()
