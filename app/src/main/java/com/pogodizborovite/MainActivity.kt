@@ -357,7 +357,7 @@ fun normalizeAnswer(value:String):String {
  return s.uppercase(Locale.ROOT).filter { it.isLetter() }
 }
 
-private fun startBackgroundMusic(): AudioTrack {
+private fun startBackgroundMusic(volume: Float): AudioTrack {
  // Original upbeat, gentle game soundtrack: warm chords, plucked melody and soft rhythm.
  val sampleRate = 22050
  val seconds = 16
@@ -415,23 +415,23 @@ private fun startBackgroundMusic(): AudioTrack {
   .build()
  track.write(pcm, 0, pcm.size)
  track.setLoopPoints(0, pcm.size, -1)
- track.setVolume(0.10f)
+ track.setVolume(0.10f * volume.coerceIn(0f, 1f))
  track.play()
  return track
 }
 
-private fun playGameSound(context: Context, soundType: String) {
+private fun playGameSound(context: Context, soundType: String, volume: Float) {
  val sampleRate = 22050
  val notes = when (soundType) {
-  "correct" -> listOf(659.25, 830.61, 987.77, 1318.51)
-  "wrong" -> listOf(311.13, 233.08)
-  "hint" -> listOf(523.25, 659.25, 783.99)
+  "correct" -> listOf(523.25, 659.25, 783.99, 1046.50, 1318.51)
+  "wrong" -> listOf(392.00, 349.23, 293.66)
+  "hint" -> listOf(440.00, 554.37, 659.25, 880.00)
   else -> listOf(880.0, 1174.66)
  }
  val durations = when (soundType) {
-  "correct" -> listOf(0.09, 0.09, 0.11, 0.20)
-  "wrong" -> listOf(0.13, 0.19)
-  "hint" -> listOf(0.10, 0.10, 0.16)
+  "correct" -> listOf(0.07, 0.07, 0.08, 0.09, 0.18)
+  "wrong" -> listOf(0.07, 0.08, 0.16)
+  "hint" -> listOf(0.07, 0.07, 0.08, 0.14)
   else -> listOf(0.045, 0.055)
  }
  val pcm = ShortArray((durations.sum() * sampleRate).toInt())
@@ -445,7 +445,7 @@ private fun playGameSound(context: Context, soundType: String) {
    val envelope = attack * release
    val fundamental = kotlin.math.sin(2.0 * Math.PI * notes[n] * t)
    val harmonic = kotlin.math.sin(2.0 * Math.PI * notes[n] * 2.0 * t)
-   val tone = fundamental * 0.78 + harmonic * 0.22
+   val tone = fundamental * 0.88 + harmonic * 0.12
    pcm[cursor++] = (tone * envelope * 10500.0).toInt().coerceIn(-32768, 32767).toShort()
   }
  }
@@ -456,7 +456,7 @@ private fun playGameSound(context: Context, soundType: String) {
   .setTransferMode(AudioTrack.MODE_STATIC)
   .build()
  track.write(pcm, 0, pcm.size)
- track.setVolume(0.72f)
+ track.setVolume(0.72f * volume.coerceIn(0f, 1f))
  track.setNotificationMarkerPosition(pcm.size)
  track.setPlaybackPositionUpdateListener(object : AudioTrack.OnPlaybackPositionUpdateListener {
   override fun onMarkerReached(player: AudioTrack) { player.release() }
@@ -473,8 +473,10 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
  var answer by remember { mutableStateOf("") }
  var score by remember { mutableIntStateOf(prefs.getInt("score", 0)) }
  var soundEnabled by remember { mutableStateOf(prefs.getBoolean("sound_enabled", true)) }
- DisposableEffect(soundEnabled) {
-  val music = if (soundEnabled) startBackgroundMusic() else null
+ var soundVolume by remember { mutableFloatStateOf(prefs.getFloat("sound_volume", 0.65f)) }
+ var darkMode by remember { mutableStateOf(prefs.getBoolean("dark_mode", true)) }
+ DisposableEffect(soundEnabled, soundVolume) {
+  val music = if (soundEnabled) startBackgroundMusic(soundVolume) else null
   onDispose { music?.pause(); music?.release() }
  }
  LaunchedEffect(selected, level, score) {
@@ -483,21 +485,39 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
  var solved by remember { mutableStateOf(false) }; var hint by remember { mutableStateOf(false) }
  var message by remember { mutableStateOf(if (prefs.getInt("selected", -1) >= 0) "Внеси го точниот збор!" else "Избери категорија за да започнеш!") }
  LaunchedEffect(solved) { if (solved && selected >= 0) { delay(900); val cat=categories[selected]; if (level+1 < cat.puzzles.size) { level++; message="Внеси го точниот збор!" } else { selected=-1; message="Категоријата е завршена! Браво! 🎉" }; answer=""; solved=false; hint=false } }
- MaterialTheme(colorScheme=darkColorScheme(primary=Color(0xFF8DE1D2))){
- Column(Modifier.fillMaxSize().background(Color(0xFF101B3D)).verticalScroll(rememberScrollState()).padding(18.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(14.dp)){
- Text("🧩 ПОГОДИ ГИ ЗБОРОВИТЕ",color=Color.White,fontSize=24.sp,fontWeight=FontWeight.ExtraBold,textAlign=TextAlign.Center)
- Text("Македонска игра со зборови",color=Color(0xFFB8C8EA))
+ val pageBackground = if (darkMode) Color(0xFF101B3D) else Color(0xFFF3F6FC)
+ val cardBackground = if (darkMode) Color(0xFF24365F) else Color.White
+ val primaryText = if (darkMode) Color.White else Color(0xFF18233A)
+ val secondaryText = if (darkMode) Color(0xFFB8C8EA) else Color(0xFF52627A)
+ val accent = if (darkMode) Color(0xFF8DE1D2) else Color(0xFF087F75)
+ MaterialTheme(colorScheme=if (darkMode) darkColorScheme(primary=accent) else lightColorScheme(primary=accent, background=pageBackground, surface=cardBackground)){
+ Column(Modifier.fillMaxSize().background(pageBackground).verticalScroll(rememberScrollState()).padding(18.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(14.dp)){
+ Text("🧩 ПОГОДИ ГИ ЗБОРОВИТЕ",color=primaryText,fontSize=24.sp,fontWeight=FontWeight.ExtraBold,textAlign=TextAlign.Center)
+ Text("Македонска игра со зборови",color=secondaryText)
  Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
-  Text("ПОЕНИ: "+score,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
-  TextButton(onClick={soundEnabled=!soundEnabled;prefs.edit().putBoolean("sound_enabled",soundEnabled).apply()}){Text(if(soundEnabled) "🔊 ЗВУК ВКЛ." else "🔇 ЗВУК ИСКЛ.",color=Color(0xFF8DE1D2))}
+  Text("ПОЕНИ: "+score,color=if(darkMode) Color(0xFFFFD782) else Color(0xFF9A6500),fontWeight=FontWeight.Bold)
+  TextButton(onClick={soundEnabled=!soundEnabled;prefs.edit().putBoolean("sound_enabled",soundEnabled).apply()}){Text(if(soundEnabled) "🔊 ЗВУК ВКЛ." else "🔇 ЗВУК ИСКЛ.",color=accent)}
+ }
+ Card(colors=CardDefaults.cardColors(containerColor=cardBackground), modifier=Modifier.fillMaxWidth()) {
+  Column(Modifier.padding(14.dp), verticalArrangement=Arrangement.spacedBy(8.dp)) {
+   Text("⚙️ ПАРАМЕТРИ", color=primaryText, fontWeight=FontWeight.Bold)
+   Text("Јачина на звук: ${(soundVolume * 100).toInt()}%", color=secondaryText)
+   Slider(value=soundVolume, onValueChange={soundVolume=it}, onValueChangeFinished={prefs.edit().putFloat("sound_volume", soundVolume).apply()}, valueRange=0f..1f, enabled=soundEnabled)
+   Row(Modifier.fillMaxWidth(), horizontalArrangement=Arrangement.SpaceBetween, verticalAlignment=Alignment.CenterVertically) {
+    Text("Заднина", color=primaryText)
+    TextButton(onClick={darkMode=!darkMode;prefs.edit().putBoolean("dark_mode",darkMode).apply()}) {
+     Text(if(darkMode) "🌙 ТЕМЕН РЕЖИМ" else "☀️ СВЕТОЛ РЕЖИМ", color=accent)
+    }
+   }
+  }
  }
  if(selected<0){
-  Text("ИЗБЕРИ КАТЕГОРИЈА",color=Color.White,fontSize=20.sp,fontWeight=FontWeight.Bold)
+  Text("ИЗБЕРИ КАТЕГОРИЈА",color=primaryText,fontSize=20.sp,fontWeight=FontWeight.Bold)
   categories.forEachIndexed { i,cat ->
-   Card(onClick={if(soundEnabled) playGameSound(context, "tap");selected=i;level=0;answer="";solved=false;hint=false;message="Внеси го точниот збор!"},colors=CardDefaults.cardColors(containerColor=Color(0xFF24365F)),shape=RoundedCornerShape(18.dp),modifier=Modifier.fillMaxWidth()){
+   Card(onClick={if(soundEnabled) playGameSound(context, "tap", soundVolume);selected=i;level=0;answer="";solved=false;hint=false;message="Внеси го точниот збор!"},colors=CardDefaults.cardColors(containerColor=cardBackground),shape=RoundedCornerShape(18.dp),modifier=Modifier.fillMaxWidth()){
     Row(Modifier.padding(18.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(14.dp)){
      Text(cat.emoji,fontSize=32.sp)
-     Column(Modifier.weight(1f)){Text(cat.title,color=Color.White,fontWeight=FontWeight.Bold,fontSize=18.sp);Text(cat.puzzles.size.toString()+" зборови со фотографии",color=Color(0xFFB8C8EA),fontSize=13.sp)}
+     Column(Modifier.weight(1f)){Text(cat.title,color=primaryText,fontWeight=FontWeight.Bold,fontSize=18.sp);Text(cat.puzzles.size.toString()+" зборови со фотографии",color=secondaryText,fontSize=13.sp)}
      Text("›",color=Color(0xFF8DE1D2),fontSize=28.sp)
     }
    }
@@ -508,10 +528,10 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
   val p=cat.puzzles[safeLevel]
   var imageFailed by remember(p.photo) { mutableStateOf(false) }
   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
-   TextButton(onClick={selected=-1;answer="";solved=false;hint=false}){Text("← КАТЕГОРИИ")}
+   TextButton(onClick={selected=-1;answer="";solved=false;hint=false}){Text("← КАТЕГОРИИ", color=accent)}
    Text("НИВО "+(level+1)+"/"+cat.puzzles.size,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
   }
-  Text(cat.title,color=Color(0xFF8DE1D2),fontWeight=FontWeight.Bold)
+  Text(cat.title,color=accent,fontWeight=FontWeight.Bold)
   Card(colors=CardDefaults.cardColors(containerColor=Color(0xFF24365F)),shape=RoundedCornerShape(22.dp),modifier=Modifier.fillMaxWidth()){
    Column(Modifier.padding(16.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(12.dp)){
     if (imageFailed) {
@@ -521,18 +541,18 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
     } else {
      AsyncImage(model=p.photo,contentDescription=p.category,modifier=Modifier.fillMaxWidth().height(190.dp),contentScale=ContentScale.Crop,onError={ imageFailed=true })
     }
-    Text("КОЈ ЗБОР Е ОВА?",color=Color.White,fontSize=21.sp,fontWeight=FontWeight.Bold)
-    Text(p.clue,color=Color.White,fontSize=17.sp,textAlign=TextAlign.Center)
+    Text("КОЈ ЗБОР Е ОВА?",color=primaryText,fontSize=21.sp,fontWeight=FontWeight.Bold)
+    Text(p.clue,color=primaryText,fontSize=17.sp,textAlign=TextAlign.Center)
     Text("БРОЈ НА БУКВИ: "+p.word.count { it != ' ' },color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
     OutlinedTextField(value=answer,onValueChange={answer=it.uppercase()},label={Text("Одговор: кирилица или латиница")},enabled=!solved,singleLine=true)
-    Button(onClick={if(normalizeAnswer(answer)==normalizeAnswer(p.word)){if(soundEnabled) playGameSound(context, "correct");score+=if(hint)5 else 10;solved=true;message="БРАВО! ТОЧЕН ОДГОВОР! 🎉"}else{if(soundEnabled) playGameSound(context, "wrong");message="Не е точно. Обиди се повторно!"}},enabled=!solved,modifier=Modifier.fillMaxWidth()){Text("ПРОВЕРИ")}
-    OutlinedButton(onClick={if(soundEnabled) playGameSound(context, "hint");hint=true;message="ПРВА БУКВА: "+p.word.first()},enabled=!solved&&!hint){Text("💡 ПОМОШ")}
+    Button(onClick={if(normalizeAnswer(answer)==normalizeAnswer(p.word)){if(soundEnabled) playGameSound(context, "correct", soundVolume);score+=if(hint)5 else 10;solved=true;message="БРАВО! ТОЧЕН ОДГОВОР! 🎉"}else{if(soundEnabled) playGameSound(context, "wrong", soundVolume);message="Не е точно. Обиди се повторно!"}},enabled=!solved,modifier=Modifier.fillMaxWidth()){Text("ПРОВЕРИ")}
+    OutlinedButton(onClick={if(soundEnabled) playGameSound(context, "hint", soundVolume);hint=true;message="ПРВА БУКВА: "+p.word.first()},enabled=!solved&&!hint){Text("💡 ПОМОШ")}
     Text(message,color=Color(0xFFFFD782),textAlign=TextAlign.Center)
     if(solved) Text("СЛЕДНОТО НИВО СЕ ОТВОРА АВТОМАТСКИ…",color=Color(0xFF8DE1D2),fontWeight=FontWeight.Bold,textAlign=TextAlign.Center)
    }
   }
  }
- Text("Погодувај, учи и забавувај се!",color=Color(0xFFB8C8EA),fontSize=13.sp)
+ Text("Погодувај, учи и забавувај се!",color=secondaryText,fontSize=13.sp)
  }
  }
 }
