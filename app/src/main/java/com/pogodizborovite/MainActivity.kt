@@ -423,11 +423,22 @@ private class BackgroundMusicPlayer(private val volume:Float) {
 private data class RadioStation(val name:String,val url:String)
 private data class RadioCountry(val name:String,val code:String)
 private val radioCountries = listOf(
- RadioCountry("Македонија","MK"), RadioCountry("Франција","FR"), RadioCountry("Албанија","AL"),
- RadioCountry("Косово","XK"), RadioCountry("Босна и Херцеговина","BA"), RadioCountry("Србија","RS"),
- RadioCountry("Хрватска","HR"), RadioCountry("Германија","DE"), RadioCountry("Швајцарија","CH"),
- RadioCountry("Австрија","AT"), RadioCountry("Италија","IT"), RadioCountry("Турција","TR"),
- RadioCountry("САД","US"), RadioCountry("Обединето Кралство","GB"), RadioCountry("Сите земји","")
+ RadioCountry("Македонија","MK"), RadioCountry("Франција","FR"), RadioCountry("Албанија","AL"), RadioCountry("Косово","XK"),
+ RadioCountry("Босна и Херцеговина","BA"), RadioCountry("Србија","RS"), RadioCountry("Хрватска","HR"), RadioCountry("Црна Гора","ME"),
+ RadioCountry("Словенија","SI"), RadioCountry("Бугарија","BG"), RadioCountry("Грција","GR"), RadioCountry("Романија","RO"),
+ RadioCountry("Германија","DE"), RadioCountry("Швајцарија","CH"), RadioCountry("Австрија","AT"), RadioCountry("Италија","IT"),
+ RadioCountry("Шпанија","ES"), RadioCountry("Португалија","PT"), RadioCountry("Обединето Кралство","GB"), RadioCountry("Ирска","IE"),
+ RadioCountry("Белгија","BE"), RadioCountry("Холандија","NL"), RadioCountry("Луксембург","LU"), RadioCountry("Полска","PL"),
+ RadioCountry("Чешка","CZ"), RadioCountry("Словачка","SK"), RadioCountry("Унгарија","HU"), RadioCountry("Украина","UA"),
+ RadioCountry("Русија","RU"), RadioCountry("Турција","TR"), RadioCountry("Шведска","SE"), RadioCountry("Норвешка","NO"),
+ RadioCountry("Данска","DK"), RadioCountry("Финска","FI"), RadioCountry("Исланд","IS"), RadioCountry("САД","US"),
+ RadioCountry("Канада","CA"), RadioCountry("Мексико","MX"), RadioCountry("Бразил","BR"), RadioCountry("Аргентина","AR"),
+ RadioCountry("Чиле","CL"), RadioCountry("Колумбија","CO"), RadioCountry("Јапонија","JP"), RadioCountry("Јужна Кореја","KR"),
+ RadioCountry("Кина","CN"), RadioCountry("Индија","IN"), RadioCountry("Пакистан","PK"), RadioCountry("Бангладеш","BD"),
+ RadioCountry("Австралија","AU"), RadioCountry("Нов Зеланд","NZ"), RadioCountry("Египет","EG"), RadioCountry("Мароко","MA"),
+ RadioCountry("Алжир","DZ"), RadioCountry("Тунис","TN"), RadioCountry("Јужна Африка","ZA"), RadioCountry("Нигерија","NG"),
+ RadioCountry("Сенегал","SN"), RadioCountry("Обединети Арапски Емирати","AE"), RadioCountry("Саудиска Арабија","SA"),
+ RadioCountry("Сите земји","")
 )
 
 class OnlineHipHopRadio(context: Context, private val onState:(String,String,Boolean)->Unit) {
@@ -500,36 +511,49 @@ class OnlineHipHopRadio(context: Context, private val onState:(String,String,Boo
   } catch (_: Exception) { next() }
  }
 
- private fun findStations(): List<RadioStation> {
+  private fun findStations(): List<RadioStation> {
   val hosts = listOf("https://de1.api.radio-browser.info", "https://de2.api.radio-browser.info", "https://nl1.api.radio-browser.info")
-  val tags = listOf("hiphop", "hip-hop", "rap")
+  val found = mutableListOf<RadioStation>()
   for (host in hosts) {
-   for (tag in tags) {
-    try {
-     val countryFilter = if (countryCode.isBlank()) "" else "&countrycode=$countryCode"
-      val endpoint = URL("$host/json/stations/search?tag=$tag$countryFilter&is_https=true&hidebroken=true&limit=100&order=clickcount&reverse=true")
-     val connection = endpoint.openConnection()
-     connection.setRequestProperty("User-Agent", "PogodiGiZborovite-Android/2.3.0")
-     connection.connectTimeout = 10000
-     connection.readTimeout = 12000
-     val data = connection.getInputStream().bufferedReader().use { it.readText() }
-     val array = JSONArray(data)
-     val found = mutableListOf<RadioStation>()
-     for (i in 0 until array.length()) {
-      val station = array.optJSONObject(i) ?: continue
-      if (station.optInt("lastcheckok", 0) != 1 || station.optInt("hls", 0) == 1) continue
-      val stream = station.optString("url_resolved").ifBlank { station.optString("url") }
-      val name = station.optString("name").ifBlank { "Hip-Hop Radio" }
-      if (stream.startsWith("https://") && found.none { it.url == stream }) found.add(RadioStation(name,stream))
-     }
-     if (found.isNotEmpty()) return found
-    } catch (_: Exception) {}
-   }
+   try {
+    val countryFilter = if (countryCode.isBlank()) "" else "&countrycode=$countryCode"
+    val preferred = if (countryCode == "FR") listOf("Skyrock","RTL","NRJ","France Inter","RMC","Europe 1","Nostalgie","Fun Radio","RTL2","Skyrock Klassiks") else emptyList()
+    for (stationName in preferred) {
+     try {
+      val endpoint = URL("$host/json/stations/search?name=" + java.net.URLEncoder.encode(stationName,"UTF-8") + countryFilter + "&is_https=true&hidebroken=true&limit=8&order=clickcount&reverse=true")
+      val connection = endpoint.openConnection()
+      connection.setRequestProperty("User-Agent","PogodiGiZborovite-Android/2.3.1")
+      connection.connectTimeout=8000
+      connection.readTimeout=10000
+      val array = JSONArray(connection.getInputStream().bufferedReader().use { it.readText() })
+      for (i in 0 until array.length()) {
+       val station = array.optJSONObject(i) ?: continue
+       if (station.optInt("lastcheckok",0) != 1 || station.optInt("hls",0) == 1) continue
+       val stream = station.optString("url_resolved").ifBlank { station.optString("url") }
+       val name = station.optString("name").ifBlank { stationName }
+       if (stream.startsWith("https://") && found.none { it.url == stream }) found.add(RadioStation(name,stream))
+      }
+     } catch (_:Exception) {}
+    }
+    val endpoint = URL("$host/json/stations/search?" + (if(countryCode.isBlank()) "" else "countrycode=$countryCode&") + "is_https=true&hidebroken=true&limit=100&order=clickcount&reverse=true")
+    val connection = endpoint.openConnection()
+    connection.setRequestProperty("User-Agent","PogodiGiZborovite-Android/2.3.1")
+    connection.connectTimeout=10000
+    connection.readTimeout=12000
+    val array = JSONArray(connection.getInputStream().bufferedReader().use { it.readText() })
+    for (i in 0 until array.length()) {
+     val station = array.optJSONObject(i) ?: continue
+     if (station.optInt("lastcheckok",0) != 1 || station.optInt("hls",0) == 1) continue
+     val stream = station.optString("url_resolved").ifBlank { station.optString("url") }
+     val name = station.optString("name").ifBlank { "Radio" }
+     if (stream.startsWith("https://") && found.none { it.url == stream }) found.add(RadioStation(name,stream))
+    }
+    if (found.isNotEmpty()) return found
+   } catch (_:Exception) {}
   }
-  return emptyList()
+  return found
  }
-
- private fun startStation() {
+private fun startStation() {
   if (currentIndex !in stations.indices) return
   stopCurrent()
   val station = stations[currentIndex]
