@@ -81,6 +81,76 @@ private fun uiText(key:String,lang:String):String {
  return if(i<0) key else (rows[lang] ?: rows["mk"]!!).getOrElse(i){key}
 }
 
+
+private val frenchAnimalWords = mapOf(
+ "КУЧЕ" to "CHIEN","МАЧКА" to "CHAT","ЛАВ" to "LION","ЗЕБРА" to "ZÈBRE",
+ "МАЈМУН" to "SINGE","МЕЧКА" to "OURS","ВОЛК" to "LOUP","ДЕЛФИН" to "DAUPHIN",
+ "ТИГАР" to "TIGRE","ЛИСИЦА" to "RENARD","ЗАЈАК" to "LAPIN","КОЊ" to "CHEVAL",
+ "КРАВА" to "VACHE","ОВЦА" to "MOUTON","КОЗА" to "CHÈVRE","ЖЕЛКА" to "TORTUE",
+ "ПАПАГАЛ" to "PERROQUET","ОРЕЛ" to "AIGLE","СЛОН" to "ÉLÉPHANT","ЖИРАФА" to "GIRAFE",
+ "НОСОРОГ" to "RHINOCÉROS","НИЛСКИ КОЊ" to "HIPPOPOTAME","КЕНГУР" to "KANGOUROU",
+ "ПИНГВИН" to "PINGOUIN","БУВ" to "HIBOU","ПАУН" to "PAON","ЕЖ" to "HÉRISSON",
+ "ВЕРВЕРИЦА" to "ÉCUREUIL","КАМИЛА" to "CHAMEAU","ПАНДА" to "PANDA","КОАЛА" to "KOALA",
+ "КРОКОДИЛ" to "CROCODILE","ЗМИЈА" to "SERPENT","ЖАБА" to "GRENOUILLE",
+ "ПЧЕЛА" to "ABEILLE","ПЕПЕРУТКА" to "PAPILLON","МИШКА" to "SOURIS","СВИЊА" to "COCHON"
+)
+private val frenchAnimalClues = mapOf(
+ "КУЧЕ" to "Animal domestique qui aboie.",
+ "МАЧКА" to "Animal domestique qui miaule.",
+ "ЛАВ" to "Grand félin sauvage qui vit en Afrique.",
+ "ЗЕБРА" to "Animal africain reconnaissable à ses rayures noires et blanches.",
+ "МАЈМУН" to "Animal qui grimpe aux arbres.",
+ "МЕЧКА" to "Grand animal forestier qui marche à quatre pattes.",
+ "ВОЛК" to "Animal sauvage ressemblant à un chien et vivant en meute.",
+ "ДЕЛФИН" to "Animal marin intelligent qui nage et saute hors de l’eau.",
+ "ТИГАР" to "Grand félin sauvage au pelage orange rayé de noir.",
+ "ЛИСИЦА" to "Animal sauvage au museau pointu et à la queue touffue.",
+ "ЗАЈАК" to "Petit animal aux longues oreilles qui bondit.",
+ "КОЊ" to "Grand animal domestique que l’on peut monter.",
+ "КРАВА" to "Animal domestique qui produit du lait.",
+ "ОВЦА" to "Animal domestique couvert de laine.",
+ "КОЗА" to "Animal domestique qui grimpe sur les rochers.",
+ "ЖЕЛКА" to "Animal qui possède une carapace dure sur le dos.",
+ "ПАПАГАЛ" to "Oiseau coloré capable d’imiter des sons.",
+ "ОРЕЛ" to "Grand oiseau de proie aux serres puissantes.",
+ "СЛОН" to "Grand animal doté d’une longue trompe et de grandes oreilles.",
+ "ЖИРАФА" to "Grand animal africain au long cou.",
+ "НОСОРОГ" to "Grand animal à la peau épaisse et portant une corne sur le nez.",
+ "НИЛСКИ КОЊ" to "Grand animal africain qui vit dans l’eau et près des rivières.",
+ "КЕНГУР" to "Animal australien qui saute et porte son petit dans une poche.",
+ "ПИНГВИН" to "Oiseau qui ne vole pas, mais nage très bien dans les mers froides.",
+ "БУВ" to "Oiseau nocturne aux grands yeux.",
+ "ПАУН" to "Oiseau connu pour sa grande queue colorée.",
+ "ЕЖ" to "Petit animal recouvert de piquants.",
+ "ВЕРВЕРИЦА" to "Petit animal qui grimpe aux arbres et ramasse des noix.",
+ "КАМИЛА" to "Animal doté d’une bosse qui peut rester longtemps sans boire.",
+ "ПАНДА" to "Ours noir et blanc qui mange principalement du bambou.",
+ "КОАЛА" to "Animal marsupial australien qui vit dans les arbres.",
+ "КРОКОДИЛ" to "Grand reptile aux mâchoires puissantes qui vit dans l’eau et sur terre.",
+ "ЗМИЈА" to "Reptile sans pattes qui se déplace en rampant.",
+ "ЖАБА" to "Petit amphibien qui saute et coasse.",
+ "ПЧЕЛА" to "Insecte qui récolte le nectar et produit du miel.",
+ "ПЕПЕРУТКА" to "Insecte aux grandes ailes colorées.",
+ "МИШКА" to "Petit rongeur doté d’une longue queue.",
+ "СВИЊА" to "Animal domestique qui vit souvent à la ferme et fouille le sol avec son groin."
+)
+private fun translatedPuzzleWord(word:String,lang:String):String =
+ if(lang=="fr") frenchAnimalWords[word] ?: word else word
+private fun translatedPuzzleClue(word:String,clue:String,lang:String):String =
+ if(lang=="fr") frenchAnimalClues[word] ?: clue else clue
+private fun translatedCategory(title:String,lang:String):String =
+ if(lang!="fr") title else when(title) {
+  "ЖИВОТНИ" -> "ANIMAUX"
+  "ОВОШЈЕ И ХРАНА" -> "FRUITS ET ALIMENTS"
+  "ОВОШЈЕ" -> "FRUITS"
+  "ХРАНА" -> "ALIMENTS"
+  "ПРИРОДА" -> "NATURE"
+  "ПРЕВОЗ" -> "TRANSPORTS"
+  "СПОРТ" -> "SPORTS"
+  "МЕСТА" -> "LIEUX"
+  else -> title
+ }
+
 data class Puzzle(val word:String,val clue:String,val category:String,val photo:String)
 data class GameCategory(val title:String,val emoji:String,val puzzles:List<Puzzle>)
 val categories = listOf(
@@ -833,27 +903,27 @@ private fun startStation() {
    Card(onClick={selected=i;level=0;answer="";solved=false;hint=false;wrongAttempts=0;message="Внеси го точниот збор!";play(ToneGenerator.TONE_PROP_BEEP)},colors=CardDefaults.cardColors(containerColor=panel),shape=RoundedCornerShape(18.dp),modifier=Modifier.fillMaxWidth()){
     Row(Modifier.padding(18.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(14.dp)){
      Text(cat.emoji,fontSize=32.sp)
-     Column(Modifier.weight(1f)){Text(cat.title,color=mainText,fontWeight=FontWeight.Bold,fontSize=18.sp);Text(cat.puzzles.size.toString()+" зборови со фотографии",color=secondaryText,fontSize=13.sp)}
+     Column(Modifier.weight(1f)){Text(translatedCategory(cat.title,selectedLanguage),color=mainText,fontWeight=FontWeight.Bold,fontSize=18.sp);Text(cat.puzzles.size.toString()+" зборови со фотографии",color=secondaryText,fontSize=13.sp)}
      Text("›",color=Color(0xFF8DE1D2),fontSize=28.sp)
     }
    }
   }
  }else{
-  val cat=categories[selected]; val p=cat.puzzles[level % cat.puzzles.size]
+  val cat=categories[selected]; val p=cat.puzzles[level % cat.puzzles.size]; val displayWord=translatedPuzzleWord(p.word,selectedLanguage); val displayClue=translatedPuzzleClue(p.word,p.clue,selectedLanguage)
   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
    TextButton(onClick={selected=-1;answer="";solved=false;hint=false;play(ToneGenerator.TONE_PROP_BEEP)}){Text(uiText("back_categories",selectedLanguage))}
    Text("НИВО "+(level+1)+"/"+cat.puzzles.size,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
   }
-  Text(cat.title,color=Color(0xFF8DE1D2),fontWeight=FontWeight.Bold)
+  Text(translatedCategory(cat.title,selectedLanguage),color=Color(0xFF8DE1D2),fontWeight=FontWeight.Bold)
   Card(colors=CardDefaults.cardColors(containerColor=Color(0xFF24365F)),shape=RoundedCornerShape(22.dp),modifier=Modifier.fillMaxWidth()){
    Column(Modifier.padding(16.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(12.dp)){
     AsyncImage(model=p.photo,contentDescription=p.category,modifier=Modifier.fillMaxWidth().height(190.dp),contentScale=ContentScale.Crop)
     Text(uiText("what_word",selectedLanguage),color=mainText,fontSize=21.sp,fontWeight=FontWeight.Bold)
-    Text(p.clue,color=mainText,fontSize=17.sp,textAlign=TextAlign.Center)
-    Text(uiText("letter_count",selectedLanguage)+p.word.length,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
+    Text(displayClue,color=mainText,fontSize=17.sp,textAlign=TextAlign.Center)
+    Text(uiText("letter_count",selectedLanguage)+displayWord.length,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
     OutlinedTextField(value=answer,onValueChange={answer=it.uppercase()},label={Text(uiText("answer",selectedLanguage))},enabled=!solved,singleLine=true)
-    Button(onClick={if(normalizeAnswer(answer)==normalizeAnswer(p.word)){score+=if(hint)5 else 10;correctAnswers++;settings.edit().putInt("score",score).putInt("correct_answers",correctAnswers).apply();solved=true;message=if(correctAnswers%10==0) "🎵 ${correctAnswers} ТОЧНИ ОДГОВОРИ! ВРЕМЕ Е ЗА МУЗИКА!" else "БРАВО! ТОЧЕН ОДГОВОР! 🎉";play(ToneGenerator.TONE_PROP_ACK)}else{wrongAttempts++;if(wrongAttempts>=3){score=(score-2).coerceAtLeast(0);settings.edit().putInt("score",score).apply();message="3 ПОГРЕШНИ ОБИДИ! -2 ПОЕНИ. Следното прашање…";solved=true}else{message="Не е точно. Обиди се повторно! ${wrongAttempts}/3"};play(ToneGenerator.TONE_PROP_NACK)}},enabled=!solved,modifier=Modifier.fillMaxWidth()){Text(uiText("check",selectedLanguage))}
-    OutlinedButton(onClick={hint=true;message="ПРВА БУКВА: "+p.word.first();play(ToneGenerator.TONE_PROP_BEEP)},enabled=!solved&&!hint){Text(uiText("hint",selectedLanguage))}
+    Button(onClick={if(normalizeAnswer(answer)==normalizeAnswer(displayWord)){score+=if(hint)5 else 10;correctAnswers++;settings.edit().putInt("score",score).putInt("correct_answers",correctAnswers).apply();solved=true;message=if(correctAnswers%10==0) "🎵 ${correctAnswers} ТОЧНИ ОДГОВОРИ! ВРЕМЕ Е ЗА МУЗИКА!" else "БРАВО! ТОЧЕН ОДГОВОР! 🎉";play(ToneGenerator.TONE_PROP_ACK)}else{wrongAttempts++;if(wrongAttempts>=3){score=(score-2).coerceAtLeast(0);settings.edit().putInt("score",score).apply();message="3 ПОГРЕШНИ ОБИДИ! -2 ПОЕНИ. Следното прашање…";solved=true}else{message="Не е точно. Обиди се повторно! ${wrongAttempts}/3"};play(ToneGenerator.TONE_PROP_NACK)}},enabled=!solved,modifier=Modifier.fillMaxWidth()){Text(uiText("check",selectedLanguage))}
+    OutlinedButton(onClick={hint=true;message=if(selectedLanguage=="fr") "PREMIÈRE LETTRE : "+displayWord.first() else "ПРВА БУКВА: "+displayWord.first();play(ToneGenerator.TONE_PROP_BEEP)},enabled=!solved&&!hint){Text(uiText("hint",selectedLanguage))}
     Text(message,color=Color(0xFFFFD782),textAlign=TextAlign.Center)
     if(solved) Text("СЛЕДНОТО НИВО СЕ ОТВОРА АВТОМАТСКИ…",color=Color(0xFF8DE1D2),fontWeight=FontWeight.Bold,textAlign=TextAlign.Center)
    }
