@@ -10,6 +10,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.widget.Toast
+import android.media.AudioManager
+import android.media.ToneGenerator
 import org.json.JSONObject
 import java.net.URL
 import kotlinx.coroutines.Dispatchers
@@ -336,22 +338,34 @@ class MainActivity:ComponentActivity(){
  }
  override fun onDestroy(){unregisterReceiver(downloadReceiver);super.onDestroy()}
 }
+fun playGameSound(context:Context,tone:Int,enabled:Boolean) { if(enabled) { try { val g=ToneGenerator(AudioManager.STREAM_MUSIC,75); g.startTone(tone,170); android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({g.release()},230) } catch (_:Exception) {} } }
 @Composable fun GameScreen(onExit:()->Unit,onUpdate:(String)->Unit){
  val context=LocalContext.current
  val scope= rememberCoroutineScope()
  var updateStatus by remember { mutableStateOf("") }
  var showExitDialog by remember { mutableStateOf(false) }
+ var showSettings by remember { mutableStateOf(false) }
+ val settings=remember { context.getSharedPreferences("game_settings",Context.MODE_PRIVATE) }
+ var darkMode by remember { mutableStateOf(settings.getBoolean("dark_mode",true)) }
+ var soundsOn by remember { mutableStateOf(settings.getBoolean("sounds_on",true)) }
+ fun play(tone:Int) { playGameSound(context,tone,soundsOn) }
+ val pageBg=if(darkMode) Color(0xFF101B3D) else Color(0xFFF3F6FC)
+ val panel=if(darkMode) Color(0xFF24365F) else Color.White
+ val mainText=if(darkMode) Color.White else Color(0xFF17233D)
+ val secondaryText=if(darkMode) Color(0xFFB8C8EA) else Color(0xFF52627A)
+ val gold=if(darkMode) Color(0xFFFFD782) else Color(0xFF805400)
  var selected by remember { mutableIntStateOf(-1) }; var level by remember { mutableIntStateOf(0) }
- var answer by remember { mutableStateOf("") }; var score by remember { mutableIntStateOf(0) }
+ var answer by remember { mutableStateOf("") }; var score by remember { mutableIntStateOf(settings.getInt("score",0)) }
  var solved by remember { mutableStateOf(false) }; var hint by remember { mutableStateOf(false) }
  var message by remember { mutableStateOf("Избери категорија за да започнеш!") }
  LaunchedEffect(solved) { if (solved && selected >= 0) { delay(900); val cat=categories[selected]; if (level+1 < cat.puzzles.size) { level++; message="Внеси го точниот збор!" } else { selected=-1; message="Категоријата е завршена! Браво! 🎉" }; answer=""; solved=false; hint=false } }
- MaterialTheme(colorScheme=darkColorScheme(primary=Color(0xFF8DE1D2))){
- Column(Modifier.fillMaxSize().background(Color(0xFF101B3D)).verticalScroll(rememberScrollState()).padding(18.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(14.dp)){
- Text("🧩 ПОГОДИ ГИ ЗБОРОВИТЕ",color=Color.White,fontSize=24.sp,fontWeight=FontWeight.ExtraBold,textAlign=TextAlign.Center)
- Text("Македонска игра со зборови",color=Color(0xFFB8C8EA))
- Text("ПОЕНИ: "+score,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
- Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(10.dp)) {
+ MaterialTheme(colorScheme=if(darkMode) darkColorScheme(primary=Color(0xFF8DE1D2)) else lightColorScheme(primary=Color(0xFF008F83))){
+ Column(Modifier.fillMaxSize().background(pageBg).verticalScroll(rememberScrollState()).padding(18.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(14.dp)){
+ Text("🧩 ПОГОДИ ГИ ЗБОРОВИТЕ",color=mainText,fontSize=24.sp,fontWeight=FontWeight.ExtraBold,textAlign=TextAlign.Center)
+ Text("Македонска игра со зборови",color=secondaryText)
+ Text("ПОЕНИ: "+score,color=gold,fontWeight=FontWeight.Bold)
+ Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
+  OutlinedButton(onClick={showSettings=true;play(ToneGenerator.TONE_PROP_BEEP)},modifier=Modifier.weight(1f)){Text("⚙",fontSize=17.sp)}
   OutlinedButton(onClick={
   updateStatus="Проверка за ажурирање…"
   scope.launch {
@@ -382,12 +396,12 @@ class MainActivity:ComponentActivity(){
  }
  if(updateStatus.isNotBlank()) Text(updateStatus,color=Color(0xFFFFD782),textAlign=TextAlign.Center,fontSize=13.sp)
  if(selected<0){
-  Text("ИЗБЕРИ КАТЕГОРИЈА",color=Color.White,fontSize=20.sp,fontWeight=FontWeight.Bold)
+  Text("ИЗБЕРИ КАТЕГОРИЈА",color=mainText,fontSize=20.sp,fontWeight=FontWeight.Bold)
   categories.forEachIndexed { i,cat ->
-   Card(onClick={selected=i;level=0;answer="";solved=false;hint=false;message="Внеси го точниот збор!"},colors=CardDefaults.cardColors(containerColor=Color(0xFF24365F)),shape=RoundedCornerShape(18.dp),modifier=Modifier.fillMaxWidth()){
+   Card(onClick={selected=i;level=0;answer="";solved=false;hint=false;message="Внеси го точниот збор!"},colors=CardDefaults.cardColors(containerColor=panel),shape=RoundedCornerShape(18.dp),modifier=Modifier.fillMaxWidth()){
     Row(Modifier.padding(18.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(14.dp)){
      Text(cat.emoji,fontSize=32.sp)
-     Column(Modifier.weight(1f)){Text(cat.title,color=Color.White,fontWeight=FontWeight.Bold,fontSize=18.sp);Text(cat.puzzles.size.toString()+" зборови со фотографии",color=Color(0xFFB8C8EA),fontSize=13.sp)}
+     Column(Modifier.weight(1f)){Text(cat.title,color=mainText,fontWeight=FontWeight.Bold,fontSize=18.sp);Text(cat.puzzles.size.toString()+" зборови со фотографии",color=secondaryText,fontSize=13.sp)}
      Text("›",color=Color(0xFF8DE1D2),fontSize=28.sp)
     }
    }
@@ -402,8 +416,8 @@ class MainActivity:ComponentActivity(){
   Card(colors=CardDefaults.cardColors(containerColor=Color(0xFF24365F)),shape=RoundedCornerShape(22.dp),modifier=Modifier.fillMaxWidth()){
    Column(Modifier.padding(16.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(12.dp)){
     AsyncImage(model=p.photo,contentDescription=p.category,modifier=Modifier.fillMaxWidth().height(190.dp),contentScale=ContentScale.Crop)
-    Text("КОЈ ЗБОР Е ОВА?",color=Color.White,fontSize=21.sp,fontWeight=FontWeight.Bold)
-    Text(p.clue,color=Color.White,fontSize=17.sp,textAlign=TextAlign.Center)
+    Text("КОЈ ЗБОР Е ОВА?",color=mainText,fontSize=21.sp,fontWeight=FontWeight.Bold)
+    Text(p.clue,color=mainText,fontSize=17.sp,textAlign=TextAlign.Center)
     Text("БРОЈ НА БУКВИ: "+p.word.length,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
     OutlinedTextField(value=answer,onValueChange={answer=it.uppercase()},label={Text("Одговор: кирилица или латиница")},enabled=!solved,singleLine=true)
     Button(onClick={if(normalizeAnswer(answer)==normalizeAnswer(p.word)){score+=if(hint)5 else 10;solved=true;message="БРАВО! ТОЧЕН ОДГОВОР! 🎉"}else{message="Не е точно. Обиди се повторно!"}},enabled=!solved,modifier=Modifier.fillMaxWidth()){Text("ПРОВЕРИ")}
@@ -413,7 +427,14 @@ class MainActivity:ComponentActivity(){
    }
   }
  }
- Text("Погодувај, учи и забавувај се!",color=Color(0xFFB8C8EA),fontSize=13.sp)
+ Text("Погодувај, учи и забавувај се!",color=secondaryText,fontSize=13.sp)
+ }
+ if(showSettings) {
+  AlertDialog(onDismissRequest={showSettings=false},title={Text("⚙ ПАРАМЕТРИ")},text={Column {
+   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text("Темна тема / Светла тема");Switch(checked=darkMode,onCheckedChange={darkMode=it;settings.edit().putBoolean("dark_mode",it).apply()})}
+   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text("Звуци во играта");Switch(checked=soundsOn,onCheckedChange={soundsOn=it;settings.edit().putBoolean("sounds_on",it).apply();if(it)playGameSound(context,ToneGenerator.TONE_PROP_ACK,true)})}
+   Text("Звуци за копчиња, точни и погрешни одговори и помош.",fontSize=13.sp)
+  }},confirmButton={TextButton(onClick={showSettings=false}){Text("ГОТОВО")}})
  }
  if(showExitDialog) {
   AlertDialog(onDismissRequest={showExitDialog=false},
