@@ -54,8 +54,8 @@ jobs:
       - name: Read app version
         run: |
           VERSION_NAME=$(sed -nE 's/.*versionName = "([^"]+)".*/\1/p' app/build.gradle.kts)
-echo "VERSION_NAME=$VERSION_NAME" >> "$GITHUB_ENV"
-test -n "$VERSION_NAME"
+          echo "VERSION_NAME=$VERSION_NAME" >> "$GITHUB_ENV"
+          test -n "$VERSION_NAME"
 
       - name: Upload signed APK artifact
         uses: actions/upload-artifact@v4
