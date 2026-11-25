@@ -534,13 +534,129 @@ private val albanianNatureClues = mapOf(
  "СЕВЕРНА СВЕТЛИНА" to "Drita shumëngjyrëshe në qiellin e rajoneve polare."
 )
 
+
+private val frenchTransportClues = mapOf(
+ "АВТОМОБИЛ" to "Véhicule à quatre roues.",
+ "ВЕЛОСИПЕД" to "Moyen de transport à deux roues et à pédales.",
+ "ВОЗ" to "Moyen de transport qui circule sur des rails.",
+ "МОТОЦИКЛ" to "Véhicule motorisé à deux roues.",
+ "ТРАМВАЈ" to "Transport urbain qui circule sur des rails.",
+ "ХЕЛИКОПТЕР" to "Aéronef doté de rotors pouvant décoller verticalement.",
+ "ТРОТИНЕТ" to "Petit véhicule à deux roues avec une plateforme.",
+ "КАМИОН" to "Grand véhicule motorisé destiné au transport de marchandises.",
+ "АВИОН" to "Aéronef à ailes qui transporte des passagers.",
+ "БРОД" to "Embarcation qui se déplace sur l’eau.",
+ "АВТОБУС" to "Grand véhicule de transport public de passagers.",
+ "ТАКСИ" to "Voiture qui transporte des passagers contre paiement.",
+ "МЕТРО" to "Transport ferroviaire urbain souterrain.",
+ "ЧАМЕЦ" to "Petite embarcation utilisée pour naviguer.",
+ "ЕДРИЛИЦА" to "Bateau qui avance grâce au vent.",
+ "СКУТЕР" to "Petit véhicule motorisé à deux roues.",
+ "ПРИКОЛКА" to "Véhicule sans moteur tracté par un autre véhicule.",
+ "БАГЕР" to "Engin de chantier qui creuse le sol.",
+ "ТРОЛЕЈБУС" to "Véhicule électrique urbain alimenté par des câbles.",
+ "ТРКАЛО" to "Pièce circulaire qui permet à un véhicule de rouler.",
+ "ПОДМОРНИЦА" to "Embarcation capable de naviguer sous l’eau.",
+ "ЖИЧНИЦА" to "Transport qui se déplace au-dessus du sol par câble.",
+ "САНКА" to "Moyen de transport qui glisse sur la neige.",
+ "КАРАВАН" to "Remorque ou véhicule aménagé pour voyager et séjourner.",
+ "КОЧИЈА" to "Ancien moyen de transport tiré par des chevaux.",
+ "БУЛДОЖЕР" to "Engin lourd qui pousse la terre et les débris.",
+ "КОМБЕ" to "Petit véhicule motorisé pour transporter des personnes ou des marchandises.",
+ "ТРАКТОР" to "Véhicule de travail utilisé surtout en agriculture.",
+ "САМОЛЕТ" to "Aéronef doté de moteurs et d’ailes.",
+ "ГЛИСЕР" to "Bateau à moteur rapide qui se déplace sur l’eau.",
+ "ФЕРИБРОД" to "Grand bateau qui transporte des passagers et des voitures.",
+ "ДИРИЖАБЛ" to "Aéronef plus léger que l’air avec une grande enveloppe remplie de gaz.",
+ "ПАРЕН ВОЗ" to "Ancien train qui fonctionnait grâce à la vapeur.",
+ "РОЛЕРИ" to "Chaussures à roulettes utilisées pour patiner.",
+ "СКЕЈТБОРД" to "Planche à quatre roulettes sur laquelle on roule debout.",
+ "СНЕГОМОБИЛ" to "Véhicule motorisé conçu pour circuler sur la neige."
+)
+private val englishTransportClues = mapOf(
+ "АВТОМОБИЛ" to "A vehicle with four wheels.",
+ "ВЕЛОСИПЕД" to "A means of transport with two wheels and pedals.",
+ "ВОЗ" to "A means of transport that runs on rails.",
+ "МОТОЦИКЛ" to "A motor vehicle with two wheels.",
+ "ТРАМВАЈ" to "A city transport vehicle that runs on rails.",
+ "ХЕЛИКОПТЕР" to "An aircraft with rotors that can take off vertically.",
+ "ТРОТИНЕТ" to "A small two-wheeled vehicle with a standing platform.",
+ "КАМИОН" to "A large motor vehicle used to carry goods.",
+ "АВИОН" to "An aircraft with wings that carries passengers.",
+ "БРОД" to "A vessel that travels on water.",
+ "АВТОБУС" to "A large passenger vehicle used for public transport.",
+ "ТАКСИ" to "A car that carries passengers for a fare.",
+ "МЕТРО" to "An underground urban rail transport system.",
+ "ЧАМЕЦ" to "A small vessel used for travelling on water.",
+ "ЕДРИЛИЦА" to "A boat that moves with the help of the wind.",
+ "СКУТЕР" to "A small motor vehicle with two wheels.",
+ "ПРИКОЛКА" to "A vehicle without an engine pulled by another vehicle.",
+ "БАГЕР" to "A construction machine used for digging soil.",
+ "ТРОЛЕЈБУС" to "An electric city vehicle powered through overhead wires.",
+ "ТРКАЛО" to "A circular part that helps a vehicle move.",
+ "ПОДМОРНИЦА" to "A vessel that can travel beneath the water's surface.",
+ "ЖИЧНИЦА" to "A transport system that moves above the ground on a cable.",
+ "САНКА" to "A vehicle that slides over snow.",
+ "КАРАВАН" to "A trailer or vehicle equipped for travelling and staying overnight.",
+ "КОЧИЈА" to "An old means of transport pulled by horses.",
+ "БУЛДОЖЕР" to "A heavy machine that pushes soil and rubble.",
+ "КОМБЕ" to "A small motor vehicle for carrying people or goods.",
+ "ТРАКТОР" to "A work vehicle used mainly in agriculture.",
+ "САМОЛЕТ" to "An aircraft with engines and wings.",
+ "ГЛИСЕР" to "A fast motorboat that travels on water.",
+ "ФЕРИБРОД" to "A large ship that carries passengers and cars.",
+ "ДИРИЖАБЛ" to "An aircraft lighter than air with a large gas-filled envelope.",
+ "ПАРЕН ВОЗ" to "An old type of train powered by steam.",
+ "РОЛЕРИ" to "Shoes with wheels used for skating.",
+ "СКЕЈТБОРД" to "A board with four wheels that you ride standing up.",
+ "СНЕГОМОБИЛ" to "A motor vehicle designed to travel over snow."
+)
+private val albanianTransportClues = mapOf(
+ "АВТОМОБИЛ" to "Mjet me katër rrota.",
+ "ВЕЛОСИПЕД" to "Mjet transporti me dy rrota dhe pedale.",
+ "ВОЗ" to "Mjet transporti që lëviz mbi shina.",
+ "МОТОЦИКЛ" to "Mjet motorik me dy rrota.",
+ "ТРАМВАЈ" to "Mjet transporti urban që lëviz mbi shina.",
+ "ХЕЛИКОПТЕР" to "Mjet fluturues me rotorë që mund të ngrihet vertikalisht.",
+ "ТРОТИНЕТ" to "Mjet i vogël me dy rrota dhe platformë për këmbët.",
+ "КАМИОН" to "Mjet i madh motorik për transportin e mallrave.",
+ "АВИОН" to "Mjet fluturues me krahë që transporton pasagjerë.",
+ "БРОД" to "Mjet lundrues që lëviz në ujë.",
+ "АВТОБУС" to "Mjet i madh për transportin publik të pasagjerëve.",
+ "ТАКСИ" to "Automjet që transporton pasagjerë kundrejt pagesës.",
+ "МЕТРО" to "Transport hekurudhor urban nëntokësor.",
+ "ЧАМЕЦ" to "Mjet i vogël lundrues për të lëvizur në ujë.",
+ "ЕДРИЛИЦА" to "Anije që lëviz me ndihmën e erës.",
+ "СКУТЕР" to "Mjet i vogël motorik me dy rrota.",
+ "ПРИКОЛКА" to "Mjet pa motor që tërhiqet nga një mjet tjetër.",
+ "БАГЕР" to "Makinë pune që gërmon dheun.",
+ "ТРОЛЕЈБУС" to "Mjet elektrik urban që furnizohet me energji përmes telave.",
+ "ТРКАЛО" to "Pjesë e rrumbullakët që ndihmon mjetin të lëvizë.",
+ "ПОДМОРНИЦА" to "Mjet lundrues që mund të lëvizë nën sipërfaqen e ujit.",
+ "ЖИЧНИЦА" to "Mjet transporti që lëviz lart mbi tokë me kabllo.",
+ "САНКА" to "Mjet transporti që rrëshqet mbi borë.",
+ "КАРАВАН" to "Rimorkio ose mjet i pajisur për udhëtim dhe qëndrim.",
+ "КОЧИЈА" to "Mjet i vjetër transporti që tërhiqet nga kuajt.",
+ "БУЛДОЖЕР" to "Makinë e rëndë që shtyn dheun dhe rrënojat.",
+ "КОМБЕ" to "Mjet i vogël motorik për transportin e njerëzve ose mallrave.",
+ "ТРАКТОР" to "Mjet pune që përdoret kryesisht në bujqësi.",
+ "САМОЛЕТ" to "Mjet fluturues me motorë dhe krahë.",
+ "ГЛИСЕР" to "Varkë e shpejtë me motor që lëviz në ujë.",
+ "ФЕРИБРОД" to "Anije e madhe që transporton pasagjerë dhe makina.",
+ "ДИРИЖАБЛ" to "Mjet fluturues më i lehtë se ajri me një mbështjellës të madh të mbushur me gaz.",
+ "ПАРЕН ВОЗ" to "Lloj i vjetër treni që lëvizte me avull.",
+ "РОЛЕРИ" to "Këpucë me rrota që përdoren për patinazh.",
+ "СКЕЈТБОРД" to "Dërrasë me katër rrota mbi të cilën lëviz duke qëndruar në këmbë.",
+ "СНЕГОМОБИЛ" to "Mjet motorik i projektuar për të lëvizur mbi borë."
+)
+
 private fun translatedPuzzleWord(word:String,lang:String):String =
  when(lang) { "fr" -> frenchAnimalWords[word] ?: frenchFoodWords[word] ?: frenchOtherWords[word] ?: word; "en" -> englishWords[word] ?: word; "sq" -> albanianWords[word] ?: word; else -> word }
 private fun translatedPuzzleClue(word:String,clue:String,lang:String):String =
  when(lang) {
-  "fr" -> frenchAnimalClues[word] ?: frenchFoodClues[word] ?: frenchNatureClues[word] ?: clue
-  "en" -> englishClues[word] ?: englishFoodClues[word] ?: englishNatureClues[word] ?: clue
-  "sq" -> albanianClues[word] ?: albanianFoodClues[word] ?: albanianNatureClues[word] ?: clue
+  "fr" -> frenchAnimalClues[word] ?: frenchFoodClues[word] ?: frenchNatureClues[word] ?: frenchTransportClues[word] ?: clue
+  "en" -> englishClues[word] ?: englishFoodClues[word] ?: englishNatureClues[word] ?: englishTransportClues[word] ?: clue
+  "sq" -> albanianClues[word] ?: albanianFoodClues[word] ?: albanianNatureClues[word] ?: albanianTransportClues[word] ?: clue
   else -> clue
  }
 private fun translatedCategory(title:String,lang:String):String {
