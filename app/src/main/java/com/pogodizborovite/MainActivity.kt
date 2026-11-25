@@ -26,9 +26,39 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import java.util.Locale
+import java.net.URL
+import java.net.URLDecoder
+import java.net.URLEncoder
+import org.json.JSONObject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.delay
 
 data class Puzzle(val word:String,val clue:String,val category:String,val photo:String)
+
+private suspend fun findCommonsPhoto(oldPhotoUrl: String): String? = withContext(Dispatchers.IO) {
+    try {
+        val rawQuery = oldPhotoUrl.substringAfter("https://loremflickr.com/900/600/", "").substringBefore("?lock=")
+        if (rawQuery.isBlank()) return@withContext null
+        val query = URLDecoder.decode(rawQuery, "UTF-8").trim()
+        val encoded = URLEncoder.encode(query, "UTF-8")
+        val api = "https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=$encoded&gsrnamespace=6&gsrlimit=8&prop=imageinfo&iiprop=url&iiurlwidth=900&format=json"
+        val connection = URL(api).openConnection()
+        connection.connectTimeout = 10000
+        connection.readTimeout = 12000
+        connection.setRequestProperty("User-Agent", "PogodiGiZboroviteAndroid/2.0")
+        val body = connection.getInputStream().bufferedReader().use { it.readText() }
+        val pages = JSONObject(body).optJSONObject("query")?.optJSONObject("pages") ?: return@withContext null
+        val keys = pages.keys()
+        while (keys.hasNext()) {
+            val page = pages.optJSONObject(keys.next()) ?: continue
+            val info = page.optJSONArray("imageinfo")?.optJSONObject(0) ?: continue
+            val thumb = info.optString("thumburl")
+            if (thumb.startsWith("https://")) return@withContext thumb
+        }
+        null
+    } catch (_: Exception) { null }
+}
 data class GameCategory(val title:String,val emoji:String,val puzzles:List<Puzzle>)
 val categories = listOf(
  GameCategory("ЖИВОТНИ","🐾", listOf(
@@ -548,6 +578,14 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
   val safeLevel = level.coerceIn(0, cat.puzzles.lastIndex)
   val p=cat.puzzles[safeLevel]
   var imageFailed by remember(p.photo) { mutableStateOf(false) }
+  var resolvedPhoto by remember(p.photo) { mutableStateOf(if (p.photo.startsWith("https://loremflickr.com/")) "" else p.photo) }
+  LaunchedEffect(p.photo) {
+   imageFailed = false
+   if (p.photo.startsWith("https://loremflickr.com/")) {
+    resolvedPhoto = findCommonsPhoto(p.photo).orEmpty()
+    if (resolvedPhoto.isBlank()) imageFailed = true
+   } else resolvedPhoto = p.photo
+  }
   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
    TextButton(onClick={selected=-1;answer="";solved=false;hint=false}){Text("← КАТЕГОРИИ", color=accent)}
    Text("НИВО "+(level+1)+"/"+cat.puzzles.size,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
@@ -557,10 +595,14 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
    Column(Modifier.padding(16.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(12.dp)){
     if (imageFailed) {
      Box(Modifier.fillMaxWidth().height(190.dp).background(Color(0xFF172747)), contentAlignment=Alignment.Center) {
-      Text("СЛИКАТА НЕ Е ДОСТАПНА", color=Color(0xFFB8C8EA), fontWeight=FontWeight.Bold)
+      Text("СЛИКАТА НЕ МОЖЕ ДА СЕ ВЧИТА", color=Color(0xFFB8C8EA), fontWeight=FontWeight.Bold)
+     }
+    } else if (resolvedPhoto.isBlank()) {
+     Box(Modifier.fillMaxWidth().height(190.dp).background(Color(0xFF172747)), contentAlignment=Alignment.Center) {
+      Text("СЕ БАРА СООДВЕТНА СЛИКА…", color=Color(0xFFB8C8EA), fontWeight=FontWeight.Bold)
      }
     } else {
-     AsyncImage(model=p.photo,contentDescription=p.category,modifier=Modifier.fillMaxWidth().height(190.dp),contentScale=ContentScale.Crop,onError={ imageFailed=true })
+     AsyncImage(model=resolvedPhoto,contentDescription=p.category,modifier=Modifier.fillMaxWidth().height(190.dp),contentScale=ContentScale.Crop,onError={ imageFailed=true })
     }
     Text("КОЈ ЗБОР Е ОВА?",color=primaryText,fontSize=21.sp,fontWeight=FontWeight.Bold)
     Text(p.clue,color=primaryText,fontSize=17.sp,textAlign=TextAlign.Center)
