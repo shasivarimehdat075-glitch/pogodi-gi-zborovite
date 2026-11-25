@@ -800,13 +800,12 @@ private fun startStation() {
  var showSettings by remember { mutableStateOf(false) }
  val settings=remember { context.getSharedPreferences("game_settings",Context.MODE_PRIVATE) }
  val supportedLanguages = listOf(
-  "Македонски" to "mk", "Français" to "fr", "Shqip" to "sq", "English" to "en",
-  "Deutsch" to "de", "Italiano" to "it", "Español" to "es", "Türkçe" to "tr",
-  "Bosanski" to "bs", "Српски" to "sr", "العربية" to "ar", "Русский" to "ru",
-  "Ελληνικά" to "el", "Português" to "pt", "Nederlands" to "nl", "Polski" to "pl",
-  "Čeština" to "cs", "Slovenčina" to "sk", "Hrvatski" to "hr", "Slovenščina" to "sl"
+  "Македонски" to "mk",
+  "Français" to "fr",
+  "Shqip" to "sq",
+  "English" to "en"
  )
- var selectedLanguage by remember { mutableStateOf(settings.getString("app_language","mk") ?: "mk") }
+ var selectedLanguage by remember { mutableStateOf((settings.getString("app_language","mk") ?: "mk").takeIf { it in setOf("mk","fr","sq","en") } ?: "mk") }
  var languageMenuExpanded by remember { mutableStateOf(false) }
  val selectedLanguageName = supportedLanguages.firstOrNull { it.second == selectedLanguage }?.first ?: "Македонски"
  var darkMode by remember { mutableStateOf(settings.getBoolean("dark_mode",true)) }
