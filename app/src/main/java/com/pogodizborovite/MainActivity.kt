@@ -257,10 +257,97 @@ private val albanianWords = mapOf(
  "УЧИЛИШТЕ" to "SHKOLLË","БИБЛИОТЕКА" to "BIBLIOTEKË","БОЛНИЦА" to "SPITAL","ТЕАТАР" to "TEATËR","СТАДИОН" to "STADIUM","АЕРОДРОМ" to "AEROPORT","ЖЕЛЕЗНИЧКА СТАНИЦА" to "STACION HEKURUDHOR","ПАЗАР" to "TREG","МУЗЕЈ" to "MUZE","ПЛАЖА" to "PLAZH","ЦРКВА" to "KISHË","ЏАМИЈА" to "XHAMI","РЕСТОРАН" to "RESTORANT","ХОТЕЛ" to "HOTEL","БАНКА" to "BANKË","ПОШТА" to "POSTË","ПАРК" to "PARK","ФАРМА" to "FERMË","БЕНЗИНСКА ПУМПА" to "POMPË BENZINE","АПТЕКА" to "FARMACI","ПЕКАРНИЦА" to "FURRË BUKË","СУПЕРМАРКЕТ" to "SUPERMARKET","ПОЖАРНА СТАНИЦА" to "STACION ZJARRFIKËS","ПОЛИЦИСКА СТАНИЦА" to "STACION POLICIE","ГРАДИНКА" to "KOPSHT FËMIJËSH","АВТОБУСКА СТАНИЦА" to "STACION AUTOBUSI","ЗООЛОШКА ГРАДИНА" to "KOPSHT ZOOLOGJIK","БАЗЕН" to "PISHINË","ОПШТИНА" to "KOMUNË","СУД" to "GJYKATË","ЗАТВОР" to "BURG","УНИВЕРЗИТЕТ" to "UNIVERSITET","ЛАБОРАТОРИЈА" to "LABORATOR","ОПЕРСКА КУЌА" to "SHTËPI OPERE","КИНО" to "KINEMA","ЗАБАВЕН ПАРК" to "PARK ARGËTIMI","ПРИСТАНИШТЕ" to "PORT","СВЕТИЛНИК" to "FANAR"
 )
 
+
+private val englishClues = mapOf(
+ "КУЧЕ" to "A domestic animal that barks.",
+ "МАЧКА" to "A domestic animal that meows.",
+ "ЛАВ" to "A large wild cat that lives in Africa.",
+ "ЗЕБРА" to "An African animal with black-and-white stripes.",
+ "МАЈМУН" to "An animal that climbs trees.",
+ "МЕЧКА" to "A large forest animal that walks on four legs.",
+ "ВОЛК" to "A wild dog-like animal that lives in a pack.",
+ "ДЕЛФИН" to "An intelligent sea animal that swims and jumps.",
+ "ТИГАР" to "A large wild cat with orange fur and black stripes.",
+ "ЛИСИЦА" to "A wild animal with a bushy tail and pointed muzzle.",
+ "ЗАЈАК" to "A small animal with long ears that hops.",
+ "КОЊ" to "A large domestic animal that people can ride.",
+ "КРАВА" to "A domestic animal that produces milk.",
+ "ОВЦА" to "A farm animal covered in wool.",
+ "КОЗА" to "A domestic animal that climbs rocks.",
+ "ЖЕЛКА" to "An animal with a hard shell on its back.",
+ "ПАПАГАЛ" to "A colorful bird that can imitate sounds.",
+ "ОРЕЛ" to "A large bird of prey with strong talons.",
+ "СЛОН" to "A large animal with a long trunk and big ears.",
+ "ЖИРАФА" to "A tall African animal with a long neck.",
+ "НОСОРОГ" to "A large animal with thick skin and a horn on its nose.",
+ "НИЛСКИ КОЊ" to "A large African animal that lives in and near water.",
+ "КЕНГУР" to "An Australian animal that hops and carries its young in a pouch.",
+ "ПИНГВИН" to "A bird that cannot fly but swims very well in cold seas.",
+ "БУВ" to "A nocturnal bird with large eyes.",
+ "ПАУН" to "A bird known for its large, colorful tail.",
+ "ЕЖ" to "A small animal covered in spines.",
+ "ВЕРВЕРИЦА" to "A small animal that climbs trees and collects nuts.",
+ "КАМИЛА" to "An animal with a hump that can go a long time without water.",
+ "ПАНДА" to "A black-and-white bear that mainly eats bamboo.",
+ "КОАЛА" to "An Australian marsupial that lives in trees.",
+ "КРОКОДИЛ" to "A large reptile with powerful jaws that lives in water and on land.",
+ "ЗМИЈА" to "A legless reptile that moves by slithering.",
+ "ЖАБА" to "A small amphibian that hops and croaks.",
+ "ПЧЕЛА" to "An insect that collects nectar and makes honey.",
+ "ПЕПЕРУТКА" to "An insect with large, colorful wings.",
+ "МИШКА" to "A small rodent with a long tail.",
+ "СВИЊА" to "A farm animal that often roots around with its snout."
+)
+private val albanianClues = mapOf(
+ "КУЧЕ" to "Kafshë shtëpiake që leh.",
+ "МАЧКА" to "Kafshë shtëpiake që mjaullin.",
+ "ЛАВ" to "Mace e madhe e egër që jeton në Afrikë.",
+ "ЗЕБРА" to "Kafshë afrikane me vija bardh e zi.",
+ "МАЈМУН" to "Kafshë që ngjitet nëpër pemë.",
+ "МЕЧКА" to "Kafshë e madhe pylli që ecën me katër këmbë.",
+ "ВОЛК" to "Kafshë e egër e ngjashme me qenin që jeton në tufë.",
+ "ДЕЛФИН" to "Kafshë detare inteligjente që noton dhe kërcen.",
+ "ТИГАР" to "Mace e madhe e egër me gëzof portokalli dhe vija të zeza.",
+ "ЛИСИЦА" to "Kafshë e egër me bisht të dendur dhe feçkë të mprehtë.",
+ "ЗАЈАК" to "Kafshë e vogël me veshë të gjatë që kërcen.",
+ "КОЊ" to "Kafshë e madhe shtëpiake që mund të kalërohet.",
+ "КРАВА" to "Kafshë shtëpiake që prodhon qumësht.",
+ "ОВЦА" to "Kafshë ferme e mbuluar me lesh.",
+ "КОЗА" to "Kafshë shtëpiake që ngjitet në shkëmbinj.",
+ "ЖЕЛКА" to "Kafshë me një guaskë të fortë në shpinë.",
+ "ПАПАГАЛ" to "Zog shumëngjyrësh që mund të imitojë tinguj.",
+ "ОРЕЛ" to "Shpend i madh grabitqar me kthetra të fuqishme.",
+ "СЛОН" to "Kafshë e madhe me feçkë të gjatë dhe veshë të mëdhenj.",
+ "ЖИРАФА" to "Kafshë e gjatë afrikane me qafë të gjatë.",
+ "НОСОРОГ" to "Kafshë e madhe me lëkurë të trashë dhe bri në hundë.",
+ "НИЛСКИ КОЊ" to "Kafshë e madhe afrikane që jeton në ujë dhe pranë tij.",
+ "КЕНГУР" to "Kafshë australiane që kërcen dhe mban të voglin në qeskë.",
+ "ПИНГВИН" to "Zog që nuk fluturon, por noton shumë mirë në detet e ftohta.",
+ "БУВ" to "Shpend nate me sy të mëdhenj.",
+ "ПАУН" to "Shpend i njohur për bishtin e madh shumëngjyrësh.",
+ "ЕЖ" to "Kafshë e vogël e mbuluar me gjemba.",
+ "ВЕРВЕРИЦА" to "Kafshë e vogël që ngjitet në pemë dhe mbledh arra.",
+ "КАМИЛА" to "Kafshë me gungë që mund të qëndrojë gjatë pa ujë.",
+ "ПАНДА" to "Ari bardhezi që ha kryesisht bambu.",
+ "КОАЛА" to "Kafshë marsupiale australiane që jeton në pemë.",
+ "КРОКОДИЛ" to "Zvarranik i madh me nofulla të fuqishme që jeton në ujë dhe në tokë.",
+ "ЗМИЈА" to "Zvarranik pa këmbë që lëviz duke u zvarritur.",
+ "ЖАБА" to "Amfib i vogël që kërcen dhe kakaris.",
+ "ПЧЕЛА" to "Insekt që mbledh nektar dhe prodhon mjaltë.",
+ "ПЕПЕРУТКА" to "Insekt me krahë të mëdhenj shumëngjyrësh.",
+ "МИШКА" to "Brejtës i vogël me bisht të gjatë.",
+ "СВИЊА" to "Kafshë ferme që shpesh gërmon tokën me turirin."
+)
+
 private fun translatedPuzzleWord(word:String,lang:String):String =
  when(lang) { "fr" -> frenchAnimalWords[word] ?: frenchFoodWords[word] ?: frenchOtherWords[word] ?: word; "en" -> englishWords[word] ?: word; "sq" -> albanianWords[word] ?: word; else -> word }
 private fun translatedPuzzleClue(word:String,clue:String,lang:String):String =
- if(lang=="fr") frenchAnimalClues[word] ?: frenchFoodClues[word] ?: clue else clue
+ when(lang) {
+  "fr" -> frenchAnimalClues[word] ?: frenchFoodClues[word] ?: clue
+  "en" -> englishClues[word] ?: clue
+  "sq" -> albanianClues[word] ?: clue
+  else -> clue
+ }
 private fun translatedCategory(title:String,lang:String):String {
  val translations=mapOf(
   "ЖИВОТНИ" to listOf("ANIMAUX","KAFSHËT","ANIMALS"),
