@@ -531,13 +531,7 @@ private class OnlineHipHopRadio(context: Context) {
  var soundVolume by remember { mutableFloatStateOf(settings.getFloat("sound_volume",0.75f)) }
  val onlineRadio = remember { OnlineHipHopRadio(context) }
  var lastRadioMilestone by remember { mutableIntStateOf(correctAnswers / 10) }
- LaunchedEffect(correctAnswers) {
-  val milestone = correctAnswers / 10
-  if (milestone > lastRadioMilestone) {
-   lastRadioMilestone = milestone
-   if (correctAnswers > 0 && correctAnswers % 10 == 0 && musicOn && musicVolume > 0f) onlineRadio.play(musicVolume)
-  }
- }
+
  LaunchedEffect(musicOn, musicVolume) {
   if (!musicOn || musicVolume <= 0f) onlineRadio.stop()
   else onlineRadio.setVolume(musicVolume)
@@ -551,6 +545,13 @@ private class OnlineHipHopRadio(context: Context) {
  val gold=if(darkMode) Color(0xFFFFD782) else Color(0xFF805400)
  var selected by remember { mutableIntStateOf(-1) }; var level by remember { mutableIntStateOf(0) }
  var answer by remember { mutableStateOf("") }; var score by remember { mutableIntStateOf(settings.getInt("score",0)) }; var correctAnswers by remember { mutableIntStateOf(settings.getInt("correct_answers",0)) }
+ LaunchedEffect(correctAnswers) {
+  val milestone = correctAnswers / 10
+  if (milestone > lastRadioMilestone) {
+   lastRadioMilestone = milestone
+   if (correctAnswers > 0 && correctAnswers % 10 == 0 && musicOn && musicVolume > 0f) onlineRadio.play(musicVolume)
+  }
+ }
  var solved by remember { mutableStateOf(false) }; var hint by remember { mutableStateOf(false) }; var wrongAttempts by remember { mutableIntStateOf(0) }
  var message by remember { mutableStateOf("Избери категорија за да започнеш!") }
  LaunchedEffect(solved) { if (solved && selected >= 0) { delay(900); val cat=categories[selected]; if (level+1 < cat.puzzles.size) { level++; message="Внеси го точниот збор!" } else { selected=-1; message="Категоријата е завршена! Браво! 🎉" }; answer=""; solved=false; hint=false; wrongAttempts=0 } }
