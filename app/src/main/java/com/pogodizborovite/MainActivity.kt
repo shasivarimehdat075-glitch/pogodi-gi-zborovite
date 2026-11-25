@@ -261,19 +261,20 @@ private fun translatedPuzzleWord(word:String,lang:String):String =
  when(lang) { "fr" -> frenchAnimalWords[word] ?: frenchFoodWords[word] ?: frenchOtherWords[word] ?: word; "en" -> englishWords[word] ?: word; "sq" -> albanianWords[word] ?: word; else -> word }
 private fun translatedPuzzleClue(word:String,clue:String,lang:String):String =
  if(lang=="fr") frenchAnimalClues[word] ?: frenchFoodClues[word] ?: clue else clue
-private fun translatedCategory(title:String,lang:String):String =
- if(lang!="fr") title else when(title) {
-  "ЖИВОТНИ" -> "ANIMAUX"
-  "ОВОШЈЕ И ХРАНА" -> "FRUITS ET ALIMENTS"
-  "ОВОШЈЕ" -> "FRUITS"
-  "ХРАНА" -> "ALIMENTS"
-  "ПРИРОДА" -> "NATURE"
-  "ПРЕВОЗ" -> "TRANSPORTS"
-  "СПОРТ" -> "SPORTS"
-  "МЕСТА" -> "LIEUX"
-  else -> title
- }
-
+private fun translatedCategory(title:String,lang:String):String {
+ val translations=mapOf(
+  "ЖИВОТНИ" to listOf("ANIMAUX","KAFSHËT","ANIMALS"),
+  "ОВОШЈЕ И ХРАНА" to listOf("FRUITS ET ALIMENTS","FRUTA DHE USHQIME","FRUIT AND FOOD"),
+  "ОВОШЈЕ" to listOf("FRUITS","FRUTA","FRUIT"),
+  "ХРАНА" to listOf("ALIMENTS","USHQIME","FOOD"),
+  "ПРИРОДА" to listOf("NATURE","NATYRË","NATURE"),
+  "ПРЕВОЗ" to listOf("TRANSPORTS","TRANSPORT","TRANSPORT"),
+  "СПОРТ" to listOf("SPORTS","SPORT","SPORTS"),
+  "МЕСТА" to listOf("LIEUX","VENDE","PLACES")
+ )
+ val i=when(lang){"fr"->0;"sq"->1;"en"->2;else->-1}
+ return if(i<0) title else translations[title]?.get(i) ?: title
+}
 data class Puzzle(val word:String,val clue:String,val category:String,val photo:String)
 data class GameCategory(val title:String,val emoji:String,val puzzles:List<Puzzle>)
 val categories = listOf(
