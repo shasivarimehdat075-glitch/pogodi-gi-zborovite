@@ -14,8 +14,10 @@ import android.media.AudioManager
 import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioTrack
+import android.media.MediaPlayer
 import android.media.ToneGenerator
 import org.json.JSONObject
+import org.json.JSONArray
 import java.net.URL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -42,6 +44,9 @@ import coil.compose.AsyncImage
 import java.util.Locale
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 
 data class Puzzle(val word:String,val clue:String,val category:String,val photo:String)
 data class GameCategory(val title:String,val emoji:String,val puzzles:List<Puzzle>)
@@ -410,6 +415,108 @@ private class BackgroundMusicPlayer(private val volume:Float) {
   worker = null
  }
 }
+
+private class OnlineHipHopRadio(context: Context) {
+ private val appContext = context.applicationContext
+ private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+ private var requestJob: Job? = null
+ private var player: MediaPlayer? = null
+ private var stationUrls: List<String> = emptyList()
+ private var nextStation = 0
+ private var volume = 0.13f
+
+ fun setVolume(value: Float) {
+  volume = value.coerceIn(0f, 1f)
+  try { player?.setVolume(volume, volume) } catch (_: Exception) {}
+ }
+
+ fun play(level: Float) {
+  volume = level.coerceIn(0f, 1f)
+  stopCurrent()
+  requestJob?.cancel()
+  requestJob = scope.launch {
+   val urls = withContext(Dispatchers.IO) { findStations() }
+   stationUrls = urls.shuffled()
+   nextStation = 0
+   playNextStation()
+  }
+ }
+
+ private fun findStations(): List<String> {
+  val hosts = listOf("https://de1.api.radio-browser.info", "https://de2.api.radio-browser.info", "https://nl1.api.radio-browser.info")
+  for (host in hosts) {
+   try {
+    val endpoint = URL("$host/json/stations/search?tag=hiphop&limit=60&hidebroken=true&order=clickcount&reverse=true")
+    val connection = endpoint.openConnection()
+    connection.setRequestProperty("User-Agent", "PogodiGiZborovite/2.1.7")
+    connection.connectTimeout = 10000
+    connection.readTimeout = 12000
+    val data = connection.getInputStream().bufferedReader().use { it.readText() }
+    val array = JSONArray(data)
+    val found = mutableListOf<String>()
+    for (i in 0 until array.length()) {
+     val station = array.optJSONObject(i) ?: continue
+     if (station.optInt("lastcheckok", 0) != 1) continue
+     val stream = station.optString("url_resolved").ifBlank { station.optString("url") }
+     if (stream.startsWith("https://") && !found.contains(stream)) found.add(stream)
+    }
+    if (found.isNotEmpty()) return found
+   } catch (_: Exception) {}
+  }
+  return emptyList()
+ }
+
+ private fun playNextStation() {
+  if (nextStation >= stationUrls.size) return
+  val streamUrl = stationUrls[nextStation++]
+  stopCurrent()
+  try {
+   val media = MediaPlayer()
+   player = media
+   media.setAudioAttributes(
+    AudioAttributes.Builder()
+     .setUsage(AudioAttributes.USAGE_MEDIA)
+     .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+     .build()
+   )
+   media.setDataSource(appContext, Uri.parse(streamUrl))
+   media.setOnPreparedListener {
+    try {
+     it.setVolume(volume, volume)
+     it.start()
+    } catch (_: Exception) { playNextStation() }
+   }
+   media.setOnErrorListener { mp, _, _ ->
+    try { mp.release() } catch (_: Exception) {}
+    if (player === mp) player = null
+    playNextStation()
+    true
+   }
+   media.prepareAsync()
+  } catch (_: Exception) {
+   stopCurrent()
+   playNextStation()
+  }
+ }
+
+ private fun stopCurrent() {
+  val old = player
+  player = null
+  try { old?.setOnPreparedListener(null); old?.setOnErrorListener(null); old?.release() } catch (_: Exception) {}
+ }
+
+ fun stop() {
+  requestJob?.cancel()
+  requestJob = null
+  stopCurrent()
+ }
+
+ fun release() {
+  stop()
+  scope.coroutineContext[Job]?.cancel()
+ }
+}
+
 @Composable fun GameScreen(onExit:()->Unit,onUpdate:(String)->Unit){
  val context=LocalContext.current
  val scope= rememberCoroutineScope()
@@ -422,7 +529,20 @@ private class BackgroundMusicPlayer(private val volume:Float) {
  var musicOn by remember { mutableStateOf(settings.getBoolean("music_on",true)) }
  var musicVolume by remember { mutableFloatStateOf(settings.getFloat("music_volume",0.13f)) }
  var soundVolume by remember { mutableFloatStateOf(settings.getFloat("sound_volume",0.75f)) }
- LaunchedEffect(musicOn,musicVolume) { if (musicOn && musicVolume>0f) { val music = BackgroundMusicPlayer(musicVolume); music.start(); try { awaitCancellation() } finally { music.stop() } } }
+ val onlineRadio = remember { OnlineHipHopRadio(context) }
+ var lastRadioMilestone by remember { mutableIntStateOf(correctAnswers / 10) }
+ LaunchedEffect(correctAnswers) {
+  val milestone = correctAnswers / 10
+  if (milestone > lastRadioMilestone) {
+   lastRadioMilestone = milestone
+   if (correctAnswers > 0 && correctAnswers % 10 == 0 && musicOn && musicVolume > 0f) onlineRadio.play(musicVolume)
+  }
+ }
+ LaunchedEffect(musicOn, musicVolume) {
+  if (!musicOn || musicVolume <= 0f) onlineRadio.stop()
+  else onlineRadio.setVolume(musicVolume)
+ }
+ DisposableEffect(onlineRadio) { onDispose { onlineRadio.release() } }
  fun play(tone:Int) { playGameSound(context,tone,soundsOn,soundVolume) }
  val pageBg=if(darkMode) Color(0xFF101B3D) else Color(0xFFF3F6FC)
  val panel=if(darkMode) Color(0xFF24365F) else Color.White
