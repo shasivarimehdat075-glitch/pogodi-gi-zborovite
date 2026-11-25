@@ -1,8 +1,20 @@
 package com.pogodizborovite
 import android.os.Bundle
 import android.app.Activity
+import android.app.DownloadManager
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.widget.Toast
+import org.json.JSONObject
+import java.net.URL
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -275,9 +287,59 @@ fun normalizeAnswer(value:String):String {
  s=s.map { latin[it] ?: it }.joinToString("")
  return s.uppercase(Locale.ROOT).filter { it.isLetter() }
 }
-class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:Bundle?){super.onCreate(savedInstanceState);setContent{GameScreen(onExit={finish()})}}}
-@Composable fun GameScreen(onExit:()->Unit){
+class MainActivity:ComponentActivity(){
+ private val prefs by lazy { getSharedPreferences("app_updater", Context.MODE_PRIVATE) }
+ private val downloadReceiver = object: BroadcastReceiver() {
+  override fun onReceive(context: Context, intent: Intent) {
+   if(intent.action != DownloadManager.ACTION_DOWNLOAD_COMPLETE) return
+   val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L)
+   if(id != prefs.getLong("download_id", -2L)) return
+   val manager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+   val uri = manager.getUriForDownloadedFile(id)
+   if(uri != null) { prefs.edit().putString("apk_uri", uri.toString()).apply(); installDownloadedApk() }
+   else Toast.makeText(this@MainActivity, "Le téléchargement a échoué. Réessaie.", Toast.LENGTH_LONG).show()
+  }
+ }
+ override fun onCreate(savedInstanceState:Bundle?){
+  super.onCreate(savedInstanceState)
+  val filter=IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+  if(Build.VERSION.SDK_INT >= 33) registerReceiver(downloadReceiver,filter,Context.RECEIVER_NOT_EXPORTED) else registerReceiver(downloadReceiver,filter)
+  setContent { GameScreen(onExit={finish()}, onUpdate={url -> downloadUpdate(url)}) }
+ }
+ override fun onResume(){
+  super.onResume()
+  val pending=prefs.getString("apk_uri",null)
+  if(pending!=null && (Build.VERSION.SDK_INT < 26 || packageManager.canRequestPackageInstalls())) installDownloadedApk()
+ }
+ private fun downloadUpdate(url:String) {
+  val request=DownloadManager.Request(Uri.parse(url))
+   .setTitle("Pogodi Gi Zborovite")
+   .setDescription("Téléchargement de la mise à jour…")
+   .setMimeType("application/vnd.android.package-archive")
+   .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+   .setDestinationInExternalFilesDir(this,Environment.DIRECTORY_DOWNLOADS,"Pogodi-Gi-Zborovite-update.apk")
+  val id=(getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager).enqueue(request)
+  prefs.edit().putLong("download_id",id).remove("apk_uri").apply()
+  Toast.makeText(this,"Téléchargement démarré. Tu recevras une notification.",Toast.LENGTH_LONG).show()
+ }
+ private fun installDownloadedApk() {
+  val raw=prefs.getString("apk_uri",null) ?: return
+  if(Build.VERSION.SDK_INT >= 26 && !packageManager.canRequestPackageInstalls()) {
+   startActivity(Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,Uri.parse("package:$packageName")))
+   return
+  }
+  val uri=Uri.parse(raw)
+  prefs.edit().remove("apk_uri").apply()
+  val install=Intent(Intent.ACTION_VIEW).setDataAndType(uri,"application/vnd.android.package-archive")
+   .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+  try { startActivity(install) } catch(e:Exception) { Toast.makeText(this,"Impossible d’ouvrir l’installateur Android.",Toast.LENGTH_LONG).show() }
+ }
+ override fun onDestroy(){unregisterReceiver(downloadReceiver);super.onDestroy()}
+}
+@Composable fun GameScreen(onExit:()->Unit,onUpdate:(String)->Unit){
  val context=LocalContext.current
+ val scope= rememberCoroutineScope()
+ var updateStatus by remember { mutableStateOf("") }
  var showExitDialog by remember { mutableStateOf(false) }
  var selected by remember { mutableIntStateOf(-1) }; var level by remember { mutableIntStateOf(0) }
  var answer by remember { mutableStateOf("") }; var score by remember { mutableIntStateOf(0) }
@@ -290,9 +352,35 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
  Text("Македонска игра со зборови",color=Color(0xFFB8C8EA))
  Text("ПОЕНИ: "+score,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
  Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(10.dp)) {
-  OutlinedButton(onClick={context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse("https://github.com/shasivarimehdat075-glitch/pogodi-gi-zborovite/actions")))},modifier=Modifier.weight(1f)){Text("🔄 АЖУРИРАЊЕ")}
+  OutlinedButton(onClick={
+  updateStatus="Проверка за ажурирање…"
+  scope.launch {
+   try {
+    val result=withContext(Dispatchers.IO) {
+     val connection=URL("https://api.github.com/repos/shasivarimehdat075-glitch/pogodi-gi-zborovite/releases/tags/latest").openConnection()
+     connection.setRequestProperty("Accept","application/vnd.github+json")
+     connection.setRequestProperty("User-Agent","PogodiGiZborovite-Android")
+     connection.connectTimeout=15000; connection.readTimeout=15000
+     val json=JSONObject(connection.getInputStream().bufferedReader().use{it.readText()})
+     val latest=json.optString("name")
+     val assets=json.getJSONArray("assets")
+     var apkUrl=""
+     for(i in 0 until assets.length()) { val asset=assets.getJSONObject(i); if(asset.optString("name")=="app-release.apk") apkUrl=asset.optString("browser_download_url") }
+     Pair(latest,apkUrl)
+    }
+    val current=context.packageManager.getPackageInfo(context.packageName,0).versionName ?: "0"
+    fun parts(v:String)=v.split(".").map{it.toIntOrNull()?:0}
+    val latestParts=parts(result.first); val currentParts=parts(current)
+    val newer=(0 until maxOf(latestParts.size,currentParts.size)).firstNotNullOfOrNull { i -> val a=latestParts.getOrElse(i){0}; val b=currentParts.getOrElse(i){0}; if(a!=b) a>b else null } ?: false
+    if(result.first.isBlank() || result.second.isBlank()) updateStatus="Aucune version publiée pour le moment."
+    else if(!newer) updateStatus="Tu as déjà la dernière version ($current)."
+    else { updateStatus="Nouvelle version ${result.first} trouvée. Téléchargement…"; onUpdate(result.second) }
+   } catch(e:Exception) { updateStatus="Vérification impossible. Vérifie ta connexion Internet et réessaie." }
+  }
+ },modifier=Modifier.weight(1f)){Text("🔄 АЖУРИРАЊЕ")}
   OutlinedButton(onClick={showExitDialog=true},modifier=Modifier.weight(1f)){Text("🚪 ИЗЛЕЗ")}
  }
+ if(updateStatus.isNotBlank()) Text(updateStatus,color=Color(0xFFFFD782),textAlign=TextAlign.Center,fontSize=13.sp)
  if(selected<0){
   Text("ИЗБЕРИ КАТЕГОРИЈА",color=Color.White,fontSize=20.sp,fontWeight=FontWeight.Bold)
   categories.forEachIndexed { i,cat ->
