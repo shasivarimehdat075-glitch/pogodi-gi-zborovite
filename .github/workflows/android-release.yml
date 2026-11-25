@@ -79,4 +79,7 @@ jobs:
       - name: Set release title for in-app updater
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release edit latest --title "$VERSION_NAME"
+        run: |
+          RELEASE_ID=$(gh release view latest --json databaseId --jq .databaseId)
+          gh api --method PATCH "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" -f name="$VERSION_NAME"
+          gh release edit latest --title "$VERSION_NAME"
