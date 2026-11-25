@@ -285,7 +285,7 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
   prefs.edit().putInt("selected", selected).putInt("level", level).putInt("score", score).apply()
  }
  var solved by remember { mutableStateOf(false) }; var hint by remember { mutableStateOf(false) }
- var message by remember { mutableStateOf("Избери категорија за да започнеш!") }
+ var message by remember { mutableStateOf(if (prefs.getInt("selected", -1) >= 0) "Внеси го точниот збор!" else "Избери категорија за да започнеш!") }
  LaunchedEffect(solved) { if (solved && selected >= 0) { delay(900); val cat=categories[selected]; if (level+1 < cat.puzzles.size) { level++; message="Внеси го точниот збор!" } else { selected=-1; message="Категоријата е завршена! Браво! 🎉" }; answer=""; solved=false; hint=false } }
  MaterialTheme(colorScheme=darkColorScheme(primary=Color(0xFF8DE1D2))){
  Column(Modifier.fillMaxSize().background(Color(0xFF101B3D)).verticalScroll(rememberScrollState()).padding(18.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(14.dp)){
