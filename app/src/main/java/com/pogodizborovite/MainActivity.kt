@@ -23,6 +23,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -315,7 +319,7 @@ class MainActivity:ComponentActivity(){
   super.onCreate(savedInstanceState)
   val filter=IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
   if(Build.VERSION.SDK_INT >= 33) registerReceiver(downloadReceiver,filter,Context.RECEIVER_NOT_EXPORTED) else registerReceiver(downloadReceiver,filter)
-  setContent { GameScreen(onExit={finish()}, onUpdate={url -> downloadUpdate(url)}) }
+  setContent { GameScreen(onExit={finishAndRemoveTask()}, onUpdate={url -> downloadUpdate(url)}) }
  }
  override fun onResume(){
   super.onResume()
@@ -417,6 +421,14 @@ private class BackgroundMusicPlayer(private val volume:Float) {
 }
 
 private data class RadioStation(val name:String,val url:String)
+private data class RadioCountry(val name:String,val code:String)
+private val radioCountries = listOf(
+ RadioCountry("Македонија","MK"), RadioCountry("Франција","FR"), RadioCountry("Албанија","AL"),
+ RadioCountry("Косово","XK"), RadioCountry("Босна и Херцеговина","BA"), RadioCountry("Србија","RS"),
+ RadioCountry("Хрватска","HR"), RadioCountry("Германија","DE"), RadioCountry("Швајцарија","CH"),
+ RadioCountry("Австрија","AT"), RadioCountry("Италија","IT"), RadioCountry("Турција","TR"),
+ RadioCountry("САД","US"), RadioCountry("Обединето Кралство","GB"), RadioCountry("Сите земји","")
+)
 
 class OnlineHipHopRadio(context: Context, private val onState:(String,String,Boolean)->Unit) {
  private val appContext = context.applicationContext
@@ -425,6 +437,8 @@ class OnlineHipHopRadio(context: Context, private val onState:(String,String,Boo
  private var player: MediaPlayer? = null
  private var stations: List<RadioStation> = emptyList()
  private var currentIndex = -1
+ private var countryCode = "MK"
+ private var countryName = "Македонија"
  private var volume = 0.13f
  private var playing = false
  private var currentName = "Hip-Hop Radio"
@@ -434,16 +448,26 @@ class OnlineHipHopRadio(context: Context, private val onState:(String,String,Boo
   try { player?.setVolume(volume, volume) } catch (_: Exception) {}
  }
 
+ fun setCountry(name:String, code:String) {
+  if (countryCode == code && countryName == name) return
+  countryName = name
+  countryCode = code
+  stations = emptyList()
+  currentIndex = -1
+  stopCurrent()
+  play()
+ }
+
  fun play() {
   volume = volume.coerceIn(0f, 1f)
   requestJob?.cancel()
   requestJob = scope.launch {
    if (stations.isEmpty()) {
-    onState("Hip-Hop Radio","Се бараат радио станици…",false)
+    onState("$countryName – Hip-Hop","Се бараат радио станици…",false)
     stations = withContext(Dispatchers.IO) { findStations() }
    }
    if (stations.isEmpty()) {
-    onState("Нема достапна станица","Провери интернет и притисни следна",false)
+    onState("Нема станица за $countryName","Пробај друга земја или провери интернет",false)
    } else {
     currentIndex = if (currentIndex < 0) 0 else currentIndex % stations.size
     startStation()
@@ -483,9 +507,10 @@ class OnlineHipHopRadio(context: Context, private val onState:(String,String,Boo
   for (host in hosts) {
    for (tag in tags) {
     try {
-     val endpoint = URL("$host/json/stations/search?tag=$tag&is_https=true&hidebroken=true&limit=100&order=clickcount&reverse=true")
+     val countryFilter = if (countryCode.isBlank()) "" else "&countrycode=$countryCode"
+      val endpoint = URL("$host/json/stations/search?tag=$tag$countryFilter&is_https=true&hidebroken=true&limit=100&order=clickcount&reverse=true")
      val connection = endpoint.openConnection()
-     connection.setRequestProperty("User-Agent", "PogodiGiZborovite-Android/2.1.9")
+     connection.setRequestProperty("User-Agent", "PogodiGiZborovite-Android/2.3.0")
      connection.connectTimeout = 10000
      connection.readTimeout = 12000
      val data = connection.getInputStream().bufferedReader().use { it.readText() }
@@ -573,13 +598,27 @@ class OnlineHipHopRadio(context: Context, private val onState:(String,String,Boo
  var radioName by remember { mutableStateOf("Hip-Hop Radio") }
  var radioStatus by remember { mutableStateOf("Се подготвува…") }
  var radioPlaying by remember { mutableStateOf(false) }
+ var selectedRadioCountry by remember { mutableStateOf(settings.getString("radio_country_name","Македонија") ?: "Македонија") }
+ var selectedRadioCode by remember { mutableStateOf(settings.getString("radio_country_code","MK") ?: "MK") }
+ var countryMenuExpanded by remember { mutableStateOf(false) }
+ val lifecycleOwner = LocalLifecycleOwner.current
  val onlineRadio = remember { OnlineHipHopRadio(context) { name,status,playing ->
   radioName=name; radioStatus=status; radioPlaying=playing
  } }
+ BackHandler { onlineRadio.stop(); onExit() }
+ LaunchedEffect(selectedRadioCode) { onlineRadio.setCountry(selectedRadioCountry,selectedRadioCode) }
+ DisposableEffect(lifecycleOwner,onlineRadio) {
+  val observer = LifecycleEventObserver { _, event ->
+   if (event == Lifecycle.Event.ON_STOP) onlineRadio.stop()
+   if (event == Lifecycle.Event.ON_START && musicOn && musicVolume > 0f) onlineRadio.play()
+  }
+  lifecycleOwner.lifecycle.addObserver(observer)
+  onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+ }
 
  LaunchedEffect(musicOn) {
   if (!musicOn || musicVolume <= 0f) onlineRadio.stop()
-  else onlineRadio.play()
+  else if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) onlineRadio.play()
  }
  LaunchedEffect(musicVolume) { onlineRadio.setVolume(musicVolume) }
  DisposableEffect(onlineRadio) { onDispose { onlineRadio.release() } }
@@ -609,6 +648,21 @@ class OnlineHipHopRadio(context: Context, private val onState:(String,String,Boo
    IconButton(onClick={if(musicOn) onlineRadio.togglePlayback() else {musicOn=true;settings.edit().putBoolean("music_on",true).apply()}}) { Text(if(radioPlaying) "⏸" else "▶",fontSize=18.sp) }
    IconButton(onClick={if(musicOn) onlineRadio.next()}) { Text("⏭",fontSize=15.sp) }
    Switch(checked=musicOn,onCheckedChange={musicOn=it;settings.edit().putBoolean("music_on",it).apply()})
+  }
+ }
+ Box(Modifier.fillMaxWidth()) {
+  OutlinedButton(onClick={countryMenuExpanded=true},modifier=Modifier.fillMaxWidth()) {
+   Text("🌍 РАДИО ЗЕМЈА: $selectedRadioCountry  ▾",fontSize=13.sp)
+  }
+  DropdownMenu(expanded=countryMenuExpanded,onDismissRequest={countryMenuExpanded=false}) {
+   radioCountries.forEach { country ->
+    DropdownMenuItem(text={Text(country.name)},onClick={
+     selectedRadioCountry=country.name
+     selectedRadioCode=country.code
+     settings.edit().putString("radio_country_name",country.name).putString("radio_country_code",country.code).apply()
+     countryMenuExpanded=false
+    })
+   }
   }
  }
  Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
