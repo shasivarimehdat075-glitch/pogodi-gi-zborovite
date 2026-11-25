@@ -422,6 +422,24 @@ private class BackgroundMusicPlayer(private val volume:Float) {
 
 private data class RadioStation(val name:String,val url:String)
 private data class RadioCountry(val name:String,val code:String)
+private data class RadioGenre(val name:String,val tag:String)
+private val radioGenres = listOf(
+ RadioGenre("Сите категории",""),
+ RadioGenre("Поп","pop"), RadioGenre("Рок","rock"),
+ RadioGenre("Хип-хоп / Рап","hip hop"),
+ RadioGenre("Традиционална / Фолк","folk"),
+ RadioGenre("Балканска музика","balkan"),
+ RadioGenre("Народна музика","folk"),
+ RadioGenre("Џез","jazz"), RadioGenre("Класична","classical"),
+ RadioGenre("Електронска / Денс","electronic"),
+ RadioGenre("Кантри","country"), RadioGenre("Регe","reggae"),
+ RadioGenre("Метал","metal"), RadioGenre("Латинска","latin"),
+ RadioGenre("Арапска / Ориентална","arabic"),
+ RadioGenre("Религиозна","religious"),
+ RadioGenre("Вести","news"), RadioGenre("Разговорна","talk"),
+ RadioGenre("Спорт","sport"), RadioGenre("Култура","culture"),
+ RadioGenre("Oldies / Ретро","oldies"), RadioGenre("Детска","children")
+)
 private val radioCountries = listOf(
  RadioCountry("Македонија","MK"), RadioCountry("Франција","FR"), RadioCountry("Албанија","AL"), RadioCountry("Косово","XK"),
  RadioCountry("Босна и Херцеговина","BA"), RadioCountry("Србија","RS"), RadioCountry("Хрватска","HR"), RadioCountry("Црна Гора","ME"),
@@ -450,6 +468,8 @@ class OnlineHipHopRadio(context: Context, private val onState:(String,String,Boo
  private var currentIndex = -1
  private var countryCode = "MK"
  private var countryName = "Македонија"
+ private var genreName = "Сите категории"
+ private var genreTag = ""
  private var volume = 0.13f
  private var playing = false
  private var currentName = "Hip-Hop Radio"
@@ -463,6 +483,18 @@ class OnlineHipHopRadio(context: Context, private val onState:(String,String,Boo
   if (countryCode == code && countryName == name) return
   countryName = name
   countryCode = code
+  resetStations()
+ }
+
+ fun setGenre(name:String, tag:String) {
+  if (genreName == name && genreTag == tag) return
+  genreName = name
+  genreTag = tag
+  resetStations()
+ }
+
+ private fun resetStations() {
+  requestJob?.cancel()
   stations = emptyList()
   currentIndex = -1
   stopCurrent()
@@ -473,11 +505,11 @@ class OnlineHipHopRadio(context: Context, private val onState:(String,String,Boo
   requestJob?.cancel()
   requestJob = scope.launch {
    if (stations.isEmpty()) {
-    onState("$countryName – Hip-Hop","Се бараат радио станици…",false)
+    onState("$countryName – $genreName","Се бараат радио станици…",false)
     stations = withContext(Dispatchers.IO) { findStations() }
    }
    if (stations.isEmpty()) {
-    onState("Нема станица за $countryName","Пробај друга земја или провери интернет",false)
+    onState("Нема станица: $genreName","Пробај друга категорија или земја",false)
    } else {
     currentIndex = if (currentIndex < 0) 0 else currentIndex % stations.size
     startStation()
@@ -535,7 +567,8 @@ class OnlineHipHopRadio(context: Context, private val onState:(String,String,Boo
       }
      } catch (_:Exception) {}
     }
-    val endpoint = URL("$host/json/stations/search?" + (if(countryCode.isBlank()) "" else "countrycode=$countryCode&") + "is_https=true&hidebroken=true&limit=100&order=clickcount&reverse=true")
+    val genreFilter = if (genreTag.isBlank()) "" else "tag=" + java.net.URLEncoder.encode(genreTag,"UTF-8") + "&"
+    val endpoint = URL("$host/json/stations/search?" + (if(countryCode.isBlank()) "" else "countrycode=$countryCode&") + genreFilter + "is_https=true&hidebroken=true&limit=100&order=clickcount&reverse=true")
     val connection = endpoint.openConnection()
     connection.setRequestProperty("User-Agent","PogodiGiZborovite-Android/2.3.1")
     connection.connectTimeout=10000
@@ -623,14 +656,18 @@ private fun startStation() {
  var radioPlaying by remember { mutableStateOf(false) }
  var selectedRadioCountry by remember { mutableStateOf(settings.getString("radio_country_name","Македонија") ?: "Македонија") }
  var selectedRadioCode by remember { mutableStateOf(settings.getString("radio_country_code","MK") ?: "MK") }
+ var selectedRadioGenre by remember { mutableStateOf(settings.getString("radio_genre_name","Сите категории") ?: "Сите категории") }
+ var selectedRadioTag by remember { mutableStateOf(settings.getString("radio_genre_tag","") ?: "") }
  var countryMenuExpanded by remember { mutableStateOf(false) }
+ var genreMenuExpanded by remember { mutableStateOf(false) }
  val lifecycleOwner = LocalLifecycleOwner.current
  val onlineRadio = remember { OnlineHipHopRadio(context) { name,status,playing ->
   radioName=name; radioStatus=status; radioPlaying=playing
  } }
  BackHandler { onlineRadio.stop(); onExit() }
- LaunchedEffect(selectedRadioCode) {
+ LaunchedEffect(selectedRadioCode,selectedRadioTag) {
   onlineRadio.setCountry(selectedRadioCountry,selectedRadioCode)
+  onlineRadio.setGenre(selectedRadioGenre,selectedRadioTag)
   if (musicOn && musicVolume > 0f && lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) onlineRadio.play()
  }
  DisposableEffect(lifecycleOwner,onlineRadio) {
@@ -687,6 +724,21 @@ private fun startStation() {
      selectedRadioCode=country.code
      settings.edit().putString("radio_country_name",country.name).putString("radio_country_code",country.code).apply()
      countryMenuExpanded=false
+    })
+   }
+  }
+ }
+ Box(Modifier.fillMaxWidth()) {
+  OutlinedButton(onClick={genreMenuExpanded=true},modifier=Modifier.fillMaxWidth()) {
+   Text("🎵 МУЗИЧКА КАТЕГОРИЈА: $selectedRadioGenre  ▾",fontSize=13.sp)
+  }
+  DropdownMenu(expanded=genreMenuExpanded,onDismissRequest={genreMenuExpanded=false}) {
+   radioGenres.forEach { genre ->
+    DropdownMenuItem(text={Text(genre.name)},onClick={
+     selectedRadioGenre=genre.name
+     selectedRadioTag=genre.tag
+     settings.edit().putString("radio_genre_name",genre.name).putString("radio_genre_tag",genre.tag).apply()
+     genreMenuExpanded=false
     })
    }
   }
