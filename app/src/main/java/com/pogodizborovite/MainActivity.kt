@@ -11,6 +11,9 @@ import android.os.Build
 import android.os.Environment
 import android.widget.Toast
 import android.media.AudioManager
+import android.media.AudioAttributes
+import android.media.AudioFormat
+import android.media.AudioTrack
 import android.media.ToneGenerator
 import org.json.JSONObject
 import java.net.URL
@@ -38,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import java.util.Locale
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.awaitCancellation
 
 data class Puzzle(val word:String,val clue:String,val category:String,val photo:String)
 data class GameCategory(val title:String,val emoji:String,val puzzles:List<Puzzle>)
@@ -339,6 +343,54 @@ class MainActivity:ComponentActivity(){
  override fun onDestroy(){unregisterReceiver(downloadReceiver);super.onDestroy()}
 }
 fun playGameSound(context:Context,tone:Int,enabled:Boolean) { if(enabled) { try { val g=ToneGenerator(AudioManager.STREAM_MUSIC,75); g.startTone(tone,170); android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({g.release()},230) } catch (_:Exception) {} } }
+private class BackgroundMusicPlayer {
+ @Volatile private var running = false
+ private var track: AudioTrack? = null
+ private var worker: Thread? = null
+ fun start() {
+  if (running) return
+  val rate = 22050
+  val format = AudioFormat.Builder().setEncoding(AudioFormat.ENCODING_PCM_16BIT).setSampleRate(rate).setChannelMask(AudioFormat.CHANNEL_OUT_MONO).build()
+  val attributes = AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()
+  val size = maxOf(AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT), 4096)
+  val audio = AudioTrack.Builder().setAudioAttributes(attributes).setAudioFormat(format).setBufferSizeInBytes(size).setTransferMode(AudioTrack.MODE_STREAM).build()
+  audio.setVolume(0.13f)
+  audio.play()
+  track = audio
+  running = true
+  worker = Thread {
+   val buffer = ShortArray(2048)
+   val melody = doubleArrayOf(261.63, 329.63, 392.00, 329.63, 293.66, 349.23, 440.00, 349.23)
+   var sample = 0L
+   try {
+    while (running) {
+     for (i in buffer.indices) {
+      val beatSamples = (rate * 1.35).toLong()
+      val beat = (sample / beatSamples).toInt() % melody.size
+      val within = (sample % beatSamples).toDouble() / beatSamples
+      val fade = kotlin.math.sin(Math.PI * within).coerceAtLeast(0.0)
+      val frequency = melody[beat]
+      val time = sample.toDouble() / rate
+      val softTone = kotlin.math.sin(2.0 * Math.PI * frequency * time) * 0.62 +
+       kotlin.math.sin(2.0 * Math.PI * (frequency / 2.0) * time) * 0.20 +
+       kotlin.math.sin(2.0 * Math.PI * (frequency * 1.5) * time) * 0.08
+      val value = softTone * (0.45 + 0.25 * fade) * 2600.0
+      buffer[i] = value.toInt().coerceIn(-32768, 32767).toShort()
+      sample++
+     }
+     audio.write(buffer, 0, buffer.size, AudioTrack.WRITE_BLOCKING)
+    }
+   } catch (_: Exception) { }
+  }.apply { name = "PogodiBackgroundMusic"; isDaemon = true; start() }
+ }
+ fun stop() {
+  running = false
+  try { track?.pause(); track?.flush(); track?.stop() } catch (_: Exception) { }
+  try { track?.release() } catch (_: Exception) { }
+  track = null
+  worker = null
+ }
+}
 @Composable fun GameScreen(onExit:()->Unit,onUpdate:(String)->Unit){
  val context=LocalContext.current
  val scope= rememberCoroutineScope()
@@ -348,6 +400,8 @@ fun playGameSound(context:Context,tone:Int,enabled:Boolean) { if(enabled) { try 
  val settings=remember { context.getSharedPreferences("game_settings",Context.MODE_PRIVATE) }
  var darkMode by remember { mutableStateOf(settings.getBoolean("dark_mode",true)) }
  var soundsOn by remember { mutableStateOf(settings.getBoolean("sounds_on",true)) }
+ var musicOn by remember { mutableStateOf(settings.getBoolean("music_on",true)) }
+ LaunchedEffect(musicOn) { if (musicOn) { val music = BackgroundMusicPlayer(); music.start(); try { awaitCancellation() } finally { music.stop() } } }
  fun play(tone:Int) { playGameSound(context,tone,soundsOn) }
  val pageBg=if(darkMode) Color(0xFF101B3D) else Color(0xFFF3F6FC)
  val panel=if(darkMode) Color(0xFF24365F) else Color.White
@@ -432,8 +486,9 @@ fun playGameSound(context:Context,tone:Int,enabled:Boolean) { if(enabled) { try 
  if(showSettings) {
   AlertDialog(onDismissRequest={showSettings=false},title={Text("⚙ ПАРАМЕТРИ")},text={Column {
    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text("Темна тема / Светла тема");Switch(checked=darkMode,onCheckedChange={darkMode=it;settings.edit().putBoolean("dark_mode",it).apply()})}
+   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text("Музика во позадина");Switch(checked=musicOn,onCheckedChange={musicOn=it;settings.edit().putBoolean("music_on",it).apply()})}
    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text("Звуци во играта");Switch(checked=soundsOn,onCheckedChange={soundsOn=it;settings.edit().putBoolean("sounds_on",it).apply();if(it)playGameSound(context,ToneGenerator.TONE_PROP_ACK,true)})}
-   Text("Звуци за копчиња, точни и погрешни одговори и помош.",fontSize=13.sp)
+   Text("Тивка музика во позадина и посебни звучни ефекти за играта.",fontSize=13.sp)
   }},confirmButton={TextButton(onClick={showSettings=false}){Text("ГОТОВО")}})
  }
  if(showExitDialog) {
