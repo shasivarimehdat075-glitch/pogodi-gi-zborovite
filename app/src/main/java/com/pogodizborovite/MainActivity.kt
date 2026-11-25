@@ -416,33 +416,68 @@ private class BackgroundMusicPlayer(private val volume:Float) {
  }
 }
 
-private class OnlineHipHopRadio(context: Context) {
+private data class RadioStation(val name:String,val url:String)
+
+class OnlineHipHopRadio(context: Context, private val onState:(String,String,Boolean)->Unit) {
  private val appContext = context.applicationContext
  private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
  private var requestJob: Job? = null
  private var player: MediaPlayer? = null
- private var stationUrls: List<String> = emptyList()
- private var nextStation = 0
+ private var stations: List<RadioStation> = emptyList()
+ private var currentIndex = -1
  private var volume = 0.13f
+ private var playing = false
+ private var currentName = "Hip-Hop Radio"
 
  fun setVolume(value: Float) {
   volume = value.coerceIn(0f, 1f)
   try { player?.setVolume(volume, volume) } catch (_: Exception) {}
  }
 
- fun play(level: Float) {
-  volume = level.coerceIn(0f, 1f)
-  stopCurrent()
+ fun play() {
+  volume = volume.coerceIn(0f, 1f)
   requestJob?.cancel()
   requestJob = scope.launch {
-   val urls = withContext(Dispatchers.IO) { findStations() }
-   stationUrls = urls.shuffled()
-   nextStation = 0
-   playNextStation()
+   if (stations.isEmpty()) {
+    onState("Hip-Hop Radio","Се бараат радио станици…",false)
+    stations = withContext(Dispatchers.IO) { findStations() }
+   }
+   if (stations.isEmpty()) {
+    onState("Нема достапна станица","Провери интернет и притисни следна",false)
+   } else {
+    currentIndex = if (currentIndex < 0) 0 else currentIndex % stations.size
+    startStation()
+   }
   }
  }
 
- private fun findStations(): List<String> {
+ fun next() {
+  if (stations.isEmpty()) { play(); return }
+  currentIndex = (currentIndex + 1) % stations.size
+  startStation()
+ }
+
+ fun previous() {
+  if (stations.isEmpty()) { play(); return }
+  currentIndex = if (currentIndex <= 0) stations.lastIndex else currentIndex - 1
+  startStation()
+ }
+
+ fun togglePlayback() {
+  try {
+   val p = player
+   if (p == null) { play(); return }
+   if (p.isPlaying) {
+    p.pause(); playing = false
+    onState(currentName,"Паузирано",false)
+   } else {
+    p.start(); playing = true
+    onState(currentName,"Се репродуцира",true)
+   }
+  } catch (_: Exception) { next() }
+ }
+
+ private fun findStations(): List<RadioStation> {
   val hosts = listOf("https://de1.api.radio-browser.info", "https://de2.api.radio-browser.info", "https://nl1.api.radio-browser.info")
   val tags = listOf("hiphop", "hip-hop", "rap")
   for (host in hosts) {
@@ -450,18 +485,18 @@ private class OnlineHipHopRadio(context: Context) {
     try {
      val endpoint = URL("$host/json/stations/search?tag=$tag&is_https=true&hidebroken=true&limit=100&order=clickcount&reverse=true")
      val connection = endpoint.openConnection()
-     connection.setRequestProperty("User-Agent", "PogodiGiZborovite-Android/2.1.8")
+     connection.setRequestProperty("User-Agent", "PogodiGiZborovite-Android/2.1.9")
      connection.connectTimeout = 10000
      connection.readTimeout = 12000
      val data = connection.getInputStream().bufferedReader().use { it.readText() }
      val array = JSONArray(data)
-     val found = mutableListOf<String>()
+     val found = mutableListOf<RadioStation>()
      for (i in 0 until array.length()) {
       val station = array.optJSONObject(i) ?: continue
-      if (station.optInt("lastcheckok", 0) != 1) continue
-      if (station.optInt("hls", 0) == 1) continue
+      if (station.optInt("lastcheckok", 0) != 1 || station.optInt("hls", 0) == 1) continue
       val stream = station.optString("url_resolved").ifBlank { station.optString("url") }
-      if (stream.startsWith("https://") && !found.contains(stream)) found.add(stream)
+      val name = station.optString("name").ifBlank { "Hip-Hop Radio" }
+      if (stream.startsWith("https://") && found.none { it.url == stream }) found.add(RadioStation(name,stream))
      }
      if (found.isNotEmpty()) return found
     } catch (_: Exception) {}
@@ -470,42 +505,44 @@ private class OnlineHipHopRadio(context: Context) {
   return emptyList()
  }
 
- private fun playNextStation() {
-  if (nextStation >= stationUrls.size) return
-  val streamUrl = stationUrls[nextStation++]
+ private fun startStation() {
+  if (currentIndex !in stations.indices) return
   stopCurrent()
+  val station = stations[currentIndex]
+  currentName = station.name
+  onState(currentName,"Се поврзува…",false)
   try {
    val media = MediaPlayer()
    player = media
-   media.setAudioAttributes(
-    AudioAttributes.Builder()
-     .setUsage(AudioAttributes.USAGE_MEDIA)
-     .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-     .build()
-   )
-   media.setDataSource(appContext, Uri.parse(streamUrl))
+   media.setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
+   media.setDataSource(appContext, Uri.parse(station.url))
    media.setOnPreparedListener {
     try {
      it.setVolume(volume, volume)
-     it.start()
-    } catch (_: Exception) { playNextStation() }
+     it.start(); playing = true
+     onState(currentName,"Се репродуцира",true)
+    } catch (_: Exception) { next() }
    }
    media.setOnErrorListener { mp, _, _ ->
     try { mp.release() } catch (_: Exception) {}
     if (player === mp) player = null
-    playNextStation()
+    playing = false
+    onState(currentName,"Станицата не работи – се бара друга…",false)
+    next()
     true
    }
    media.prepareAsync()
   } catch (_: Exception) {
    stopCurrent()
-   playNextStation()
+   onState(currentName,"Не може да се пушти – следна станица",false)
+   next()
   }
  }
 
  private fun stopCurrent() {
   val old = player
   player = null
+  playing = false
   try { old?.setOnPreparedListener(null); old?.setOnErrorListener(null); old?.release() } catch (_: Exception) {}
  }
 
@@ -533,15 +570,18 @@ private class OnlineHipHopRadio(context: Context) {
  var musicOn by remember { mutableStateOf(settings.getBoolean("music_on",true)) }
  var musicVolume by remember { mutableFloatStateOf(settings.getFloat("music_volume",0.13f)) }
  var soundVolume by remember { mutableFloatStateOf(settings.getFloat("sound_volume",0.75f)) }
- val onlineRadio = remember { OnlineHipHopRadio(context) }
+ var radioName by remember { mutableStateOf("Hip-Hop Radio") }
+ var radioStatus by remember { mutableStateOf("Се подготвува…") }
+ var radioPlaying by remember { mutableStateOf(false) }
+ val onlineRadio = remember { OnlineHipHopRadio(context) { name,status,playing ->
+  radioName=name; radioStatus=status; radioPlaying=playing
+ } }
 
  LaunchedEffect(musicOn) {
   if (!musicOn || musicVolume <= 0f) onlineRadio.stop()
-  else onlineRadio.play(musicVolume)
+  else onlineRadio.play()
  }
- LaunchedEffect(musicVolume) {
-  if (musicOn) onlineRadio.setVolume(musicVolume)
- }
+ LaunchedEffect(musicVolume) { onlineRadio.setVolume(musicVolume) }
  DisposableEffect(onlineRadio) { onDispose { onlineRadio.release() } }
  fun play(tone:Int) { playGameSound(context,tone,soundsOn,soundVolume) }
  val pageBg=if(darkMode) Color(0xFF101B3D) else Color(0xFFF3F6FC)
@@ -563,10 +603,22 @@ private class OnlineHipHopRadio(context: Context) {
  var message by remember { mutableStateOf("Избери категорија за да започнеш!") }
  LaunchedEffect(solved) { if (solved && selected >= 0) { delay(900); val cat=categories[selected]; if (level+1 < cat.puzzles.size) { level++; message="Внеси го точниот збор!" } else { selected=-1; message="Категоријата е завршена! Браво! 🎉" }; answer=""; solved=false; hint=false; wrongAttempts=0 } }
  MaterialTheme(colorScheme=if(darkMode) darkColorScheme(primary=Color(0xFF8DE1D2)) else lightColorScheme(primary=Color(0xFF008F83))){
- Column(Modifier.fillMaxSize().background(pageBg).verticalScroll(rememberScrollState()).padding(18.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(14.dp)){
+ Box(Modifier.fillMaxSize().background(pageBg)) {
+ Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(start=18.dp,end=18.dp,top=18.dp,bottom=88.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(14.dp)){
  Text("🧩 ПОГОДИ ГИ ЗБОРОВИТЕ",color=mainText,fontSize=24.sp,fontWeight=FontWeight.ExtraBold,textAlign=TextAlign.Center)
  Text("Македонска игра со зборови",color=secondaryText)
- Text("ПОЕНИ: "+score,color=gold,fontWeight=FontWeight.Bold)
+ Card(colors=CardDefaults.cardColors(containerColor=panel),shape=RoundedCornerShape(14.dp),modifier=Modifier.fillMaxWidth()) {
+  Row(Modifier.fillMaxWidth().padding(horizontal=10.dp,vertical=7.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(6.dp)) {
+   Column(Modifier.weight(1f)) {
+    Text("📻 ${radioName}",color=mainText,fontWeight=FontWeight.Bold,fontSize=12.sp,maxLines=1)
+    Text(radioStatus,color=secondaryText,fontSize=10.sp,maxLines=1)
+   }
+   IconButton(onClick={if(musicOn) onlineRadio.previous()}) { Text("⏮",fontSize=15.sp) }
+   IconButton(onClick={if(musicOn) onlineRadio.togglePlayback() else {musicOn=true;settings.edit().putBoolean("music_on",true).apply()}}) { Text(if(radioPlaying) "⏸" else "▶",fontSize=18.sp) }
+   IconButton(onClick={if(musicOn) onlineRadio.next()}) { Text("⏭",fontSize=15.sp) }
+   Switch(checked=musicOn,onCheckedChange={musicOn=it;settings.edit().putBoolean("music_on",it).apply()})
+  }
+ }
  Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
   OutlinedButton(onClick={showSettings=true;play(ToneGenerator.TONE_PROP_BEEP)},modifier=Modifier.weight(1f)){Text("⚙",fontSize=17.sp)}
   OutlinedButton(onClick={
@@ -631,6 +683,12 @@ private class OnlineHipHopRadio(context: Context) {
   }
  }
  Text("Погодувај, учи и забавувај се!",color=secondaryText,fontSize=13.sp)
+ }
+ Surface(Modifier.align(Alignment.BottomCenter).fillMaxWidth(),color=panel,shadowElevation=8.dp) {
+  Row(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal=22.dp,vertical=12.dp),horizontalArrangement=Arrangement.Center,verticalAlignment=Alignment.CenterVertically) {
+   Text("🏆  ВКУПНО ПОЕНИ: $score",color=gold,fontWeight=FontWeight.ExtraBold,fontSize=18.sp)
+  }
+ }
  }
  if(showSettings) {
   AlertDialog(onDismissRequest={showSettings=false},title={Text("⚙ ПАРАМЕТРИ")},text={Column {
