@@ -1574,7 +1574,7 @@ private fun startStation() {
  MaterialTheme(colorScheme=if(darkMode) darkColorScheme(primary=Color(0xFF8DE1D2)) else lightColorScheme(primary=Color(0xFF008F83))){
  Box(Modifier.fillMaxSize().background(pageBg)) {
  Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(start=18.dp,end=18.dp,top=18.dp,bottom=88.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(14.dp)){
- Text("🧩 ПОГОДИ ГИ ЗБОРОВИТЕ",color=mainText,fontSize=24.sp,fontWeight=FontWeight.ExtraBold,textAlign=TextAlign.Center)
+ Text("🧩 "+when(selectedLanguage){"fr"->"DEVINE LES MOTS";"sq"->"GJEJI FJALËT";"en"->"GUESS THE WORDS";else->"ПОГОДИ ГИ ЗБОРОВИТЕ"},color=mainText,fontSize=24.sp,fontWeight=FontWeight.ExtraBold,textAlign=TextAlign.Center)
  Box(Modifier.fillMaxWidth()) {
   OutlinedButton(onClick={languageMenuExpanded=true},modifier=Modifier.fillMaxWidth()) {
    Text("🌍 ЈАЗИК / LANGUE: $selectedLanguageName  ▾",fontSize=14.sp)
@@ -1589,7 +1589,7 @@ private fun startStation() {
    }
   }
  }
- Text("Македонска игра со зборови",color=secondaryText)
+ Text(when(selectedLanguage){"fr"->"Jeu de mots macédonien";"sq"->"Lojë maqedonase me fjalë";"en"->"Macedonian word game";else->"Македонска игра со зборови"},color=secondaryText)
  Card(colors=CardDefaults.cardColors(containerColor=panel),shape=RoundedCornerShape(14.dp),modifier=Modifier.fillMaxWidth()) {
   Row(Modifier.fillMaxWidth().padding(horizontal=10.dp,vertical=7.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(6.dp)) {
    Column(Modifier.weight(1f)) {
