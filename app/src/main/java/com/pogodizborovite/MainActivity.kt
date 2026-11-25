@@ -134,10 +134,64 @@ private val frenchAnimalClues = mapOf(
  "МИШКА" to "Petit rongeur doté d’une longue queue.",
  "СВИЊА" to "Animal domestique qui vit souvent à la ferme et fouille le sol avec son groin."
 )
+
+private val frenchFoodWords = mapOf(
+ "ЈАБОЛКО" to "POMME","БАНАНА" to "BANANE","ПОРТОКАЛ" to "ORANGE","ЈАГОДА" to "FRAISE",
+ "ЛИМОН" to "CITRON","ЛУБЕНИЦА" to "PASTÈQUE","АНАНАС" to "ANANAS","МОРКОВ" to "CAROTTE",
+ "КРУША" to "POIRE","ЦРЕША" to "CERISE","ПРАСКА" to "PÊCHE","ГРОЗЈЕ" to "RAISIN",
+ "КИВИ" to "KIWI","КАЈСИЈА" to "ABRICOT","ДОМАТ" to "TOMATE","КРАСТАВИЦА" to "CONCOMBRE",
+ "КОМПИР" to "POMME DE TERRE","ОРИЗ" to "RIZ","МАНДАРИНА" to "MANDARINE","ЛОЗОВ ЛИСТ" to "FEUILLE DE VIGNE",
+ "СМОКВА" to "FIGUE","КАЛИНКА" to "GRENADE","ДИЊА" to "MELON","ПИПЕРКА" to "POIVRON",
+ "КРОМИД" to "OIGNON","ЛУК" to "AIL","СИРЕЊЕ" to "FROMAGE","ЛЕБ" to "PAIN",
+ "МАЛИНА" to "FRAMBOISE","БОРОВИНКА" to "MYRTILLE","КАПИНА" to "MÛRE","ПАПАЈА" to "PAPAYE",
+ "МАНГО" to "MANGUE","АВОКАДО" to "AVOCAT","ПЕЧУРКА" to "CHAMPIGNON","ПЧЕНКА" to "MAÏS",
+ "ТЕСТЕНИНИ" to "PÂTES","ЈОГУРТ" to "YAOURT"
+)
+private val frenchFoodClues = mapOf(
+ "ЈАБОЛКО" to "Fruit rouge ou vert qui pousse sur un arbre.",
+ "БАНАНА" to "Fruit jaune que l’on épluche avant de le manger.",
+ "ПОРТОКАЛ" to "Fruit rond et agrume à la peau orange.",
+ "ЈАГОДА" to "Fruit rouge avec de petites graines à sa surface.",
+ "ЛИМОН" to "Agrume jaune au goût acide.",
+ "ЛУБЕНИЦА" to "Gros fruit d’été à la chair rouge et juteuse.",
+ "АНАНАС" to "Fruit tropical à la peau dure et aux feuilles vertes.",
+ "МОРКОВ" to "Légume-racine orange que l’on mange cru ou cuit.",
+ "КРУША" to "Fruit juteux qui a souvent la forme d’une cloche.",
+ "ЦРЕША" to "Petit fruit rouge avec un noyau dur.",
+ "ПРАСКА" to "Fruit à la peau duveteuse et au gros noyau.",
+ "ГРОЗЈЕ" to "Petits fruits qui poussent en grappes.",
+ "КИВИ" to "Fruit à la peau brune et à la chair verte.",
+ "КАЈСИЈА" to "Fruit orange à la peau douce avec un seul noyau.",
+ "ДОМАТ" to "Fruit rouge souvent utilisé dans les salades.",
+ "КРАСТАВИЦА" to "Long légume vert souvent mangé cru.",
+ "КОМПИР" to "Légume riche en amidon que l’on fait bouillir ou cuire au four.",
+ "ОРИЗ" to "Petits grains que l’on cuisine en accompagnement ou en plat.",
+ "МАНДАРИНА" to "Petit agrume facile à éplucher.",
+ "ЛОЗОВ ЛИСТ" to "Feuille utilisée pour préparer des feuilles de vigne farcies.",
+ "СМОКВА" to "Fruit sucré à la chair tendre et contenant de nombreuses petites graines.",
+ "КАЛИНКА" to "Fruit qui contient de petites graines rouges.",
+ "ДИЊА" to "Gros fruit d’été sucré à la chair parfumée.",
+ "ПИПЕРКА" to "Légume qui peut être rouge, jaune ou vert.",
+ "КРОМИД" to "Légume que l’on coupe souvent pour cuisiner et qui fait pleurer.",
+ "ЛУК" to "Légume aromatique à l’odeur forte, composé de gousses.",
+ "СИРЕЊЕ" to "Produit laitier fabriqué à partir du lait.",
+ "ЛЕБ" to "Aliment de base cuit au four avec de la farine et de l’eau.",
+ "МАЛИНА" to "Petit fruit des bois rouge ou rose.",
+ "БОРОВИНКА" to "Petit fruit des bois de couleur bleu foncé.",
+ "КАПИНА" to "Fruit sombre qui pousse sur un arbuste épineux.",
+ "ПАПАЈА" to "Fruit tropical à la chair orange et aux graines noires.",
+ "МАНГО" to "Fruit tropical à la chair juteuse jaune orangé.",
+ "АВОКАДО" to "Fruit vert avec un gros noyau et une chair crémeuse.",
+ "ПЕЧУРКА" to "Champignon comestible utilisé dans de nombreux plats.",
+ "ПЧЕНКА" to "Grains jaunes qui poussent sur un épi.",
+ "ТЕСТЕНИНИ" to "Aliment à base de pâte, souvent en forme de spaghetti.",
+ "ЈОГУРТ" to "Produit laitier au goût légèrement acidulé."
+)
+
 private fun translatedPuzzleWord(word:String,lang:String):String =
- if(lang=="fr") frenchAnimalWords[word] ?: word else word
+ if(lang=="fr") frenchAnimalWords[word] ?: frenchFoodWords[word] ?: word else word
 private fun translatedPuzzleClue(word:String,clue:String,lang:String):String =
- if(lang=="fr") frenchAnimalClues[word] ?: clue else clue
+ if(lang=="fr") frenchAnimalClues[word] ?: frenchFoodClues[word] ?: clue else clue
 private fun translatedCategory(title:String,lang:String):String =
  if(lang!="fr") title else when(title) {
   "ЖИВОТНИ" -> "ANIMAUX"
