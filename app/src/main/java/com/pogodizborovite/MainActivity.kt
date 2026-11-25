@@ -53,7 +53,7 @@ val categories = listOf(
   Puzzle("СЛОН","Големо животно со долга сурла и големи уши.","ЖИВОТНИ","https://commons.wikimedia.org/wiki/Special:FilePath/African_elephant.jpg?width=900"),
   Puzzle("ЖИРАФА","Високо африканско животно со долг врат.","ЖИВОТНИ","https://commons.wikimedia.org/wiki/Special:FilePath/Giraffe_at_Dierenpark_Amersfoort,_photo_6.JPG?width=900"),
   Puzzle("НОСОРОГ","Големо животно со дебела кожа и рог на носот.","ЖИВОТНИ","https://commons.wikimedia.org/wiki/Special:FilePath/White_Rhinoceros_(9114161448).jpg?width=900"),
-  Puzzle("НИЛСКИ КОЊ","Големо африканско животно што живее во вода и покрај неа.","ЖИВОТНИ","https://pxhere.com/en/photo/1373502"),
+  Puzzle("НИЛСКИ КОЊ","Големо африканско животно што живее во вода и покрај неа.","ЖИВОТНИ","https://commons.wikimedia.org/wiki/Special:FilePath/Hippopotamus_kruger.jpg?width=900"),
   Puzzle("КЕНГУР","Австралиско животно што скока и го носи младенчето во торба.","ЖИВОТНИ","https://commons.wikimedia.org/wiki/Special:FilePath/Cute_Kangaroo_(Unsplash).jpg?width=900"),
   Puzzle("ПИНГВИН","Птица што не лета, но одлично плива во студени мориња.","ЖИВОТНИ","https://commons.wikimedia.org/wiki/Special:FilePath/King_penguin_in_Edinburgh_Zoo_03.jpg?width=900"),
   Puzzle("БУВ","Ноќна птица со големи очи.","ЖИВОТНИ","https://commons.wikimedia.org/wiki/Special:FilePath/Eurasian_Eagle_Owl_Bubo_Bubo_Bird_Up_Close.jpg?width=900"),
