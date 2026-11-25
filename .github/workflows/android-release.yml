@@ -51,6 +51,10 @@ jobs:
       - name: Verify APK exists
         run: test -s app/build/outputs/apk/release/app-release.apk
 
+      - name: Read app version
+        run: |
+          echo "VERSION_NAME=$(grep -oP 'versionName = "\\K[^"]+' app/build.gradle.kts)" >> "$GITHUB_ENV"
+
       - name: Upload signed APK artifact
         uses: actions/upload-artifact@v4
         with:
@@ -58,10 +62,6 @@ jobs:
           path: app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
           retention-days: 30
-
-      - name: Read app version
-        run: |
-          echo "VERSION_NAME=$(grep -oP 'versionName = "\\K[^"]+' app/build.gradle.kts)" >> "$GITHUB_ENV"
 
       - name: Publish update for in-app updater
         uses: softprops/action-gh-release@v2
