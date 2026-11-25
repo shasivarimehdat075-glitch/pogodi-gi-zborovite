@@ -1,5 +1,6 @@
 package com.pogodizborovite
 import android.os.Bundle
+import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -13,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -266,15 +268,22 @@ val categories = listOf(
  ))
 )
 fun normalizeAnswer(value:String):String {
- var s=value.trim().lowercase(Locale.ROOT).replace("dzh","џ").replace("dž","џ").replace("gj","ѓ").replace("zh","ж").replace("dz","ѕ").replace("lj","љ").replace("nj","њ").replace("kj","ќ").replace("ch","ч").replace("sh","ш")
+ var s=value.trim().lowercase(Locale.ROOT).replace("dzh","џ").replace("dž","џ").replace("gj","ѓ").replace("đ","ѓ").replace("zh","ж").replace("ž","ж").replace("dz","ѕ").replace("lj","љ").replace("nj","њ").replace("kj","ќ").replace("ć","ќ").replace("ch","ч").replace("č","ч").replace("sh","ш").replace("š","ш")
  val latin=mapOf('a' to 'а','b' to 'б','v' to 'в','g' to 'г','d' to 'д','e' to 'е','z' to 'з','i' to 'и','j' to 'ј','k' to 'к','l' to 'л','m' to 'м','n' to 'н','o' to 'о','p' to 'п','r' to 'р','s' to 'с','t' to 'т','u' to 'у','f' to 'ф','h' to 'х','c' to 'ц')
  s=s.map { latin[it] ?: it }.joinToString("")
  return s.uppercase(Locale.ROOT).filter { it.isLetter() }
 }
 class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:Bundle?){super.onCreate(savedInstanceState);setContent{GameScreen()}}}
 @Composable fun GameScreen(){
- var selected by remember { mutableIntStateOf(-1) }; var level by remember { mutableIntStateOf(0) }
- var answer by remember { mutableStateOf("") }; var score by remember { mutableIntStateOf(0) }
+ val context = LocalContext.current
+ val prefs = remember { context.getSharedPreferences("pogodi_progress", Context.MODE_PRIVATE) }
+ var selected by remember { mutableIntStateOf(prefs.getInt("selected", -1)) }
+ var level by remember { mutableIntStateOf(prefs.getInt("level", 0)) }
+ var answer by remember { mutableStateOf("") }
+ var score by remember { mutableIntStateOf(prefs.getInt("score", 0)) }
+ LaunchedEffect(selected, level, score) {
+  prefs.edit().putInt("selected", selected).putInt("level", level).putInt("score", score).apply()
+ }
  var solved by remember { mutableStateOf(false) }; var hint by remember { mutableStateOf(false) }
  var message by remember { mutableStateOf("Избери категорија за да започнеш!") }
  LaunchedEffect(solved) { if (solved && selected >= 0) { delay(900); val cat=categories[selected]; if (level+1 < cat.puzzles.size) { level++; message="Внеси го точниот збор!" } else { selected=-1; message="Категоријата е завршена! Браво! 🎉" }; answer=""; solved=false; hint=false } }
@@ -295,7 +304,10 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
    }
   }
  }else{
-  val cat=categories[selected]; val p=cat.puzzles[level % cat.puzzles.size]
+  val cat=categories[selected.coerceIn(0, categories.lastIndex)]
+  val safeLevel = level.coerceIn(0, cat.puzzles.lastIndex)
+  val p=cat.puzzles[safeLevel]
+  var imageFailed by remember(p.photo) { mutableStateOf(false) }
   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
    TextButton(onClick={selected=-1;answer="";solved=false;hint=false}){Text("← КАТЕГОРИИ")}
    Text("НИВО "+(level+1)+"/"+cat.puzzles.size,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
@@ -303,10 +315,16 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
   Text(cat.title,color=Color(0xFF8DE1D2),fontWeight=FontWeight.Bold)
   Card(colors=CardDefaults.cardColors(containerColor=Color(0xFF24365F)),shape=RoundedCornerShape(22.dp),modifier=Modifier.fillMaxWidth()){
    Column(Modifier.padding(16.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(12.dp)){
-    AsyncImage(model=p.photo,contentDescription=p.category,modifier=Modifier.fillMaxWidth().height(190.dp),contentScale=ContentScale.Crop)
+    if (imageFailed) {
+     Box(Modifier.fillMaxWidth().height(190.dp).background(Color(0xFF172747)), contentAlignment=Alignment.Center) {
+      Text("СЛИКАТА НЕ Е ДОСТАПНА", color=Color(0xFFB8C8EA), fontWeight=FontWeight.Bold)
+     }
+    } else {
+     AsyncImage(model=p.photo,contentDescription=p.category,modifier=Modifier.fillMaxWidth().height(190.dp),contentScale=ContentScale.Crop,onError={ imageFailed=true })
+    }
     Text("КОЈ ЗБОР Е ОВА?",color=Color.White,fontSize=21.sp,fontWeight=FontWeight.Bold)
     Text(p.clue,color=Color.White,fontSize=17.sp,textAlign=TextAlign.Center)
-    Text("БРОЈ НА БУКВИ: "+p.word.length,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
+    Text("БРОЈ НА БУКВИ: "+p.word.count { it != ' ' },color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
     OutlinedTextField(value=answer,onValueChange={answer=it.uppercase()},label={Text("Одговор: кирилица или латиница")},enabled=!solved,singleLine=true)
     Button(onClick={if(normalizeAnswer(answer)==normalizeAnswer(p.word)){score+=if(hint)5 else 10;solved=true;message="БРАВО! ТОЧЕН ОДГОВОР! 🎉"}else{message="Не е точно. Обиди се повторно!"}},enabled=!solved,modifier=Modifier.fillMaxWidth()){Text("ПРОВЕРИ")}
     OutlinedButton(onClick={hint=true;message="ПРВА БУКВА: "+p.word.first()},enabled=!solved&&!hint){Text("💡 ПОМОШ")}
