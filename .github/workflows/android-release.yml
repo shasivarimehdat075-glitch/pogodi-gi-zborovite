@@ -3,6 +3,8 @@ name: Signed Android Release
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
     tags:
       - "v*"
 
@@ -52,7 +54,7 @@ jobs:
       - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: Pogodi-Gi-Zborovite-2.1.0
+          name: Pogodi-Gi-Zborovite-2.1.1-SIGNED
           path: app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
           retention-days: 30
