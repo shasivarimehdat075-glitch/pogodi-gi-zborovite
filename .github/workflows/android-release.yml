@@ -75,3 +75,8 @@ jobs:
           make_latest: true
           prerelease: false
           draft: false
+
+      - name: Set release title for in-app updater
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release edit latest --title "$VERSION_NAME"
