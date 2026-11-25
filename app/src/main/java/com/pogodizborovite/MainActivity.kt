@@ -531,9 +531,12 @@ private class OnlineHipHopRadio(context: Context) {
  var soundVolume by remember { mutableFloatStateOf(settings.getFloat("sound_volume",0.75f)) }
  val onlineRadio = remember { OnlineHipHopRadio(context) }
 
- LaunchedEffect(musicOn, musicVolume) {
+ LaunchedEffect(musicOn) {
   if (!musicOn || musicVolume <= 0f) onlineRadio.stop()
-  else onlineRadio.setVolume(musicVolume)
+  else onlineRadio.play(musicVolume)
+ }
+ LaunchedEffect(musicVolume) {
+  if (musicOn) onlineRadio.setVolume(musicVolume)
  }
  DisposableEffect(onlineRadio) { onDispose { onlineRadio.release() } }
  fun play(tone:Int) { playGameSound(context,tone,soundsOn,soundVolume) }
