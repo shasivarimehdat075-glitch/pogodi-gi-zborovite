@@ -645,6 +645,16 @@ private fun startStation() {
  var updateStatus by remember { mutableStateOf("") }
  var showExitDialog by remember { mutableStateOf(false) }
  var showSettings by remember { mutableStateOf(false) }
+ val supportedLanguages = listOf(
+  "Македонски" to "mk", "Français" to "fr", "Shqip" to "sq", "English" to "en",
+  "Deutsch" to "de", "Italiano" to "it", "Español" to "es", "Türkçe" to "tr",
+  "Bosanski" to "bs", "Српски" to "sr", "العربية" to "ar", "Русский" to "ru",
+  "Ελληνικά" to "el", "Português" to "pt", "Nederlands" to "nl", "Polski" to "pl",
+  "Čeština" to "cs", "Slovenčina" to "sk", "Hrvatski" to "hr", "Slovenščina" to "sl"
+ )
+ var selectedLanguage by remember { mutableStateOf(settings.getString("app_language","mk") ?: "mk") }
+ var languageMenuExpanded by remember { mutableStateOf(false) }
+ val selectedLanguageName = supportedLanguages.firstOrNull { it.second == selectedLanguage }?.first ?: "Македонски"
  val settings=remember { context.getSharedPreferences("game_settings",Context.MODE_PRIVATE) }
  var darkMode by remember { mutableStateOf(settings.getBoolean("dark_mode",true)) }
  var soundsOn by remember { mutableStateOf(settings.getBoolean("sounds_on",true)) }
@@ -700,6 +710,20 @@ private fun startStation() {
  Box(Modifier.fillMaxSize().background(pageBg)) {
  Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(start=18.dp,end=18.dp,top=18.dp,bottom=88.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(14.dp)){
  Text("🧩 ПОГОДИ ГИ ЗБОРОВИТЕ",color=mainText,fontSize=24.sp,fontWeight=FontWeight.ExtraBold,textAlign=TextAlign.Center)
+ Box(Modifier.fillMaxWidth()) {
+  OutlinedButton(onClick={languageMenuExpanded=true},modifier=Modifier.fillMaxWidth()) {
+   Text("🌍 ЈАЗИК / LANGUE: $selectedLanguageName  ▾",fontSize=14.sp)
+  }
+  DropdownMenu(expanded=languageMenuExpanded,onDismissRequest={languageMenuExpanded=false}) {
+   supportedLanguages.forEach { language ->
+    DropdownMenuItem(text={Text(language.first)},onClick={
+     selectedLanguage=language.second
+     settings.edit().putString("app_language",language.second).apply()
+     languageMenuExpanded=false
+    })
+   }
+  }
+ }
  Text("Македонска игра со зборови",color=secondaryText)
  Card(colors=CardDefaults.cardColors(containerColor=panel),shape=RoundedCornerShape(14.dp),modifier=Modifier.fillMaxWidth()) {
   Row(Modifier.fillMaxWidth().padding(horizontal=10.dp,vertical=7.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(6.dp)) {
