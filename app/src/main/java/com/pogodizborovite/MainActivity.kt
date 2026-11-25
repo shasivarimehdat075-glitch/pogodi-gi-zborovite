@@ -1,5 +1,8 @@
 package com.pogodizborovite
 import android.os.Bundle
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -14,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -271,8 +275,10 @@ fun normalizeAnswer(value:String):String {
  s=s.map { latin[it] ?: it }.joinToString("")
  return s.uppercase(Locale.ROOT).filter { it.isLetter() }
 }
-class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:Bundle?){super.onCreate(savedInstanceState);setContent{GameScreen()}}}
-@Composable fun GameScreen(){
+class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:Bundle?){super.onCreate(savedInstanceState);setContent{GameScreen(onExit={finish()})}}}
+@Composable fun GameScreen(onExit:()->Unit){
+ val context=LocalContext.current
+ var showExitDialog by remember { mutableStateOf(false) }
  var selected by remember { mutableIntStateOf(-1) }; var level by remember { mutableIntStateOf(0) }
  var answer by remember { mutableStateOf("") }; var score by remember { mutableIntStateOf(0) }
  var solved by remember { mutableStateOf(false) }; var hint by remember { mutableStateOf(false) }
@@ -283,6 +289,10 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
  Text("🧩 ПОГОДИ ГИ ЗБОРОВИТЕ",color=Color.White,fontSize=24.sp,fontWeight=FontWeight.ExtraBold,textAlign=TextAlign.Center)
  Text("Македонска игра со зборови",color=Color(0xFFB8C8EA))
  Text("ПОЕНИ: "+score,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
+ Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(10.dp)) {
+  OutlinedButton(onClick={context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse("https://github.com/shasivarimehdat075-glitch/pogodi-gi-zborovite/actions")))},modifier=Modifier.weight(1f)){Text("🔄 МИЗУРАЊЕ")}
+  OutlinedButton(onClick={showExitDialog=true},modifier=Modifier.weight(1f)){Text("🚪 ИЗЛЕЗ")}
+ }
  if(selected<0){
   Text("ИЗБЕРИ КАТЕГОРИЈА",color=Color.White,fontSize=20.sp,fontWeight=FontWeight.Bold)
   categories.forEachIndexed { i,cat ->
@@ -316,6 +326,14 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
   }
  }
  Text("Погодувај, учи и забавувај се!",color=Color(0xFFB8C8EA),fontSize=13.sp)
+ }
+ if(showExitDialog) {
+  AlertDialog(onDismissRequest={showExitDialog=false},
+   title={Text("Излез од играта?")},
+   text={Text("Дали сигурно сакаш да ја затвориш апликацијата?")},
+   confirmButton={TextButton(onClick={showExitDialog=false;onExit()}){Text("ИЗЛЕЗ")}},
+   dismissButton={TextButton(onClick={showExitDialog=false}){Text("ОТКАЖИ")}}
+  )
  }
  }
 }
