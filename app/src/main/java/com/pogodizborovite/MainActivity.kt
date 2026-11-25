@@ -1589,7 +1589,7 @@ private fun startStation() {
    }
   }
  }
- Text(when(selectedLanguage){"fr"->"Jeu de mots macédonien";"sq"->"Lojë maqedonase me fjalë";"en"->"Macedonian word game";else->"Македонска игра со зборови"},color=secondaryText)
+ Text(when(selectedLanguage){"fr"->"Jeu de mots";"sq"->"Lojë me fjalë";"en"->"Word game";else->"Игра со зборови"},color=secondaryText)
  Card(colors=CardDefaults.cardColors(containerColor=panel),shape=RoundedCornerShape(14.dp),modifier=Modifier.fillMaxWidth()) {
   Row(Modifier.fillMaxWidth().padding(horizontal=10.dp,vertical=7.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(6.dp)) {
    Column(Modifier.weight(1f)) {
