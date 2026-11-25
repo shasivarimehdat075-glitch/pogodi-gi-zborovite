@@ -1183,7 +1183,7 @@ class MainActivity:ComponentActivity(){
  override fun onCreate(savedInstanceState:Bundle?){
   super.onCreate(savedInstanceState)
   val filter=IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
-  if(Build.VERSION.SDK_INT >= 33) registerReceiver(downloadReceiver,filter,Context.RECEIVER_NOT_EXPORTED) else registerReceiver(downloadReceiver,filter)
+  if(Build.VERSION.SDK_INT >= 33) registerReceiver(downloadReceiver,filter,Context.RECEIVER_EXPORTED) else registerReceiver(downloadReceiver,filter)
   setContent { GameScreen(onExit={finishAndRemoveTask()}, onUpdate={url -> downloadUpdate(url)}) }
  }
  override fun onResume(){
