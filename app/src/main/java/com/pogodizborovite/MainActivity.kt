@@ -339,13 +339,95 @@ private val albanianClues = mapOf(
  "СВИЊА" to "Kafshë ferme që shpesh gërmon tokën me turirin."
 )
 
+
+private val englishFoodClues = mapOf(
+ "ЈАБОЛКО" to "A red or green fruit that grows on a tree.",
+ "БАНАНА" to "A yellow fruit that you peel before eating.",
+ "ПОРТОКАЛ" to "A round citrus fruit with orange skin.",
+ "ЈАГОДА" to "A red fruit with tiny seeds on its surface.",
+ "ЛИМОН" to "A sour yellow citrus fruit.",
+ "ЛУБЕНИЦА" to "A large summer fruit with juicy red flesh.",
+ "АНАНАС" to "A tropical fruit with tough skin and green leaves.",
+ "МОРКОВ" to "An orange root vegetable eaten raw or cooked.",
+ "КРУША" to "A juicy fruit that often has a bell shape.",
+ "ЦРЕША" to "A small red fruit with a hard stone.",
+ "ПРАСКА" to "A soft fruit with fuzzy skin and a large stone.",
+ "ГРОЗЈЕ" to "Small fruits that grow in bunches.",
+ "КИВИ" to "A fruit with brown skin and green flesh.",
+ "КАЈСИЈА" to "An orange fruit with soft skin and one stone.",
+ "ДОМАТ" to "A red fruit often used in salads.",
+ "КРАСТАВИЦА" to "A long green vegetable often eaten fresh.",
+ "КОМПИР" to "A starchy vegetable that is boiled or baked.",
+ "ОРИЗ" to "Small grains cooked as a side dish or a meal.",
+ "МАНДАРИНА" to "A small citrus fruit that is easy to peel.",
+ "ЛОЗОВ ЛИСТ" to "A leaf used to wrap stuffed vine leaves.",
+ "СМОКВА" to "A sweet fruit with soft flesh and many tiny seeds.",
+ "КАЛИНКА" to "A fruit filled with small red seeds.",
+ "ДИЊА" to "A large, sweet summer fruit with fragrant flesh.",
+ "ПИПЕРКА" to "A vegetable that can be red, yellow, or green.",
+ "КРОМИД" to "A vegetable often chopped for cooking that makes your eyes water.",
+ "ЛУК" to "A strongly scented vegetable made up of cloves.",
+ "СИРЕЊЕ" to "A dairy product made from milk.",
+ "ЛЕБ" to "A staple food baked from flour and water.",
+ "МАЛИНА" to "A small red or pink berry.",
+ "БОРОВИНКА" to "A small, dark-blue wild berry.",
+ "КАПИНА" to "A dark berry that grows on a thorny bush.",
+ "ПАПАЈА" to "A tropical fruit with orange flesh and black seeds.",
+ "МАНГО" to "A tropical fruit with juicy yellow-orange flesh.",
+ "АВОКАДО" to "A green fruit with a large stone and creamy flesh.",
+ "ПЕЧУРКА" to "An edible fungus used in many dishes.",
+ "ПЧЕНКА" to "Yellow kernels that grow on a cob.",
+ "ТЕСТЕНИНИ" to "Food made from dough, often shaped like spaghetti.",
+ "ЈОГУРТ" to "A dairy product with a slightly sour taste."
+)
+private val albanianFoodClues = mapOf(
+ "ЈАБОЛКО" to "Frut i kuq ose i gjelbër që rritet në pemë.",
+ "БАНАНА" to "Frut i verdhë që qërohet para se të hahet.",
+ "ПОРТОКАЛ" to "Frut agrum i rrumbullakët me lëkurë portokalli.",
+ "ЈАГОДА" to "Frut i kuq me fara të vogla në sipërfaqe.",
+ "ЛИМОН" to "Frut agrum i verdhë me shije të thartë.",
+ "ЛУБЕНИЦА" to "Frut i madh vere me tul të kuq dhe të lëngshëm.",
+ "АНАНАС" to "Frut tropikal me lëkurë të fortë dhe gjethe të gjelbra.",
+ "МОРКОВ" to "Perime rrënjore portokalli që hahet e freskët ose e zier.",
+ "КРУША" to "Frut i lëngshëm që shpesh ka formë zileje.",
+ "ЦРЕША" to "Frut i vogël i kuq me bërthamë të fortë.",
+ "ПРАСКА" to "Frut i butë me lëkurë kadifeje dhe bërthamë të madhe.",
+ "ГРОЗЈЕ" to "Fruta të vogla që rriten në vile.",
+ "КИВИ" to "Frut me lëkurë kafe dhe tul të gjelbër.",
+ "КАЈСИЈА" to "Frut portokalli me lëkurë të butë dhe një bërthamë.",
+ "ДОМАТ" to "Frut i kuq që përdoret shpesh në sallata.",
+ "КРАСТАВИЦА" to "Perime e gjatë dhe e gjelbër që hahet shpesh e freskët.",
+ "КОМПИР" to "Perime me niseshte që zihet ose piqet.",
+ "ОРИЗ" to "Kokrra të vogla që gatuhen si garniturë ose si gjellë.",
+ "МАНДАРИНА" to "Frut i vogël agrum që qërohet lehtë.",
+ "ЛОЗОВ ЛИСТ" to "Gjethe që përdoret për të mbështjellë japrakë.",
+ "СМОКВА" to "Frut i ëmbël me tul të butë dhe shumë fara të imëta.",
+ "КАЛИНКА" to "Frut që ka kokrra të vogla të kuqe brenda.",
+ "ДИЊА" to "Frut i madh dhe i ëmbël vere me tul aromatik.",
+ "ПИПЕРКА" to "Perime që mund të jetë e kuqe, e verdhë ose e gjelbër.",
+ "КРОМИД" to "Perime që pritet shpesh gjatë gatimit dhe shkakton lot.",
+ "ЛУК" to "Perime aromatike me erë të fortë, e përbërë nga thelpinj.",
+ "СИРЕЊЕ" to "Produkt bulmeti që bëhet nga qumështi.",
+ "ЛЕБ" to "Ushqim bazë që piqet me miell dhe ujë.",
+ "МАЛИНА" to "Frut pylli i vogël, i kuq ose rozë.",
+ "БОРОВИНКА" to "Frut pylli i vogël me ngjyrë blu të errët.",
+ "КАПИНА" to "Frut i errët që rritet në një shkurre me gjemba.",
+ "ПАПАЈА" to "Frut tropikal me tul portokalli dhe fara të zeza.",
+ "МАНГО" to "Frut tropikal me tul të lëngshëm verdhë-portokalli.",
+ "АВОКАДО" to "Frut i gjelbër me bërthamë të madhe dhe tul kremoz.",
+ "ПЕЧУРКА" to "Kërpudhë e ngrënshme që përdoret në shumë gatime.",
+ "ПЧЕНКА" to "Kokrra të verdha që rriten në kallinj.",
+ "ТЕСТЕНИНИ" to "Ushqim i bërë nga brumi, shpesh në formë spageti.",
+ "ЈОГУРТ" to "Produkt bulmeti me shije paksa të thartë."
+)
+
 private fun translatedPuzzleWord(word:String,lang:String):String =
  when(lang) { "fr" -> frenchAnimalWords[word] ?: frenchFoodWords[word] ?: frenchOtherWords[word] ?: word; "en" -> englishWords[word] ?: word; "sq" -> albanianWords[word] ?: word; else -> word }
 private fun translatedPuzzleClue(word:String,clue:String,lang:String):String =
  when(lang) {
   "fr" -> frenchAnimalClues[word] ?: frenchFoodClues[word] ?: clue
-  "en" -> englishClues[word] ?: clue
-  "sq" -> albanianClues[word] ?: clue
+  "en" -> englishClues[word] ?: englishFoodClues[word] ?: clue
+  "sq" -> albanianClues[word] ?: albanianFoodClues[word] ?: clue
   else -> clue
  }
 private fun translatedCategory(title:String,lang:String):String {
