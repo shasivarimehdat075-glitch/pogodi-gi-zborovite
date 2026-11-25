@@ -52,6 +52,35 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 
+
+private fun uiText(key:String,lang:String):String {
+ val rows=mapOf(
+  "mk" to listOf("ИЗБЕРИ КАТЕГОРИЈА","← КАТЕГОРИИ","КОЈ ЗБОР Е ОВА?","БРОЈ НА БУКВИ: ","Одговор","ПРОВЕРИ","💡 ПОМОШ","⚙ ПАРАМЕТРИ","ГОТОВО","ИЗЛЕЗ","ОТКАЖИ","ВКУПНО ПОЕНИ","Погодувај, учи и забавувај се!"),
+  "fr" to listOf("CHOISIR UNE CATÉGORIE","← CATÉGORIES","QUEL EST CE MOT ?","NOMBRE DE LETTRES : ","Réponse","VÉRIFIER","💡 INDICE","⚙ PARAMÈTRES","TERMINÉ","QUITTER","ANNULER","TOTAL DES POINTS","Devinez, apprenez et amusez-vous !"),
+  "sq" to listOf("ZGJIDH KATEGORINË","← KATEGORITË","CILA ËSHTË KJO FJALË?","NUMRI I SHKRONJAVE: ","Përgjigjja","KONTROLLO","💡 NDIHMË","⚙ CILËSIMET","U KRYE","DIL","ANULO","PIKËT TOTALE","Gjej, mëso dhe argëtohu!"),
+  "en" to listOf("CHOOSE A CATEGORY","← CATEGORIES","WHAT IS THIS WORD?","NUMBER OF LETTERS: ","Answer","CHECK","💡 HINT","⚙ SETTINGS","DONE","EXIT","CANCEL","TOTAL POINTS","Guess, learn and have fun!"),
+  "de" to listOf("KATEGORIE WÄHLEN","← KATEGORIEN","WELCHES WORT IST DAS?","ANZAHL DER BUCHSTABEN: ","Antwort","PRÜFEN","💡 HINWEIS","⚙ EINSTELLUNGEN","FERTIG","BEENDEN","ABBRECHEN","PUNKTE GESAMT","Rate, lerne und hab Spaß!"),
+  "it" to listOf("SCEGLI UNA CATEGORIA","← CATEGORIE","CHE PAROLA È QUESTA?","NUMERO DI LETTERE: ","Risposta","VERIFICA","💡 AIUTO","⚙ IMPOSTAZIONI","FATTO","ESCI","ANNULLA","PUNTI TOTALI","Indovina, impara e divertiti!"),
+  "es" to listOf("ELIGE UNA CATEGORÍA","← CATEGORÍAS","¿QUÉ PALABRA ES ESTA?","NÚMERO DE LETRAS: ","Respuesta","COMPROBAR","💡 PISTA","⚙ AJUSTES","LISTO","SALIR","CANCELAR","PUNTOS TOTALES","¡Adivina, aprende y diviértete!"),
+  "tr" to listOf("KATEGORİ SEÇ","← KATEGORİLER","BU HANGİ KELİME?","HARF SAYISI: ","Cevap","KONTROL ET","💡 İPUCU","⚙ AYARLAR","TAMAM","ÇIKIŞ","İPTAL","TOPLAM PUAN","Tahmin et, öğren ve eğlen!"),
+  "bs" to listOf("IZABERI KATEGORIJU","← KATEGORIJE","KOJA JE OVO RIJEČ?","BROJ SLOVA: ","Odgovor","PROVJERI","💡 POMOĆ","⚙ POSTAVKE","GOTOVO","IZLAZ","OTKAŽI","UKUPNO BODOVA","Pogađaj, uči i zabavi se!"),
+  "sr" to listOf("ИЗАБЕРИ КАТЕГОРИЈУ","← КАТЕГОРИЈЕ","КОЈА ЈЕ ОВО РЕЧ?","БРОЈ СЛОВА: ","Одговор","ПРОВЕРИ","💡 ПОМОЋ","⚙ ПОДЕШАВАЊА","ГОТОВО","ИЗЛАЗ","ОТКАЖИ","УКУПНО ПОЕНА","Погађај, учи и забави се!"),
+  "ar" to listOf("اختر فئة","← الفئات","ما هذه الكلمة؟","عدد الحروف: ","الإجابة","تحقق","💡 تلميح","⚙ الإعدادات","تم","خروج","إلغاء","مجموع النقاط","خمن وتعلم واستمتع!"),
+  "ru" to listOf("ВЫБЕРИТЕ КАТЕГОРИЮ","← КАТЕГОРИИ","ЧТО ЭТО ЗА СЛОВО?","КОЛИЧЕСТВО БУКВ: ","Ответ","ПРОВЕРИТЬ","💡 ПОДСКАЗКА","⚙ НАСТРОЙКИ","ГОТОВО","ВЫХОД","ОТМЕНА","ВСЕГО ОЧКОВ","Угадывай, учись и развлекайся!"),
+  "el" to listOf("ΕΠΙΛΕΞΤΕ ΚΑΤΗΓΟΡΙΑ","← ΚΑΤΗΓΟΡΙΕΣ","ΠΟΙΑ ΕΙΝΑΙ ΑΥΤΗ Η ΛΕΞΗ;","ΑΡΙΘΜΟΣ ΓΡΑΜΜΑΤΩΝ: ","Απάντηση","ΕΛΕΓΧΟΣ","💡 ΥΠΟΔΕΙΞΗ","⚙ ΡΥΘΜΙΣΕΙΣ","ΕΤΟΙΜΟ","ΕΞΟΔΟΣ","ΑΚΥΡΩΣΗ","ΣΥΝΟΛΟ ΠΟΝΤΩΝ","Μάντεψε, μάθε και διασκέδασε!"),
+  "pt" to listOf("ESCOLHE UMA CATEGORIA","← CATEGORIAS","QUE PALAVRA É ESTA?","NÚMERO DE LETRAS: ","Resposta","VERIFICAR","💡 DICA","⚙ DEFINIÇÕES","CONCLUÍDO","SAIR","CANCELAR","PONTOS TOTAIS","Adivinha, aprende e diverte-te!"),
+  "nl" to listOf("KIES EEN CATEGORIE","← CATEGORIEËN","WELK WOORD IS DIT?","AANTAL LETTERS: ","Antwoord","CONTROLEREN","💡 HINT","⚙ INSTELLINGEN","KLAAR","AFSLUITEN","ANNULEREN","TOTAAL AANTAL PUNTEN","Raad, leer en heb plezier!"),
+  "pl" to listOf("WYBIERZ KATEGORIĘ","← KATEGORIE","CO TO ZA SŁOWO?","LICZBA LITER: ","Odpowiedź","SPRAWDŹ","💡 PODPOWIEDŹ","⚙ USTAWIENIA","GOTOWE","WYJŚCIE","ANULUJ","ŁĄCZNA LICZBA PUNKTÓW","Zgaduj, ucz się i baw się dobrze!"),
+  "cs" to listOf("VYBERTE KATEGORII","← KATEGORIE","CO JE TO ZA SLOVO?","POČET PÍSMEN: ","Odpověď","ZKONTROLOVAT","💡 NÁPOVĚDA","⚙ NASTAVENÍ","HOTOVO","KONEC","ZRUŠIT","CELKEM BODŮ","Hádej, uč se a bav se!"),
+  "sk" to listOf("VYBERTE KATEGÓRIU","← KATEGÓRIE","AKÉ JE TO SLOVO?","POČET PÍSMEN: ","Odpoveď","SKONTROLOVAŤ","💡 NÁPOVEDA","⚙ NASTAVENIA","HOTOVO","KONIEC","ZRUŠIŤ","CELKOVÝ POČET BODOV","Hádaj, uč sa a zabávaj sa!"),
+  "hr" to listOf("ODABERI KATEGORIJU","← KATEGORIJE","KOJA JE OVO RIJEČ?","BROJ SLOVA: ","Odgovor","PROVJERI","💡 POMOĆ","⚙ POSTAVKE","GOTOVO","IZLAZ","ODUSTANI","UKUPNO BODOVA","Pogađaj, uči i zabavi se!"),
+  "sl" to listOf("IZBERI KATEGORIJO","← KATEGORIJE","KATERA BESEDA JE TO?","ŠTEVILO ČRK: ","Odgovor","PREVERI","💡 NAMIG","⚙ NASTAVITVE","KONČANO","IZHOD","PREKLIČI","SKUPAJ TOČK","Ugibaj, uči se in se zabavaj!")
+ )
+ val keys=listOf("choose_category","back_categories","what_word","letter_count","answer","check","hint","settings","done","exit","cancel","total_points","tagline")
+ val i=keys.indexOf(key)
+ return if(i<0) key else (rows[lang] ?: rows["mk"]!!).getOrElse(i){key}
+}
+
 data class Puzzle(val word:String,val clue:String,val category:String,val photo:String)
 data class GameCategory(val title:String,val emoji:String,val puzzles:List<Puzzle>)
 val categories = listOf(
@@ -799,7 +828,7 @@ private fun startStation() {
  }
  if(updateStatus.isNotBlank()) Text(updateStatus,color=Color(0xFFFFD782),textAlign=TextAlign.Center,fontSize=13.sp)
  if(selected<0){
-  Text("ИЗБЕРИ КАТЕГОРИЈА",color=mainText,fontSize=20.sp,fontWeight=FontWeight.Bold)
+  Text(uiText("choose_category",selectedLanguage),color=mainText,fontSize=20.sp,fontWeight=FontWeight.Bold)
   categories.forEachIndexed { i,cat ->
    Card(onClick={selected=i;level=0;answer="";solved=false;hint=false;wrongAttempts=0;message="Внеси го точниот збор!";play(ToneGenerator.TONE_PROP_BEEP)},colors=CardDefaults.cardColors(containerColor=panel),shape=RoundedCornerShape(18.dp),modifier=Modifier.fillMaxWidth()){
     Row(Modifier.padding(18.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(14.dp)){
@@ -812,34 +841,34 @@ private fun startStation() {
  }else{
   val cat=categories[selected]; val p=cat.puzzles[level % cat.puzzles.size]
   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
-   TextButton(onClick={selected=-1;answer="";solved=false;hint=false;play(ToneGenerator.TONE_PROP_BEEP)}){Text("← КАТЕГОРИИ")}
+   TextButton(onClick={selected=-1;answer="";solved=false;hint=false;play(ToneGenerator.TONE_PROP_BEEP)}){Text(uiText("back_categories",selectedLanguage))}
    Text("НИВО "+(level+1)+"/"+cat.puzzles.size,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
   }
   Text(cat.title,color=Color(0xFF8DE1D2),fontWeight=FontWeight.Bold)
   Card(colors=CardDefaults.cardColors(containerColor=Color(0xFF24365F)),shape=RoundedCornerShape(22.dp),modifier=Modifier.fillMaxWidth()){
    Column(Modifier.padding(16.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(12.dp)){
     AsyncImage(model=p.photo,contentDescription=p.category,modifier=Modifier.fillMaxWidth().height(190.dp),contentScale=ContentScale.Crop)
-    Text("КОЈ ЗБОР Е ОВА?",color=mainText,fontSize=21.sp,fontWeight=FontWeight.Bold)
+    Text(uiText("what_word",selectedLanguage),color=mainText,fontSize=21.sp,fontWeight=FontWeight.Bold)
     Text(p.clue,color=mainText,fontSize=17.sp,textAlign=TextAlign.Center)
-    Text("БРОЈ НА БУКВИ: "+p.word.length,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
-    OutlinedTextField(value=answer,onValueChange={answer=it.uppercase()},label={Text("Одговор: кирилица или латиница")},enabled=!solved,singleLine=true)
-    Button(onClick={if(normalizeAnswer(answer)==normalizeAnswer(p.word)){score+=if(hint)5 else 10;correctAnswers++;settings.edit().putInt("score",score).putInt("correct_answers",correctAnswers).apply();solved=true;message=if(correctAnswers%10==0) "🎵 ${correctAnswers} ТОЧНИ ОДГОВОРИ! ВРЕМЕ Е ЗА МУЗИКА!" else "БРАВО! ТОЧЕН ОДГОВОР! 🎉";play(ToneGenerator.TONE_PROP_ACK)}else{wrongAttempts++;if(wrongAttempts>=3){score=(score-2).coerceAtLeast(0);settings.edit().putInt("score",score).apply();message="3 ПОГРЕШНИ ОБИДИ! -2 ПОЕНИ. Следното прашање…";solved=true}else{message="Не е точно. Обиди се повторно! ${wrongAttempts}/3"};play(ToneGenerator.TONE_PROP_NACK)}},enabled=!solved,modifier=Modifier.fillMaxWidth()){Text("ПРОВЕРИ")}
-    OutlinedButton(onClick={hint=true;message="ПРВА БУКВА: "+p.word.first();play(ToneGenerator.TONE_PROP_BEEP)},enabled=!solved&&!hint){Text("💡 ПОМОШ")}
+    Text(uiText("letter_count",selectedLanguage)+p.word.length,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
+    OutlinedTextField(value=answer,onValueChange={answer=it.uppercase()},label={Text(uiText("answer",selectedLanguage))},enabled=!solved,singleLine=true)
+    Button(onClick={if(normalizeAnswer(answer)==normalizeAnswer(p.word)){score+=if(hint)5 else 10;correctAnswers++;settings.edit().putInt("score",score).putInt("correct_answers",correctAnswers).apply();solved=true;message=if(correctAnswers%10==0) "🎵 ${correctAnswers} ТОЧНИ ОДГОВОРИ! ВРЕМЕ Е ЗА МУЗИКА!" else "БРАВО! ТОЧЕН ОДГОВОР! 🎉";play(ToneGenerator.TONE_PROP_ACK)}else{wrongAttempts++;if(wrongAttempts>=3){score=(score-2).coerceAtLeast(0);settings.edit().putInt("score",score).apply();message="3 ПОГРЕШНИ ОБИДИ! -2 ПОЕНИ. Следното прашање…";solved=true}else{message="Не е точно. Обиди се повторно! ${wrongAttempts}/3"};play(ToneGenerator.TONE_PROP_NACK)}},enabled=!solved,modifier=Modifier.fillMaxWidth()){Text(uiText("check",selectedLanguage))}
+    OutlinedButton(onClick={hint=true;message="ПРВА БУКВА: "+p.word.first();play(ToneGenerator.TONE_PROP_BEEP)},enabled=!solved&&!hint){Text(uiText("hint",selectedLanguage))}
     Text(message,color=Color(0xFFFFD782),textAlign=TextAlign.Center)
     if(solved) Text("СЛЕДНОТО НИВО СЕ ОТВОРА АВТОМАТСКИ…",color=Color(0xFF8DE1D2),fontWeight=FontWeight.Bold,textAlign=TextAlign.Center)
    }
   }
  }
- Text("Погодувај, учи и забавувај се!",color=secondaryText,fontSize=13.sp)
+ Text(uiText("tagline",selectedLanguage),color=secondaryText,fontSize=13.sp)
  }
  Surface(Modifier.align(Alignment.BottomCenter).fillMaxWidth(),color=panel,shadowElevation=8.dp) {
   Row(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal=22.dp,vertical=12.dp),horizontalArrangement=Arrangement.Center,verticalAlignment=Alignment.CenterVertically) {
-   Text("🏆  ВКУПНО ПОЕНИ: $score",color=gold,fontWeight=FontWeight.ExtraBold,fontSize=18.sp)
+   Text("🏆  ${uiText("total_points",selectedLanguage)}: $score",color=gold,fontWeight=FontWeight.ExtraBold,fontSize=18.sp)
   }
  }
  }
  if(showSettings) {
-  AlertDialog(onDismissRequest={showSettings=false},title={Text("⚙ ПАРАМЕТРИ")},text={Column {
+  AlertDialog(onDismissRequest={showSettings=false},title={Text(uiText("settings",selectedLanguage))},text={Column {
    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text("Темна тема / Светла тема");Switch(checked=darkMode,onCheckedChange={darkMode=it;settings.edit().putBoolean("dark_mode",it).apply()})}
    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text("Музика во позадина");Switch(checked=musicOn,onCheckedChange={musicOn=it;settings.edit().putBoolean("music_on",it).apply()})}
    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text("Звуци во играта");Switch(checked=soundsOn,onCheckedChange={soundsOn=it;settings.edit().putBoolean("sounds_on",it).apply();if(it)playGameSound(context,ToneGenerator.TONE_PROP_ACK,true,soundVolume)})}
@@ -848,14 +877,14 @@ private fun startStation() {
    Text("Јачина на звучните ефекти: ${(soundVolume*100).toInt()}%",fontSize=13.sp)
    Slider(value=soundVolume,onValueChange={soundVolume=it;settings.edit().putFloat("sound_volume",it).apply()},valueRange=0f..1f)
    Text("Можеш одделно да ја намалиш или зголемиш музиката и звуците.",fontSize=13.sp)
-  }},confirmButton={TextButton(onClick={showSettings=false}){Text("ГОТОВО")}})
+  }},confirmButton={TextButton(onClick={showSettings=false}){Text(uiText("done",selectedLanguage))}})
  }
  if(showExitDialog) {
   AlertDialog(onDismissRequest={showExitDialog=false},
    title={Text("Излез од играта?")},
    text={Text("Дали сигурно сакаш да ја затвориш апликацијата?")},
-   confirmButton={TextButton(onClick={showExitDialog=false;onExit()}){Text("ИЗЛЕЗ")}},
-   dismissButton={TextButton(onClick={showExitDialog=false}){Text("ОТКАЖИ")}}
+   confirmButton={TextButton(onClick={showExitDialog=false;onExit()}){Text(uiText("exit",selectedLanguage))}},
+   dismissButton={TextButton(onClick={showExitDialog=false}){Text(uiText("cancel",selectedLanguage))}}
   )
  }
  }
