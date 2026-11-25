@@ -421,13 +421,126 @@ private val albanianFoodClues = mapOf(
  "ЈОГУРТ" to "Produkt bulmeti me shije paksa të thartë."
 )
 
+
+private val frenchNatureClues = mapOf(
+ "ПЛАНИНА" to "Grande élévation naturelle du terrain.",
+ "СОНЦЕ" to "Étoile qui éclaire la Terre.",
+ "РЕКА" to "Cours d’eau naturel qui s’écoule dans un lit.",
+ "ВОДОПАД" to "Chute d’eau depuis une falaise ou une marche rocheuse.",
+ "ЕЗЕРО" to "Grande étendue d’eau entourée de terres.",
+ "ПЕШТЕРА" to "Cavité naturelle dans une roche ou une montagne.",
+ "ВУЛКАН" to "Montagne qui peut laisser sortir de la lave.",
+ "ОСТРОВ" to "Étendue de terre entourée d’eau de tous côtés.",
+ "ШУМА" to "Grande étendue couverte de nombreux arbres.",
+ "ЦВЕТ" to "Partie colorée d’une plante, souvent parfumée.",
+ "ДРВО" to "Grande plante avec un tronc et des branches.",
+ "ОБЛАК" to "Masse blanche ou grise de minuscules gouttelettes dans le ciel.",
+ "ДОЖД" to "Eau qui tombe des nuages.",
+ "СНЕГ" to "Cristaux de glace blancs qui tombent en hiver.",
+ "ВЕТЕР" to "Mouvement de l’air.",
+ "МОРЕ" to "Grande étendue d’eau salée.",
+ "ПЕСОК" to "Petits grains que l’on trouve souvent sur les plages.",
+ "ЅВЕЗДА" to "Corps céleste lumineux visible la nuit.",
+ "ДОЛИНА" to "Terrain bas situé entre des collines ou des montagnes.",
+ "РИД" to "Élévation du terrain moins haute qu’une montagne.",
+ "КАНЈОН" to "Vallée profonde et étroite aux parois rocheuses abruptes.",
+ "МОЛЊА" to "Puissant éclair électrique pendant un orage.",
+ "ВИНОЖИТО" to "Arc coloré dans le ciel qui apparaît après la pluie.",
+ "МАГЛА" to "Fines gouttelettes dans l’air qui réduisent la visibilité.",
+ "ИЗВОР" to "Endroit où l’eau sort naturellement du sol.",
+ "КРАЈБРЕЖЈЕ" to "Bande de terre située au bord de la mer ou d’un lac.",
+ "ПУСТИНА" to "Région sèche avec très peu de pluie et de végétation.",
+ "МОЧУРИШТЕ" to "Terrain humide avec de l’eau peu profonde et des plantes aquatiques.",
+ "ВОДЕНА ЛИЛЈАНА" to "Plante aquatique aux grandes feuilles flottantes.",
+ "КОРАЛЕН ГРЕБЕН" to "Structure sous-marine créée par les coraux.",
+ "ГРОМ" to "Bruit puissant entendu pendant un orage.",
+ "МРАЗ" to "Fine couche d’eau gelée sur une surface froide.",
+ "СЕНКА" to "Zone sombre créée lorsqu’un objet bloque la lumière.",
+ "ПРИЛИВ" to "Hausse du niveau de l’eau de mer.",
+ "СЕВЕРНА СВЕТЛИНА" to "Lueurs colorées dans le ciel des régions polaires."
+)
+private val englishNatureClues = mapOf(
+ "ПЛАНИНА" to "A high natural elevation of the land.",
+ "СОНЦЕ" to "The star that lights up Earth.",
+ "РЕКА" to "A natural flow of water moving through a channel.",
+ "ВОДОПАД" to "Water falling from a high cliff or ledge.",
+ "ЕЗЕРО" to "A large body of water surrounded by land.",
+ "ПЕШТЕРА" to "A natural hollow in rock or a mountain.",
+ "ВУЛКАН" to "A mountain that can erupt with lava.",
+ "ОСТРОВ" to "Land surrounded by water on all sides.",
+ "ШУМА" to "A large area covered with many trees.",
+ "ЦВЕТ" to "The colorful part of a plant, often with a scent.",
+ "ДРВО" to "A tall plant with a trunk and branches.",
+ "ОБЛАК" to "A white or gray mass of tiny droplets in the sky.",
+ "ДОЖД" to "Water falling from clouds.",
+ "СНЕГ" to "White ice crystals that fall in winter.",
+ "ВЕТЕР" to "The movement of air.",
+ "МОРЕ" to "A large body of salt water.",
+ "ПЕСОК" to "Tiny grains often found on beaches.",
+ "ЅВЕЗДА" to "A bright celestial body visible at night.",
+ "ДОЛИНА" to "Low land between hills or mountains.",
+ "РИД" to "A raised area of land lower than a mountain.",
+ "КАНЈОН" to "A deep, narrow valley with steep rocky sides.",
+ "МОЛЊА" to "A powerful flash of electricity during a storm.",
+ "ВИНОЖИТО" to "A colorful arc in the sky that appears after rain.",
+ "МАГЛА" to "Tiny water droplets in the air that reduce visibility.",
+ "ИЗВОР" to "A place where water naturally comes out of the ground.",
+ "КРАЈБРЕЖЈЕ" to "The strip of land along a sea or lake.",
+ "ПУСТИНА" to "A dry region with very little rain and few plants.",
+ "МОЧУРИШТЕ" to "Wet land with shallow water and aquatic plants.",
+ "ВОДЕНА ЛИЛЈАНА" to "An aquatic plant with large leaves floating on the surface.",
+ "КОРАЛЕН ГРЕБЕН" to "An underwater structure formed by corals.",
+ "ГРОМ" to "A loud sound heard during a thunderstorm.",
+ "МРАЗ" to "A thin layer of frozen water on a cold surface.",
+ "СЕНКА" to "A dark area made when something blocks light.",
+ "ПРИЛИВ" to "A rise in the level of sea water.",
+ "СЕВЕРНА СВЕТЛИНА" to "Colorful lights in the sky over polar regions."
+)
+private val albanianNatureClues = mapOf(
+ "ПЛАНИНА" to "Lartësi e madhe natyrore e tokës.",
+ "СОНЦЕ" to "Ylli që ndriçon Tokën.",
+ "РЕКА" to "Rrjedhë natyrore uji që kalon në shtratin e saj.",
+ "ВОДОПАД" to "Ujë që bie nga një shkëmb ose prag i lartë.",
+ "ЕЗЕРО" to "Sipërfaqe e madhe uji e rrethuar nga toka.",
+ "ПЕШТЕРА" to "Zgavër natyrore në shkëmb ose mal.",
+ "ВУЛКАН" to "Mal nga i cili mund të shpërthejë llavë.",
+ "ОСТРОВ" to "Tokë e rrethuar nga uji në të gjitha anët.",
+ "ШУМА" to "Sipërfaqe e madhe e mbuluar me shumë pemë.",
+ "ЦВЕТ" to "Pjesa me ngjyra e një bime, shpesh me aromë.",
+ "ДРВО" to "Bimë e lartë me trung dhe degë.",
+ "ОБЛАК" to "Masë e bardhë ose gri me pika të imëta uji në qiell.",
+ "ДОЖД" to "Ujë që bie nga retë.",
+ "СНЕГ" to "Kristale të bardha akulli që bien në dimër.",
+ "ВЕТЕР" to "Lëvizja e ajrit.",
+ "МОРЕ" to "Sipërfaqe e madhe me ujë të kripur.",
+ "ПЕСОК" to "Kokrriza të imëta që gjenden shpesh në plazh.",
+ "ЅВЕЗДА" to "Trup qiellor i ndritshëm që shihet natën.",
+ "ДОЛИНА" to "Terren i ulët midis kodrave ose maleve.",
+ "РИД" to "Pjesë e ngritur e tokës, më e ulët se mali.",
+ "КАНЈОН" to "Luginë e thellë dhe e ngushtë me anë të pjerrëta shkëmbore.",
+ "МОЛЊА" to "Shkëndijë e fuqishme elektrike gjatë stuhisë.",
+ "ВИНОЖИТО" to "Hark shumëngjyrësh në qiell që shfaqet pas shiut.",
+ "МАГЛА" to "Pika të imëta uji në ajër që ulin dukshmërinë.",
+ "ИЗВОР" to "Vend ku uji del natyrshëm nga toka.",
+ "КРАЈБРЕЖЈЕ" to "Rripi i tokës pranë detit ose liqenit.",
+ "ПУСТИНА" to "Rajon i thatë me shumë pak shi dhe bimësi.",
+ "МОЧУРИШТЕ" to "Tokë e lagësht me ujë të cekët dhe bimë ujore.",
+ "ВОДЕНА ЛИЛЈАНА" to "Bimë ujore me gjethe të mëdha që pluskojnë në sipërfaqe.",
+ "КОРАЛЕН ГРЕБЕН" to "Formacion nënujor i krijuar nga koralet.",
+ "ГРОМ" to "Tingull i fortë që dëgjohet gjatë stuhisë.",
+ "МРАЗ" to "Shtresë e hollë uji të ngrirë mbi një sipërfaqe të ftohtë.",
+ "СЕНКА" to "Zonë e errët që krijohet kur diçka bllokon dritën.",
+ "ПРИЛИВ" to "Ngritja e nivelit të ujit të detit.",
+ "СЕВЕРНА СВЕТЛИНА" to "Drita shumëngjyrëshe në qiellin e rajoneve polare."
+)
+
 private fun translatedPuzzleWord(word:String,lang:String):String =
  when(lang) { "fr" -> frenchAnimalWords[word] ?: frenchFoodWords[word] ?: frenchOtherWords[word] ?: word; "en" -> englishWords[word] ?: word; "sq" -> albanianWords[word] ?: word; else -> word }
 private fun translatedPuzzleClue(word:String,clue:String,lang:String):String =
  when(lang) {
-  "fr" -> frenchAnimalClues[word] ?: frenchFoodClues[word] ?: clue
-  "en" -> englishClues[word] ?: englishFoodClues[word] ?: clue
-  "sq" -> albanianClues[word] ?: albanianFoodClues[word] ?: clue
+  "fr" -> frenchAnimalClues[word] ?: frenchFoodClues[word] ?: frenchNatureClues[word] ?: clue
+  "en" -> englishClues[word] ?: englishFoodClues[word] ?: englishNatureClues[word] ?: clue
+  "sq" -> albanianClues[word] ?: albanianFoodClues[word] ?: albanianNatureClues[word] ?: clue
   else -> clue
  }
 private fun translatedCategory(title:String,lang:String):String {
