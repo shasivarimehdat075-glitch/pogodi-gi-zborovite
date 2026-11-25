@@ -342,6 +342,15 @@ class MainActivity:ComponentActivity(){
  }
  override fun onDestroy(){unregisterReceiver(downloadReceiver);super.onDestroy()}
 }
+class UpdateRestartReceiver:BroadcastReceiver() {
+ override fun onReceive(context:Context,intent:Intent) {
+  if(intent.action==Intent.ACTION_MY_PACKAGE_REPLACED) {
+   val launch=context.packageManager.getLaunchIntentForPackage(context.packageName) ?: return
+   launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+   try { context.startActivity(launch) } catch (_:Exception) {}
+  }
+ }
+}
 fun playGameSound(context:Context,tone:Int,enabled:Boolean,volume:Float=0.75f) {
  if(enabled && volume>0f) {
   try {
