@@ -650,13 +650,135 @@ private val albanianTransportClues = mapOf(
  "СНЕГОМОБИЛ" to "Mjet motorik i projektuar për të lëvizur mbi borë."
 )
 
+
+private val frenchSportClues = mapOf(
+ "ФУДБАЛ" to "Sport qui se joue avec un ballon et les pieds.",
+ "КОШАРКА" to "Sport où l’on lance un ballon dans un panier.",
+ "ПЛИВАЊЕ" to "Activité sportive pratiquée dans l’eau.",
+ "ОДБОЈКА" to "Sport où deux équipes font passer un ballon au-dessus d’un filet.",
+ "СКИЈАЊЕ" to "Sport d’hiver qui consiste à glisser sur la neige avec des skis.",
+ "ВЕЛОСИПЕДИЗАМ" to "Sport qui consiste à faire du vélo.",
+ "АТЛЕТИКА" to "Sport comprenant la course, le saut et le lancer.",
+ "ГИМНАСТИКА" to "Sport composé d’exercices de force, d’équilibre et de souplesse.",
+ "ТЕНИС" to "Sport joué avec une raquette et une balle au-dessus d’un filet.",
+ "БОКС" to "Sport de combat où l’on porte des coups avec des gants.",
+ "РАКОМЕТ" to "Sport collectif où l’on lance un ballon avec la main.",
+ "БЕЈЗБОЛ" to "Sport avec une batte, une balle et des bases.",
+ "ГОЛФ" to "Sport où l’on frappe une balle vers un trou avec un club.",
+ "КАРАТЕ" to "Art martial avec des coups et des blocages.",
+ "ЏУДО" to "Sport de combat avec des projections et des prises.",
+ "ЈАВАЊЕ" to "Activité sportive pratiquée à cheval.",
+ "КАЈАК" to "Sport de pagaie pratiqué dans une embarcation étroite.",
+ "КЛИЗГАЊЕ" to "Déplacement sur la glace avec des patins.",
+ "ПИНГ-ПОНГ" to "Jeu avec de petites raquettes et une balle sur une table.",
+ "КУГЛАЊЕ" to "Sport où l’on renverse des quilles avec une boule lourde.",
+ "СТРЕЛАШТВО" to "Sport qui consiste à atteindre une cible avec un arc ou une arme.",
+ "ФЕХТУВАЊЕ" to "Sport de combat avec des épées et un équipement de protection.",
+ "РЕГБИ" to "Sport collectif joué avec un ballon ovale.",
+ "КРИКЕТ" to "Sport collectif avec une batte et une balle, populaire dans de nombreux pays.",
+ "СНОУБОРД" to "Sport d’hiver pratiqué avec une seule planche sur la neige.",
+ "СУРФАЊЕ" to "Sport qui consiste à glisser sur les vagues avec une planche.",
+ "МАРАТОН" to "Course de longue distance de 42 kilomètres.",
+ "КАРЛИНГ" to "Sport d’équipe d’hiver où des pierres glissent sur la glace.",
+ "ФУТСАЛ" to "Variante du football jouée en salle avec une équipe réduite.",
+ "ВЕСЛАЊЕ" to "Sport où les athlètes propulsent un bateau avec des rames.",
+ "ТРИАТЛОН" to "Épreuve qui combine natation, cyclisme et course à pied.",
+ "ПАРКУР" to "Activité sportive qui consiste à franchir des obstacles en ville.",
+ "КАЧУВАЊЕ" to "Sport qui consiste à escalader des rochers ou des murs artificiels.",
+ "ДИГАЊЕ ТЕГОВИ" to "Sport où les participants soulèvent des poids lourds.",
+ "БОРЕЊЕ" to "Sport de combat où deux adversaires tentent de prendre le dessus.",
+ "БАДМИНТОН" to "Sport de raquette où l’on frappe un volant.",
+ "СЕПАКТАКРАВ" to "Sport collectif d’Asie du Sud-Est où l’on frappe un ballon avec les pieds.",
+ "СОФТБОЛ" to "Sport collectif proche du baseball, joué avec une balle plus grosse."
+)
+private val englishSportClues = mapOf(
+ "ФУДБАЛ" to "A sport played with a ball and the feet.",
+ "КОШАРКА" to "A sport in which players throw a ball into a basket.",
+ "ПЛИВАЊЕ" to "A sporting activity performed in water.",
+ "ОДБОЈКА" to "A sport where two teams hit a ball over a net.",
+ "СКИЈАЊЕ" to "A winter sport involving sliding over snow on skis.",
+ "ВЕЛОСИПЕДИЗАМ" to "The sport of riding bicycles.",
+ "АТЛЕТИКА" to "A sport involving running, jumping and throwing.",
+ "ГИМНАСТИКА" to "A sport involving strength, balance and flexibility exercises.",
+ "ТЕНИС" to "A sport played with a racket and ball over a net.",
+ "БОКС" to "A combat sport in which punches are thrown while wearing gloves.",
+ "РАКОМЕТ" to "A team sport in which players throw a ball by hand.",
+ "БЕЈЗБОЛ" to "A sport played with a bat, ball and bases.",
+ "ГОЛФ" to "A sport in which a club is used to hit a ball into a hole.",
+ "КАРАТЕ" to "A martial art involving strikes and blocks.",
+ "ЏУДО" to "A combat sport involving throws and holds.",
+ "ЈАВАЊЕ" to "A sporting activity performed on horseback.",
+ "КАЈАК" to "A paddling sport using a narrow boat.",
+ "КЛИЗГАЊЕ" to "Moving over ice using skates.",
+ "ПИНГ-ПОНГ" to "A game played with small bats and a ball on a table.",
+ "КУГЛАЊЕ" to "A sport in which a heavy ball knocks down pins.",
+ "СТРЕЛАШТВО" to "A sport in which a target is hit with a bow or weapon.",
+ "ФЕХТУВАЊЕ" to "A combat sport using swords and protective equipment.",
+ "РЕГБИ" to "A team sport played with an oval ball.",
+ "КРИКЕТ" to "A team sport played with a bat and ball, popular in many countries.",
+ "СНОУБОРД" to "A winter sport using one wide board on snow.",
+ "СУРФАЊЕ" to "A sport in which a board is ridden on waves.",
+ "МАРАТОН" to "A long-distance running race of 42 kilometres.",
+ "КАРЛИНГ" to "A winter team sport in which stones slide across ice.",
+ "ФУТСАЛ" to "A version of football played indoors with smaller teams.",
+ "ВЕСЛАЊЕ" to "A sport in which athletes move a boat using oars.",
+ "ТРИАТЛОН" to "A competition combining swimming, cycling and running.",
+ "ПАРКУР" to "A sport involving jumping over obstacles in an urban area.",
+ "КАЧУВАЊЕ" to "A sport involving climbing rocks or artificial walls.",
+ "ДИГАЊЕ ТЕГОВИ" to "A sport in which competitors lift heavy weights.",
+ "БОРЕЊЕ" to "A combat sport in which two competitors try to overpower each other.",
+ "БАДМИНТОН" to "A racket sport in which players hit a shuttlecock.",
+ "СЕПАКТАКРАВ" to "A Southeast Asian team sport in which a ball is kicked with the feet.",
+ "СОФТБОЛ" to "A team sport similar to baseball, played with a larger ball."
+)
+private val albanianSportClues = mapOf(
+ "ФУДБАЛ" to "Sport që luhet me top dhe këmbë.",
+ "КОШАРКА" to "Sport ku topi hidhet në kosh.",
+ "ПЛИВАЊЕ" to "Aktivitet sportiv që zhvillohet në ujë.",
+ "ОДБОЈКА" to "Sport ku dy ekipe kalojnë topin mbi rrjetë.",
+ "СКИЈАЊЕ" to "Sport dimëror ku rrëshqitet mbi borë me ski.",
+ "ВЕЛОСИПЕДИЗАМ" to "Sporti i ngasjes së biçikletës.",
+ "АТЛЕТИКА" to "Sport që përfshin vrapimin, kërcimin dhe hedhjen.",
+ "ГИМНАСТИКА" to "Sport me ushtrime për forcë, ekuilibër dhe fleksibilitet.",
+ "ТЕНИС" to "Sport që luhet me raketë dhe top mbi rrjetë.",
+ "БОКС" to "Sport luftarak ku goditet me doreza boksi.",
+ "РАКОМЕТ" to "Sport ekipor ku topi hidhet me dorë.",
+ "БЕЈЗБОЛ" to "Sport me shkop, top dhe baza.",
+ "ГОЛФ" to "Sport ku topi goditet me shkop drejt një vrime.",
+ "КАРАТЕ" to "Art luftarak me goditje dhe bllokime.",
+ "ЏУДО" to "Sport luftarak me hedhje dhe kapje.",
+ "ЈАВАЊЕ" to "Aktivitet sportiv mbi kalë.",
+ "КАЈАК" to "Sport me vozitje në një varkë të ngushtë.",
+ "КЛИЗГАЊЕ" to "Lëvizje mbi akull me patina.",
+ "ПИНГ-ПОНГ" to "Lojë me raketa të vogla dhe top mbi tavolinë.",
+ "КУГЛАЊЕ" to "Sport ku rrëzohen birilat me një top të rëndë.",
+ "СТРЕЛАШТВО" to "Sport ku goditet një shenjë me hark ose armë.",
+ "ФЕХТУВАЊЕ" to "Sport luftarak me shpata dhe pajisje mbrojtëse.",
+ "РЕГБИ" to "Sport ekipor që luhet me top oval.",
+ "КРИКЕТ" to "Sport ekipor me shkop dhe top, i përhapur në shumë vende.",
+ "СНОУБОРД" to "Sport dimëror me një dërrasë të gjerë mbi borë.",
+ "СУРФАЊЕ" to "Sport ku lëvizet mbi valë me dërrasë.",
+ "МАРАТОН" to "Garë vrapimi në distancë të gjatë prej 42 kilometrash.",
+ "КАРЛИНГ" to "Sport ekipor dimëror ku gurët rrëshqasin mbi akull.",
+ "ФУТСАЛ" to "Variant i futbollit që luhet në sallë me ekip më të vogël.",
+ "ВЕСЛАЊЕ" to "Sport ku atletët lëvizin varkën me lopata.",
+ "ТРИАТЛОН" to "Garë që bashkon notin, çiklizmin dhe vrapimin.",
+ "ПАРКУР" to "Aktivitet sportiv me kapërcim pengesash në mjedis urban.",
+ "КАЧУВАЊЕ" to "Sport ku ngjiten shkëmbinj ose mure artificiale.",
+ "ДИГАЊЕ ТЕГОВИ" to "Sport ku garuesit ngrenë pesha të rënda.",
+ "БОРЕЊЕ" to "Sport luftarak ku dy garues përpiqen të mposhtin njëri-tjetrin.",
+ "БАДМИНТОН" to "Sport me raketa ku goditet një puplë.",
+ "СЕПАКТАКРАВ" to "Sport ekipor i Azisë Juglindore ku topi goditet me këmbë.",
+ "СОФТБОЛ" to "Sport ekipor i ngjashëm me bejsbollin, me top më të madh."
+)
+
 private fun translatedPuzzleWord(word:String,lang:String):String =
  when(lang) { "fr" -> frenchAnimalWords[word] ?: frenchFoodWords[word] ?: frenchOtherWords[word] ?: word; "en" -> englishWords[word] ?: word; "sq" -> albanianWords[word] ?: word; else -> word }
 private fun translatedPuzzleClue(word:String,clue:String,lang:String):String =
  when(lang) {
-  "fr" -> frenchAnimalClues[word] ?: frenchFoodClues[word] ?: frenchNatureClues[word] ?: frenchTransportClues[word] ?: clue
-  "en" -> englishClues[word] ?: englishFoodClues[word] ?: englishNatureClues[word] ?: englishTransportClues[word] ?: clue
-  "sq" -> albanianClues[word] ?: albanianFoodClues[word] ?: albanianNatureClues[word] ?: albanianTransportClues[word] ?: clue
+  "fr" -> frenchAnimalClues[word] ?: frenchFoodClues[word] ?: frenchNatureClues[word] ?: frenchTransportClues[word] ?: frenchSportClues[word] ?: clue
+  "en" -> englishClues[word] ?: englishFoodClues[word] ?: englishNatureClues[word] ?: englishTransportClues[word] ?: englishSportClues[word] ?: clue
+  "sq" -> albanianClues[word] ?: albanianFoodClues[word] ?: albanianNatureClues[word] ?: albanianTransportClues[word] ?: albanianSportClues[word] ?: clue
   else -> clue
  }
 private fun translatedCategory(title:String,lang:String):String {
