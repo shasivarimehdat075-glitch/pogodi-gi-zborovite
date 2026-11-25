@@ -512,7 +512,7 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
     runCatching { track.release() }
    }
    backgroundMusic = null
-   (context as? Activity)?.finish()
+   (context as? Activity)?.finishAndRemoveTask()
   }) { Text("🚪 ИЗЛЕЗ ОД ИГРАТА", color=accent, fontWeight=FontWeight.Bold) }
  }
  Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
