@@ -444,24 +444,28 @@ private class OnlineHipHopRadio(context: Context) {
 
  private fun findStations(): List<String> {
   val hosts = listOf("https://de1.api.radio-browser.info", "https://de2.api.radio-browser.info", "https://nl1.api.radio-browser.info")
+  val tags = listOf("hiphop", "hip-hop", "rap")
   for (host in hosts) {
-   try {
-    val endpoint = URL("$host/json/stations/search?tag=hiphop&limit=60&hidebroken=true&order=clickcount&reverse=true")
-    val connection = endpoint.openConnection()
-    connection.setRequestProperty("User-Agent", "PogodiGiZborovite/2.1.7")
-    connection.connectTimeout = 10000
-    connection.readTimeout = 12000
-    val data = connection.getInputStream().bufferedReader().use { it.readText() }
-    val array = JSONArray(data)
-    val found = mutableListOf<String>()
-    for (i in 0 until array.length()) {
-     val station = array.optJSONObject(i) ?: continue
-     if (station.optInt("lastcheckok", 0) != 1) continue
-     val stream = station.optString("url_resolved").ifBlank { station.optString("url") }
-     if (stream.startsWith("https://") && !found.contains(stream)) found.add(stream)
-    }
-    if (found.isNotEmpty()) return found
-   } catch (_: Exception) {}
+   for (tag in tags) {
+    try {
+     val endpoint = URL("$host/json/stations/search?tag=$tag&is_https=true&hidebroken=true&limit=100&order=clickcount&reverse=true")
+     val connection = endpoint.openConnection()
+     connection.setRequestProperty("User-Agent", "PogodiGiZborovite-Android/2.1.8")
+     connection.connectTimeout = 10000
+     connection.readTimeout = 12000
+     val data = connection.getInputStream().bufferedReader().use { it.readText() }
+     val array = JSONArray(data)
+     val found = mutableListOf<String>()
+     for (i in 0 until array.length()) {
+      val station = array.optJSONObject(i) ?: continue
+      if (station.optInt("lastcheckok", 0) != 1) continue
+      if (station.optInt("hls", 0) == 1) continue
+      val stream = station.optString("url_resolved").ifBlank { station.optString("url") }
+      if (stream.startsWith("https://") && !found.contains(stream)) found.add(stream)
+     }
+     if (found.isNotEmpty()) return found
+    } catch (_: Exception) {}
+   }
   }
   return emptyList()
  }
