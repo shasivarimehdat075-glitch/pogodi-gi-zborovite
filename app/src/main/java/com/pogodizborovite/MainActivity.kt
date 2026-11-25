@@ -1,4 +1,5 @@
 package com.pogodizborovite
+import android.app.Activity
 import android.os.Bundle
 import android.content.Context
 import android.media.MediaPlayer
@@ -494,6 +495,9 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
  Column(Modifier.fillMaxSize().background(pageBackground).verticalScroll(rememberScrollState()).padding(18.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(14.dp)){
  Text("🧩 ПОГОДИ ГИ ЗБОРОВИТЕ",color=primaryText,fontSize=24.sp,fontWeight=FontWeight.ExtraBold,textAlign=TextAlign.Center)
  Text("Македонска игра со зборови",color=secondaryText)
+ Row(Modifier.fillMaxWidth(), horizontalArrangement=Arrangement.End) {
+  TextButton(onClick={(context as? Activity)?.finish()}) { Text("🚪 ИЗЛЕЗ ОД ИГРАТА", color=accent, fontWeight=FontWeight.Bold) }
+ }
  Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
   Text("ПОЕНИ: "+score,color=if(darkMode) Color(0xFFFFD782) else Color(0xFF9A6500),fontWeight=FontWeight.Bold)
   TextButton(onClick={soundEnabled=!soundEnabled;prefs.edit().putBoolean("sound_enabled",soundEnabled).apply()}){Text(if(soundEnabled) "🔊 ЗВУК ВКЛ." else "🔇 ЗВУК ИСКЛ.",color=accent)}
