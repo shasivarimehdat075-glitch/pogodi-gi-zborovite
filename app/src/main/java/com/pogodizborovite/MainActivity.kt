@@ -1616,7 +1616,7 @@ private fun startStation() {
  }
  Box(Modifier.fillMaxWidth()) {
   OutlinedButton(onClick={countryMenuExpanded=true},modifier=Modifier.fillMaxWidth()) {
-   Text("🌍 РАДИО ЗЕМЈА: $selectedRadioCountry  ▾",fontSize=13.sp)
+   Text("🌍 ${radioUiText(selectedLanguage,"country")}: ${radioCountryName(selectedRadioCode,selectedLanguage)}  ▾",fontSize=13.sp)
   }
   DropdownMenu(expanded=countryMenuExpanded,onDismissRequest={countryMenuExpanded=false}) {
    radioCountries.forEach { country ->
@@ -1625,21 +1625,6 @@ private fun startStation() {
      selectedRadioCode=country.code
      settings.edit().putString("radio_country_name",country.name).putString("radio_country_code",country.code).apply()
      countryMenuExpanded=false
-    })
-   }
-  }
- }
- Box(Modifier.fillMaxWidth()) {
-  OutlinedButton(onClick={genreMenuExpanded=true},modifier=Modifier.fillMaxWidth()) {
-   Text("🎵 МУЗИЧКА КАТЕГОРИЈА: $selectedRadioGenre  ▾",fontSize=13.sp)
-  }
-  DropdownMenu(expanded=genreMenuExpanded,onDismissRequest={genreMenuExpanded=false}) {
-   radioGenres.forEach { genre ->
-    DropdownMenuItem(text={Text(genre.name)},onClick={
-     selectedRadioGenre=genre.name
-     selectedRadioTag=genre.tag
-     settings.edit().putString("radio_genre_name",genre.name).putString("radio_genre_tag",genre.tag).apply()
-     genreMenuExpanded=false
     })
    }
   }
