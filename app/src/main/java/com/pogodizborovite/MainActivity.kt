@@ -420,10 +420,49 @@ private fun startBackgroundMusic(): AudioTrack {
  return track
 }
 
-private fun playGameSound(context: Context, soundRes: Int) {
- val player = MediaPlayer.create(context, soundRes) ?: return
- player.setOnCompletionListener { it.release() }
- player.start()
+private fun playGameSound(context: Context, soundType: String) {
+ val sampleRate = 22050
+ val notes = when (soundType) {
+  "correct" -> listOf(659.25, 830.61, 987.77, 1318.51)
+  "wrong" -> listOf(311.13, 233.08)
+  "hint" -> listOf(523.25, 659.25, 783.99)
+  else -> listOf(880.0, 1174.66)
+ }
+ val durations = when (soundType) {
+  "correct" -> listOf(0.09, 0.09, 0.11, 0.20)
+  "wrong" -> listOf(0.13, 0.19)
+  "hint" -> listOf(0.10, 0.10, 0.16)
+  else -> listOf(0.045, 0.055)
+ }
+ val pcm = ShortArray((durations.sum() * sampleRate).toInt())
+ var cursor = 0
+ for (n in notes.indices) {
+  val count = (durations[n] * sampleRate).toInt()
+  for (i in 0 until count) {
+   val t = i.toDouble() / sampleRate
+   val attack = (i / (sampleRate * 0.008)).coerceAtMost(1).toDouble()
+   val release = ((count - i) / (sampleRate * 0.035)).coerceAtMost(1).toDouble()
+   val envelope = attack * release
+   val fundamental = kotlin.math.sin(2.0 * Math.PI * notes[n] * t)
+   val harmonic = kotlin.math.sin(2.0 * Math.PI * notes[n] * 2.0 * t)
+   val tone = fundamental * 0.78 + harmonic * 0.22
+   pcm[cursor++] = (tone * envelope * 10500.0).toInt().coerceIn(-32768, 32767).toShort()
+  }
+ }
+ val track = AudioTrack.Builder()
+  .setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION).setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build())
+  .setAudioFormat(AudioFormat.Builder().setSampleRate(sampleRate).setEncoding(AudioFormat.ENCODING_PCM_16BIT).setChannelMask(AudioFormat.CHANNEL_OUT_MONO).build())
+  .setBufferSizeInBytes(pcm.size * 2)
+  .setTransferMode(AudioTrack.MODE_STATIC)
+  .build()
+ track.write(pcm, 0, pcm.size)
+ track.setVolume(0.72f)
+ track.setNotificationMarkerPosition(pcm.size)
+ track.setPlaybackPositionUpdateListener(object : AudioTrack.OnPlaybackPositionUpdateListener {
+  override fun onMarkerReached(player: AudioTrack) { player.release() }
+  override fun onPeriodicNotification(player: AudioTrack) {}
+ })
+ track.play()
 }
 class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:Bundle?){super.onCreate(savedInstanceState);setContent{GameScreen()}}}
 @Composable fun GameScreen(){
@@ -455,7 +494,7 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
  if(selected<0){
   Text("ИЗБЕРИ КАТЕГОРИЈА",color=Color.White,fontSize=20.sp,fontWeight=FontWeight.Bold)
   categories.forEachIndexed { i,cat ->
-   Card(onClick={if(soundEnabled) playGameSound(context,R.raw.tap);selected=i;level=0;answer="";solved=false;hint=false;message="Внеси го точниот збор!"},colors=CardDefaults.cardColors(containerColor=Color(0xFF24365F)),shape=RoundedCornerShape(18.dp),modifier=Modifier.fillMaxWidth()){
+   Card(onClick={if(soundEnabled) playGameSound(context, "tap");selected=i;level=0;answer="";solved=false;hint=false;message="Внеси го точниот збор!"},colors=CardDefaults.cardColors(containerColor=Color(0xFF24365F)),shape=RoundedCornerShape(18.dp),modifier=Modifier.fillMaxWidth()){
     Row(Modifier.padding(18.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(14.dp)){
      Text(cat.emoji,fontSize=32.sp)
      Column(Modifier.weight(1f)){Text(cat.title,color=Color.White,fontWeight=FontWeight.Bold,fontSize=18.sp);Text(cat.puzzles.size.toString()+" зборови со фотографии",color=Color(0xFFB8C8EA),fontSize=13.sp)}
@@ -486,8 +525,8 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
     Text(p.clue,color=Color.White,fontSize=17.sp,textAlign=TextAlign.Center)
     Text("БРОЈ НА БУКВИ: "+p.word.count { it != ' ' },color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
     OutlinedTextField(value=answer,onValueChange={answer=it.uppercase()},label={Text("Одговор: кирилица или латиница")},enabled=!solved,singleLine=true)
-    Button(onClick={if(normalizeAnswer(answer)==normalizeAnswer(p.word)){if(soundEnabled) playGameSound(context,R.raw.correct);score+=if(hint)5 else 10;solved=true;message="БРАВО! ТОЧЕН ОДГОВОР! 🎉"}else{if(soundEnabled) playGameSound(context,R.raw.wrong);message="Не е точно. Обиди се повторно!"}},enabled=!solved,modifier=Modifier.fillMaxWidth()){Text("ПРОВЕРИ")}
-    OutlinedButton(onClick={if(soundEnabled) playGameSound(context,R.raw.hint);hint=true;message="ПРВА БУКВА: "+p.word.first()},enabled=!solved&&!hint){Text("💡 ПОМОШ")}
+    Button(onClick={if(normalizeAnswer(answer)==normalizeAnswer(p.word)){if(soundEnabled) playGameSound(context, "correct");score+=if(hint)5 else 10;solved=true;message="БРАВО! ТОЧЕН ОДГОВОР! 🎉"}else{if(soundEnabled) playGameSound(context, "wrong");message="Не е точно. Обиди се повторно!"}},enabled=!solved,modifier=Modifier.fillMaxWidth()){Text("ПРОВЕРИ")}
+    OutlinedButton(onClick={if(soundEnabled) playGameSound(context, "hint");hint=true;message="ПРВА БУКВА: "+p.word.first()},enabled=!solved&&!hint){Text("💡 ПОМОШ")}
     Text(message,color=Color(0xFFFFD782),textAlign=TextAlign.Center)
     if(solved) Text("СЛЕДНОТО НИВО СЕ ОТВОРА АВТОМАТСКИ…",color=Color(0xFF8DE1D2),fontWeight=FontWeight.Bold,textAlign=TextAlign.Center)
    }
