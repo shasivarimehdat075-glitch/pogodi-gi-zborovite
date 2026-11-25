@@ -431,9 +431,9 @@ private class BackgroundMusicPlayer(private val volume:Float) {
  val gold=if(darkMode) Color(0xFFFFD782) else Color(0xFF805400)
  var selected by remember { mutableIntStateOf(-1) }; var level by remember { mutableIntStateOf(0) }
  var answer by remember { mutableStateOf("") }; var score by remember { mutableIntStateOf(settings.getInt("score",0)) }
- var solved by remember { mutableStateOf(false) }; var hint by remember { mutableStateOf(false) }
+ var solved by remember { mutableStateOf(false) }; var hint by remember { mutableStateOf(false) }; var wrongAttempts by remember { mutableIntStateOf(0) }
  var message by remember { mutableStateOf("Избери категорија за да започнеш!") }
- LaunchedEffect(solved) { if (solved && selected >= 0) { delay(900); val cat=categories[selected]; if (level+1 < cat.puzzles.size) { level++; message="Внеси го точниот збор!" } else { selected=-1; message="Категоријата е завршена! Браво! 🎉" }; answer=""; solved=false; hint=false } }
+ LaunchedEffect(solved) { if (solved && selected >= 0) { delay(900); val cat=categories[selected]; if (level+1 < cat.puzzles.size) { level++; message="Внеси го точниот збор!" } else { selected=-1; message="Категоријата е завршена! Браво! 🎉" }; answer=""; solved=false; hint=false; wrongAttempts=0 } }
  MaterialTheme(colorScheme=if(darkMode) darkColorScheme(primary=Color(0xFF8DE1D2)) else lightColorScheme(primary=Color(0xFF008F83))){
  Column(Modifier.fillMaxSize().background(pageBg).verticalScroll(rememberScrollState()).padding(18.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(14.dp)){
  Text("🧩 ПОГОДИ ГИ ЗБОРОВИТЕ",color=mainText,fontSize=24.sp,fontWeight=FontWeight.ExtraBold,textAlign=TextAlign.Center)
@@ -473,7 +473,7 @@ private class BackgroundMusicPlayer(private val volume:Float) {
  if(selected<0){
   Text("ИЗБЕРИ КАТЕГОРИЈА",color=mainText,fontSize=20.sp,fontWeight=FontWeight.Bold)
   categories.forEachIndexed { i,cat ->
-   Card(onClick={selected=i;level=0;answer="";solved=false;hint=false;message="Внеси го точниот збор!";play(ToneGenerator.TONE_PROP_BEEP)},colors=CardDefaults.cardColors(containerColor=panel),shape=RoundedCornerShape(18.dp),modifier=Modifier.fillMaxWidth()){
+   Card(onClick={selected=i;level=0;answer="";solved=false;hint=false;wrongAttempts=0;message="Внеси го точниот збор!";play(ToneGenerator.TONE_PROP_BEEP)},colors=CardDefaults.cardColors(containerColor=panel),shape=RoundedCornerShape(18.dp),modifier=Modifier.fillMaxWidth()){
     Row(Modifier.padding(18.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(14.dp)){
      Text(cat.emoji,fontSize=32.sp)
      Column(Modifier.weight(1f)){Text(cat.title,color=mainText,fontWeight=FontWeight.Bold,fontSize=18.sp);Text(cat.puzzles.size.toString()+" зборови со фотографии",color=secondaryText,fontSize=13.sp)}
@@ -495,7 +495,7 @@ private class BackgroundMusicPlayer(private val volume:Float) {
     Text(p.clue,color=mainText,fontSize=17.sp,textAlign=TextAlign.Center)
     Text("БРОЈ НА БУКВИ: "+p.word.length,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
     OutlinedTextField(value=answer,onValueChange={answer=it.uppercase()},label={Text("Одговор: кирилица или латиница")},enabled=!solved,singleLine=true)
-    Button(onClick={if(normalizeAnswer(answer)==normalizeAnswer(p.word)){score+=if(hint)5 else 10;settings.edit().putInt("score",score).apply();solved=true;message="БРАВО! ТОЧЕН ОДГОВОР! 🎉";play(ToneGenerator.TONE_PROP_ACK)}else{message="Не е точно. Обиди се повторно!";play(ToneGenerator.TONE_PROP_NACK)}},enabled=!solved,modifier=Modifier.fillMaxWidth()){Text("ПРОВЕРИ")}
+    Button(onClick={if(normalizeAnswer(answer)==normalizeAnswer(p.word)){score+=if(hint)5 else 10;settings.edit().putInt("score",score).apply();solved=true;message="БРАВО! ТОЧЕН ОДГОВОР! 🎉";play(ToneGenerator.TONE_PROP_ACK)}else{wrongAttempts++;if(wrongAttempts>=3){score=(score-2).coerceAtLeast(0);settings.edit().putInt("score",score).apply();message="3 ПОГРЕШНИ ОБИДИ! -2 ПОЕНИ. Следното прашање…";solved=true}else{message="Не е точно. Обиди се повторно! ${wrongAttempts}/3"};play(ToneGenerator.TONE_PROP_NACK)}},enabled=!solved,modifier=Modifier.fillMaxWidth()){Text("ПРОВЕРИ")}
     OutlinedButton(onClick={hint=true;message="ПРВА БУКВА: "+p.word.first();play(ToneGenerator.TONE_PROP_BEEP)},enabled=!solved&&!hint){Text("💡 ПОМОШ")}
     Text(message,color=Color(0xFFFFD782),textAlign=TextAlign.Center)
     if(solved) Text("СЛЕДНОТО НИВО СЕ ОТВОРА АВТОМАТСКИ…",color=Color(0xFF8DE1D2),fontWeight=FontWeight.Bold,textAlign=TextAlign.Center)
