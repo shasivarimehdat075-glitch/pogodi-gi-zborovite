@@ -440,7 +440,7 @@ private fun playGameSound(context: Context, soundType: String, volume: Float) {
   val count = (durations[n] * sampleRate).toInt()
   for (i in 0 until count) {
    val t = i.toDouble() / sampleRate
-   val attack = (i / (sampleRate * 0.008)).coerceAtMost(1.0)
+   val attack = (i.toDouble() / (sampleRate * 0.008)).coerceAtMost(1.0)
    val release = ((count - i) / (sampleRate * 0.035)).coerceAtMost(1).toDouble()
    val envelope = attack * release
    val fundamental = kotlin.math.sin(2.0 * Math.PI * notes[n] * t)
