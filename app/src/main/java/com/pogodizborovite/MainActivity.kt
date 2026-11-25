@@ -772,13 +772,135 @@ private val albanianSportClues = mapOf(
  "СОФТБОЛ" to "Sport ekipor i ngjashëm me bejsbollin, me top më të madh."
 )
 
+
+private val frenchPlaceClues = mapOf(
+ "УЧИЛИШТЕ" to "Lieu où les enfants apprennent.",
+ "БИБЛИОТЕКА" to "Lieu où l’on emprunte des livres.",
+ "БОЛНИЦА" to "Lieu où les médecins soignent les personnes malades.",
+ "ТЕАТАР" to "Bâtiment où des spectacles sont présentés.",
+ "СТАДИОН" to "Grand espace où se déroulent des compétitions sportives.",
+ "АЕРОДРОМ" to "Lieu où les avions décollent et atterrissent.",
+ "ЖЕЛЕЗНИЧКА СТАНИЦА" to "Lieu où les trains s’arrêtent et partent.",
+ "ПАЗАР" to "Lieu où l’on achète des aliments frais et d’autres produits.",
+ "МУЗЕЈ" to "Lieu où sont exposés des objets historiques et artistiques.",
+ "ПЛАЖА" to "Lieu au bord de la mer ou d’un lac, avec du sable ou des galets.",
+ "ЦРКВА" to "Édifice religieux où se déroulent des cérémonies chrétiennes.",
+ "ЏАМИЈА" to "Édifice religieux où les musulmans prient.",
+ "РЕСТОРАН" to "Lieu où l’on prépare et sert des repas.",
+ "ХОТЕЛ" to "Lieu où les voyageurs séjournent et dorment.",
+ "БАНКА" to "Lieu où l’argent est conservé et géré.",
+ "ПОШТА" to "Lieu où l’on envoie des lettres et des colis.",
+ "ПАРК" to "Espace vert public pour se promener et se reposer.",
+ "ФАРМА" to "Lieu où l’on élève des animaux ou cultive des plantes.",
+ "БЕНЗИНСКА ПУМПА" to "Lieu où les véhicules font le plein de carburant.",
+ "АПТЕКА" to "Lieu où l’on achète des médicaments et des produits médicaux.",
+ "ПЕКАРНИЦА" to "Magasin où l’on vend du pain frais et des viennoiseries.",
+ "СУПЕРМАРКЕТ" to "Grand magasin qui vend de la nourriture et des produits courants.",
+ "ПОЖАРНА СТАНИЦА" to "Lieu d’où les pompiers partent en intervention.",
+ "ПОЛИЦИСКА СТАНИЦА" to "Lieu où travaille la police.",
+ "ГРАДИНКА" to "Lieu où les jeunes enfants sont accueillis et apprennent.",
+ "АВТОБУСКА СТАНИЦА" to "Lieu où les autobus arrivent et partent.",
+ "ЗООЛОШКА ГРАДИНА" to "Lieu où les visiteurs observent différents animaux.",
+ "БАЗЕН" to "Lieu rempli d’eau où l’on peut nager.",
+ "ОПШТИНА" to "Institution publique qui gère les affaires locales d’une commune.",
+ "СУД" to "Institution où les juges tranchent les litiges juridiques.",
+ "ЗАТВОР" to "Établissement où sont détenues les personnes condamnées à la prison.",
+ "УНИВЕРЗИТЕТ" to "Établissement d’enseignement supérieur où l’on fait des études.",
+ "ЛАБОРАТОРИЈА" to "Pièce où sont menées des recherches et des expériences scientifiques.",
+ "ОПЕРСКА КУЌА" to "Bâtiment où sont présentés des spectacles d’opéra.",
+ "КИНО" to "Lieu où l’on projette des films sur grand écran.",
+ "ЗАБАВЕН ПАРК" to "Lieu avec des attractions, des manèges et des toboggans.",
+ "ПРИСТАНИШТЕ" to "Lieu au bord de l’eau où les bateaux accostent.",
+ "СВЕТИЛНИК" to "Tour élevée au bord de la mer qui aide les navires à s’orienter."
+)
+private val englishPlaceClues = mapOf(
+ "УЧИЛИШТЕ" to "A place where children learn.",
+ "БИБЛИОТЕКА" to "A place where people borrow books.",
+ "БОЛНИЦА" to "A place where doctors treat sick people.",
+ "ТЕАТАР" to "A building where performances are held.",
+ "СТАДИОН" to "A large place where sports competitions take place.",
+ "АЕРОДРОМ" to "A place where planes take off and land.",
+ "ЖЕЛЕЗНИЧКА СТАНИЦА" to "A place where trains stop and depart.",
+ "ПАЗАР" to "A place where people buy fresh food and other products.",
+ "МУЗЕЈ" to "A place where historical and artistic objects are displayed.",
+ "ПЛАЖА" to "A place by the sea or a lake with sand or pebbles.",
+ "ЦРКВА" to "A religious building where Christian services are held.",
+ "ЏАМИЈА" to "A religious building where Muslims pray.",
+ "РЕСТОРАН" to "A place where food is prepared and served.",
+ "ХОТЕЛ" to "A place where travellers stay and sleep.",
+ "БАНКА" to "A place where money is kept and managed.",
+ "ПОШТА" to "A place where letters and parcels are sent.",
+ "ПАРК" to "A public green space for walking and relaxing.",
+ "ФАРМА" to "A place where animals or plants are raised.",
+ "БЕНЗИНСКА ПУМПА" to "A place where vehicles refuel.",
+ "АПТЕКА" to "A place where medicines and medical products are sold.",
+ "ПЕКАРНИЦА" to "A shop where fresh bread and pastries are sold.",
+ "СУПЕРМАРКЕТ" to "A large shop selling food and everyday products.",
+ "ПОЖАРНА СТАНИЦА" to "A place from which firefighters respond to emergencies.",
+ "ПОЛИЦИСКА СТАНИЦА" to "A place where the police work.",
+ "ГРАДИНКА" to "A place where young children are cared for and learn.",
+ "АВТОБУСКА СТАНИЦА" to "A place where buses arrive and depart.",
+ "ЗООЛОШКА ГРАДИНА" to "A place where visitors can see different animals.",
+ "БАЗЕН" to "A place filled with water for swimming.",
+ "ОПШТИНА" to "A public institution that manages local municipal affairs.",
+ "СУД" to "An institution where judges settle legal disputes.",
+ "ЗАТВОР" to "A facility where people sentenced to prison are held.",
+ "УНИВЕРЗИТЕТ" to "A higher education institution where people study.",
+ "ЛАБОРАТОРИЈА" to "A room where scientific research and experiments are carried out.",
+ "ОПЕРСКА КУЌА" to "A building where opera performances are held.",
+ "КИНО" to "A place where films are shown on a big screen.",
+ "ЗАБАВЕН ПАРК" to "A place with rides, attractions and slides.",
+ "ПРИСТАНИШТЕ" to "A place by the water where ships dock.",
+ "СВЕТИЛНИК" to "A tall tower by the sea that helps ships navigate."
+)
+private val albanianPlaceClues = mapOf(
+ "УЧИЛИШТЕ" to "Vend ku fëmijët mësojnë.",
+ "БИБЛИОТЕКА" to "Vend ku njerëzit marrin libra hua.",
+ "БОЛНИЦА" to "Vend ku mjekët trajtojnë njerëzit e sëmurë.",
+ "ТЕАТАР" to "Ndërtesë ku zhvillohen shfaqje.",
+ "СТАДИОН" to "Hapësirë e madhe ku zhvillohen gara sportive.",
+ "АЕРОДРОМ" to "Vend ku avionët ngrihen dhe ulen.",
+ "ЖЕЛЕЗНИЧКА СТАНИЦА" to "Vend ku trenat ndalojnë dhe nisen.",
+ "ПАЗАР" to "Vend ku njerëzit blejnë ushqime të freskëta dhe produkte të tjera.",
+ "МУЗЕЈ" to "Vend ku ekspozohen objekte historike dhe artistike.",
+ "ПЛАЖА" to "Vend pranë detit ose liqenit me rërë ose gurë të vegjël.",
+ "ЦРКВА" to "Ndërtesë fetare ku mbahen shërbesat e krishtera.",
+ "ЏАМИЈА" to "Ndërtesë fetare ku falen myslimanët.",
+ "РЕСТОРАН" to "Vend ku përgatitet dhe shërbehet ushqimi.",
+ "ХОТЕЛ" to "Vend ku udhëtarët qëndrojnë dhe flenë.",
+ "БАНКА" to "Vend ku ruhen dhe administrohen paratë.",
+ "ПОШТА" to "Vend ku dërgohen letra dhe pako.",
+ "ПАРК" to "Hapësirë publike e gjelbër për shëtitje dhe pushim.",
+ "ФАРМА" to "Vend ku rriten kafshë ose bimë.",
+ "БЕНЗИНСКА ПУМПА" to "Vend ku automjetet mbushen me karburant.",
+ "АПТЕКА" to "Vend ku shiten ilaçe dhe produkte mjekësore.",
+ "ПЕКАРНИЦА" to "Dyqan ku shitet bukë e freskët dhe produkte furre.",
+ "СУПЕРМАРКЕТ" to "Dyqan i madh që shet ushqime dhe produkte të përditshme.",
+ "ПОЖАРНА СТАНИЦА" to "Vend nga ku zjarrfikësit nisen për ndërhyrje.",
+ "ПОЛИЦИСКА СТАНИЦА" to "Vend ku punon policia.",
+ "ГРАДИНКА" to "Vend ku kujdesen dhe mësojnë fëmijët e vegjël.",
+ "АВТОБУСКА СТАНИЦА" to "Vend ku mbërrijnë dhe nisen autobusët.",
+ "ЗООЛОШКА ГРАДИНА" to "Vend ku vizitorët shohin kafshë të ndryshme.",
+ "БАЗЕН" to "Vend i mbushur me ujë për not.",
+ "ОПШТИНА" to "Institucion publik që organizon çështjet lokale të një komune.",
+ "СУД" to "Institucion ku gjyqtarët zgjidhin mosmarrëveshjet ligjore.",
+ "ЗАТВОР" to "Institucion ku mbahen personat e dënuar me burg.",
+ "УНИВЕРЗИТЕТ" to "Institucion i arsimit të lartë ku studiohet.",
+ "ЛАБОРАТОРИЈА" to "Dhoma ku kryhen kërkime dhe eksperimente shkencore.",
+ "ОПЕРСКА КУЌА" to "Ndërtesë ku shfaqen opera.",
+ "КИНО" to "Vend ku shfaqen filma në ekran të madh.",
+ "ЗАБАВЕН ПАРК" to "Vend me atraksione, lodra rrotulluese dhe rrëshqitëse.",
+ "ПРИСТАНИШТЕ" to "Vend pranë ujit ku ankorohen anijet.",
+ "СВЕТИЛНИК" to "Kullë e lartë pranë detit që ndihmon anijet të orientohen."
+)
+
 private fun translatedPuzzleWord(word:String,lang:String):String =
  when(lang) { "fr" -> frenchAnimalWords[word] ?: frenchFoodWords[word] ?: frenchOtherWords[word] ?: word; "en" -> englishWords[word] ?: word; "sq" -> albanianWords[word] ?: word; else -> word }
 private fun translatedPuzzleClue(word:String,clue:String,lang:String):String =
  when(lang) {
-  "fr" -> frenchAnimalClues[word] ?: frenchFoodClues[word] ?: frenchNatureClues[word] ?: frenchTransportClues[word] ?: frenchSportClues[word] ?: clue
-  "en" -> englishClues[word] ?: englishFoodClues[word] ?: englishNatureClues[word] ?: englishTransportClues[word] ?: englishSportClues[word] ?: clue
-  "sq" -> albanianClues[word] ?: albanianFoodClues[word] ?: albanianNatureClues[word] ?: albanianTransportClues[word] ?: albanianSportClues[word] ?: clue
+  "fr" -> frenchAnimalClues[word] ?: frenchFoodClues[word] ?: frenchNatureClues[word] ?: frenchTransportClues[word] ?: frenchSportClues[word] ?: frenchPlaceClues[word] ?: clue
+  "en" -> englishClues[word] ?: englishFoodClues[word] ?: englishNatureClues[word] ?: englishTransportClues[word] ?: englishSportClues[word] ?: englishPlaceClues[word] ?: clue
+  "sq" -> albanianClues[word] ?: albanianFoodClues[word] ?: albanianNatureClues[word] ?: albanianTransportClues[word] ?: albanianSportClues[word] ?: albanianPlaceClues[word] ?: clue
   else -> clue
  }
 private fun translatedCategory(title:String,lang:String):String {
