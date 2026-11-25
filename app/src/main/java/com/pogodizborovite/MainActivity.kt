@@ -290,7 +290,7 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
  Text("Македонска игра со зборови",color=Color(0xFFB8C8EA))
  Text("ПОЕНИ: "+score,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
  Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(10.dp)) {
-  OutlinedButton(onClick={context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse("https://github.com/shasivarimehdat075-glitch/pogodi-gi-zborovite/actions")))},modifier=Modifier.weight(1f)){Text("🔄 МИЗУРАЊЕ")}
+  OutlinedButton(onClick={context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse("https://github.com/shasivarimehdat075-glitch/pogodi-gi-zborovite/actions")))},modifier=Modifier.weight(1f)){Text("🔄 АЖУРИРАЊЕ")}
   OutlinedButton(onClick={showExitDialog=true},modifier=Modifier.weight(1f)){Text("🚪 ИЗЛЕЗ")}
  }
  if(selected<0){
