@@ -455,7 +455,6 @@ class OnlineHipHopRadio(context: Context, private val onState:(String,String,Boo
   stations = emptyList()
   currentIndex = -1
   stopCurrent()
-  play()
  }
 
  fun play() {
@@ -606,7 +605,10 @@ class OnlineHipHopRadio(context: Context, private val onState:(String,String,Boo
   radioName=name; radioStatus=status; radioPlaying=playing
  } }
  BackHandler { onlineRadio.stop(); onExit() }
- LaunchedEffect(selectedRadioCode) { onlineRadio.setCountry(selectedRadioCountry,selectedRadioCode) }
+ LaunchedEffect(selectedRadioCode) {
+  onlineRadio.setCountry(selectedRadioCountry,selectedRadioCode)
+  if (musicOn && musicVolume > 0f && lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) onlineRadio.play()
+ }
  DisposableEffect(lifecycleOwner,onlineRadio) {
   val observer = LifecycleEventObserver { _, event ->
    if (event == Lifecycle.Event.ON_STOP) onlineRadio.stop()
