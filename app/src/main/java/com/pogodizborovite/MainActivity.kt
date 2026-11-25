@@ -342,8 +342,18 @@ class MainActivity:ComponentActivity(){
  }
  override fun onDestroy(){unregisterReceiver(downloadReceiver);super.onDestroy()}
 }
-fun playGameSound(context:Context,tone:Int,enabled:Boolean) { if(enabled) { try { val g=ToneGenerator(AudioManager.STREAM_MUSIC,75); g.startTone(tone,170); android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({g.release()},230) } catch (_:Exception) {} } }
-private class BackgroundMusicPlayer {
+fun playGameSound(context:Context,tone:Int,enabled:Boolean,volume:Float=0.75f) {
+ if(enabled && volume>0f) {
+  try {
+   val level=(volume.coerceIn(0f,1f)*100).toInt().coerceIn(1,100)
+   val g=ToneGenerator(AudioManager.STREAM_MUSIC,level)
+   val duration=if(tone==ToneGenerator.TONE_PROP_ACK) 300 else if(tone==ToneGenerator.TONE_PROP_NACK) 360 else 110
+   g.startTone(tone,duration)
+   android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({g.release()},duration.toLong()+80)
+  } catch (_:Exception) {}
+ }
+}
+private class BackgroundMusicPlayer(private val volume:Float) {
  @Volatile private var running = false
  private var track: AudioTrack? = null
  private var worker: Thread? = null
@@ -354,7 +364,7 @@ private class BackgroundMusicPlayer {
   val attributes = AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()
   val size = maxOf(AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT), 4096)
   val audio = AudioTrack.Builder().setAudioAttributes(attributes).setAudioFormat(format).setBufferSizeInBytes(size).setTransferMode(AudioTrack.MODE_STREAM).build()
-  audio.setVolume(0.13f)
+  audio.setVolume(volume.coerceIn(0f,1f))
   audio.play()
   track = audio
   running = true
@@ -401,8 +411,10 @@ private class BackgroundMusicPlayer {
  var darkMode by remember { mutableStateOf(settings.getBoolean("dark_mode",true)) }
  var soundsOn by remember { mutableStateOf(settings.getBoolean("sounds_on",true)) }
  var musicOn by remember { mutableStateOf(settings.getBoolean("music_on",true)) }
- LaunchedEffect(musicOn) { if (musicOn) { val music = BackgroundMusicPlayer(); music.start(); try { awaitCancellation() } finally { music.stop() } } }
- fun play(tone:Int) { playGameSound(context,tone,soundsOn) }
+ var musicVolume by remember { mutableFloatStateOf(settings.getFloat("music_volume",0.13f)) }
+ var soundVolume by remember { mutableFloatStateOf(settings.getFloat("sound_volume",0.75f)) }
+ LaunchedEffect(musicOn,musicVolume) { if (musicOn && musicVolume>0f) { val music = BackgroundMusicPlayer(musicVolume); music.start(); try { awaitCancellation() } finally { music.stop() } } }
+ fun play(tone:Int) { playGameSound(context,tone,soundsOn,soundVolume) }
  val pageBg=if(darkMode) Color(0xFF101B3D) else Color(0xFFF3F6FC)
  val panel=if(darkMode) Color(0xFF24365F) else Color.White
  val mainText=if(darkMode) Color.White else Color(0xFF17233D)
@@ -487,8 +499,12 @@ private class BackgroundMusicPlayer {
   AlertDialog(onDismissRequest={showSettings=false},title={Text("⚙ ПАРАМЕТРИ")},text={Column {
    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text("Темна тема / Светла тема");Switch(checked=darkMode,onCheckedChange={darkMode=it;settings.edit().putBoolean("dark_mode",it).apply()})}
    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text("Музика во позадина");Switch(checked=musicOn,onCheckedChange={musicOn=it;settings.edit().putBoolean("music_on",it).apply()})}
-   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text("Звуци во играта");Switch(checked=soundsOn,onCheckedChange={soundsOn=it;settings.edit().putBoolean("sounds_on",it).apply();if(it)playGameSound(context,ToneGenerator.TONE_PROP_ACK,true)})}
-   Text("Тивка музика во позадина и посебни звучни ефекти за играта.",fontSize=13.sp)
+   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text("Звуци во играта");Switch(checked=soundsOn,onCheckedChange={soundsOn=it;settings.edit().putBoolean("sounds_on",it).apply();if(it)playGameSound(context,ToneGenerator.TONE_PROP_ACK,true,soundVolume)})}
+   Text("Јачина на музиката: ${(musicVolume*100).toInt()}%",fontSize=13.sp)
+   Slider(value=musicVolume,onValueChange={musicVolume=it;settings.edit().putFloat("music_volume",it).apply()},valueRange=0f..0.5f)
+   Text("Јачина на звучните ефекти: ${(soundVolume*100).toInt()}%",fontSize=13.sp)
+   Slider(value=soundVolume,onValueChange={soundVolume=it;settings.edit().putFloat("sound_volume",it).apply()},valueRange=0f..1f)
+   Text("Можеш одделно да ја намалиш или зголемиш музиката и звуците.",fontSize=13.sp)
   }},confirmButton={TextButton(onClick={showSettings=false}){Text("ГОТОВО")}})
  }
  if(showExitDialog) {
