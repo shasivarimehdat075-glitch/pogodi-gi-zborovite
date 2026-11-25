@@ -2,6 +2,9 @@ package com.pogodizborovite
 import android.os.Bundle
 import android.content.Context
 import android.media.MediaPlayer
+import android.media.AudioAttributes
+import android.media.AudioFormat
+import android.media.AudioTrack
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -353,6 +356,44 @@ fun normalizeAnswer(value:String):String {
  s=s.map { latin[it] ?: it }.joinToString("")
  return s.uppercase(Locale.ROOT).filter { it.isLetter() }
 }
+
+private fun startBackgroundMusic(): AudioTrack {
+ val sampleRate = 22050
+ val seconds = 12
+ val total = sampleRate * seconds
+ val pcm = ShortArray(total)
+ val notes = listOf(
+  Triple(261.63, 0.0, 2.8), Triple(329.63, 0.0, 2.8), Triple(392.00, 0.0, 2.8),
+  Triple(293.66, 3.0, 2.8), Triple(369.99, 3.0, 2.8), Triple(440.00, 3.0, 2.8),
+  Triple(220.00, 6.0, 2.8), Triple(261.63, 6.0, 2.8), Triple(329.63, 6.0, 2.8),
+  Triple(246.94, 9.0, 2.8), Triple(293.66, 9.0, 2.8), Triple(369.99, 9.0, 2.8)
+ )
+ for (i in 0 until total) {
+  val t = i.toDouble() / sampleRate
+  var value = 0.0
+  for ((frequency, start, length) in notes) {
+   val local = t - start
+   if (local >= 0.0 && local < length) {
+    val envelope = (1.0 - kotlin.math.exp(-local * 3.0)) * kotlin.math.exp(-local * 0.8)
+    value += 0.13 * envelope * (kotlin.math.sin(2.0 * Math.PI * frequency * local) + 0.18 * kotlin.math.sin(4.0 * Math.PI * frequency * local))
+   }
+  }
+  val edge = minOf(1.0, t / 0.5, (seconds - t) / 0.5).coerceAtLeast(0.0)
+  pcm[i] = (value * edge * 32767.0).toInt().coerceIn(-32768, 32767).toShort()
+ }
+ val track = AudioTrack.Builder()
+  .setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
+  .setAudioFormat(AudioFormat.Builder().setSampleRate(sampleRate).setEncoding(AudioFormat.ENCODING_PCM_16BIT).setChannelMask(AudioFormat.CHANNEL_OUT_MONO).build())
+  .setBufferSizeInBytes(pcm.size * 2)
+  .setTransferMode(AudioTrack.MODE_STATIC)
+  .build()
+ track.write(pcm, 0, pcm.size)
+ track.setLoopPoints(0, pcm.size, -1)
+ track.setVolume(0.10f)
+ track.play()
+ return track
+}
+
 private fun playGameSound(context: Context, soundRes: Int) {
  val player = MediaPlayer.create(context, soundRes) ?: return
  player.setOnCompletionListener { it.release() }
@@ -367,6 +408,10 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
  var answer by remember { mutableStateOf("") }
  var score by remember { mutableIntStateOf(prefs.getInt("score", 0)) }
  var soundEnabled by remember { mutableStateOf(prefs.getBoolean("sound_enabled", true)) }
+ DisposableEffect(soundEnabled) {
+  val music = if (soundEnabled) startBackgroundMusic() else null
+  onDispose { music?.pause(); music?.release() }
+ }
  LaunchedEffect(selected, level, score) {
   prefs.edit().putInt("selected", selected).putInt("level", level).putInt("score", score).apply()
  }
