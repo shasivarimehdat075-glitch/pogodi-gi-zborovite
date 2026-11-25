@@ -82,6 +82,51 @@ private fun uiText(key:String,lang:String):String {
 }
 
 
+
+private fun extraText(key:String,lang:String):String {
+ val en=mapOf(
+  "words_photos" to "words with pictures","level" to "LEVEL","update" to "UPDATE","checking" to "Checking for updates…",
+  "no_release" to "No version published yet.","latest" to "You already have the latest version","found" to "New version found. Downloading…",
+  "failed" to "Unable to check. Check your internet connection and try again.","correct" to "BRAVO! CORRECT ANSWER! 🎉",
+  "ten_correct" to "🎵 correct answers! TIME FOR MUSIC!","wrong" to "Not correct. Try again!","wrong_final" to "3 WRONG ATTEMPTS! -2 POINTS. Next question…",
+  "first_letter" to "FIRST LETTER: ","next_level" to "THE NEXT LEVEL OPENS AUTOMATICALLY…","dark_light" to "Dark theme / Light theme",
+  "background_music" to "Background music","game_sounds" to "Game sounds","music_volume" to "Music volume: ",
+  "effects_volume" to "Sound effects volume: ","volume_help" to "You can adjust the music and sound effects separately.",
+  "exit_title" to "Exit the game?","exit_confirm" to "Are you sure you want to close the app?","enter_word" to "Enter the correct word!"
+ )
+ val fr=mapOf(
+  "words_photos" to "mots illustrés","level" to "NIVEAU","update" to "MISE À JOUR","checking" to "Recherche de mises à jour…",
+  "no_release" to "Aucune version publiée pour le moment.","latest" to "Tu as déjà la dernière version","found" to "Nouvelle version trouvée. Téléchargement…",
+  "failed" to "Vérification impossible. Vérifie ta connexion Internet et réessaie.","correct" to "BRAVO ! BONNE RÉPONSE ! 🎉",
+  "ten_correct" to "🎵 bonnes réponses ! PLACE À LA MUSIQUE !","wrong" to "Ce n’est pas correct. Réessaie !","wrong_final" to "3 ERREURS ! -2 POINTS. Question suivante…",
+  "first_letter" to "PREMIÈRE LETTRE : ","next_level" to "LE NIVEAU SUIVANT S’OUVRE AUTOMATIQUEMENT…","dark_light" to "Thème sombre / Thème clair",
+  "background_music" to "Musique de fond","game_sounds" to "Sons du jeu","music_volume" to "Volume de la musique : ",
+  "effects_volume" to "Volume des effets sonores : ","volume_help" to "Tu peux régler séparément la musique et les effets sonores.",
+  "exit_title" to "Quitter le jeu ?","exit_confirm" to "Veux-tu vraiment fermer l’application ?","enter_word" to "Trouve le bon mot !"
+ )
+ val sq=mapOf(
+  "words_photos" to "fjalë me fotografi","level" to "NIVELI","update" to "PËRDITËSO","checking" to "Po kontrollohen përditësimet…",
+  "no_release" to "Nuk ka ende version të publikuar.","latest" to "Ke tashmë versionin më të fundit","found" to "U gjet version i ri. Po shkarkohet…",
+  "failed" to "Kontrolli dështoi. Kontrollo internetin dhe provo përsëri.","correct" to "BRAVO! PËRGJIGJE E SAKTË! 🎉",
+  "ten_correct" to "🎵 përgjigje të sakta! KOHA PËR MUZIKË!","wrong" to "Nuk është e saktë. Provo përsëri!","wrong_final" to "3 GABIME! -2 PIKË. Pyetja tjetër…",
+  "first_letter" to "SHKRONJA E PARË: ","next_level" to "NIVELI TJETËR HAPET AUTOMATIKISHT…","dark_light" to "Tema e errët / Tema e çelët",
+  "background_music" to "Muzikë në sfond","game_sounds" to "Tingujt e lojës","music_volume" to "Volumi i muzikës: ",
+  "effects_volume" to "Volumi i efekteve zanore: ","volume_help" to "Mund të rregullosh veçmas muzikën dhe efektet zanore.",
+  "exit_title" to "Të dalësh nga loja?","exit_confirm" to "A je i sigurt që dëshiron ta mbyllësh aplikacionin?","enter_word" to "Shkruaj fjalën e saktë!"
+ )
+ val mk=mapOf(
+  "words_photos" to "зборови со фотографии","level" to "НИВО","update" to "АЖУРИРАЊЕ","checking" to "Проверка за ажурирање…",
+  "no_release" to "Нема објавена верзија засега.","latest" to "Ја имаш најновата верзија","found" to "Пронајдена е нова верзија. Се презема…",
+  "failed" to "Проверката не успеа. Провери интернет и обиди се повторно.","correct" to "БРАВО! ТОЧЕН ОДГОВОР! 🎉",
+  "ten_correct" to "🎵 ТОЧНИ ОДГОВОРИ! ВРЕМЕ Е ЗА МУЗИКА!","wrong" to "Не е точно. Обиди се повторно!","wrong_final" to "3 ПОГРЕШНИ ОБИДИ! -2 ПОЕНИ. Следното прашање…",
+  "first_letter" to "ПРВА БУКВА: ","next_level" to "СЛЕДНОТО НИВО СЕ ОТВОРА АВТОМАТСКИ…","dark_light" to "Темна тема / Светла тема",
+  "background_music" to "Музика во позадина","game_sounds" to "Звуци во играта","music_volume" to "Јачина на музиката: ",
+  "effects_volume" to "Јачина на звучните ефекти: ","volume_help" to "Можеш одделно да ја намалиш или зголемиш музиката и звуците.",
+  "exit_title" to "Излез од играта?","exit_confirm" to "Дали сигурно сакаш да ја затвориш апликацијата?","enter_word" to "Внеси го точниот збор!"
+ )
+ return when(lang) { "fr"->fr[key]; "sq"->sq[key]; "en"->en[key]; else->mk[key] } ?: key
+}
+
 private val frenchAnimalWords = mapOf(
  "КУЧЕ" to "CHIEN","МАЧКА" to "CHAT","ЛАВ" to "LION","ЗЕБРА" to "ZÈBRE",
  "МАЈМУН" to "SINGE","МЕЧКА" to "OURS","ВОЛК" to "LOUP","ДЕЛФИН" to "DAUPHIN",
@@ -857,7 +902,7 @@ private fun startStation() {
  var answer by remember { mutableStateOf("") }; var score by remember { mutableIntStateOf(settings.getInt("score",0)) }; var correctAnswers by remember { mutableIntStateOf(settings.getInt("correct_answers",0)) }
  var solved by remember { mutableStateOf(false) }; var hint by remember { mutableStateOf(false) }; var wrongAttempts by remember { mutableIntStateOf(0) }
  var message by remember { mutableStateOf("Избери категорија за да започнеш!") }
- LaunchedEffect(solved) { if (solved && selected >= 0) { delay(900); val cat=categories[selected]; if (level+1 < cat.puzzles.size) { level++; message="Внеси го точниот збор!" } else { selected=-1; message="Категоријата е завршена! Браво! 🎉" }; answer=""; solved=false; hint=false; wrongAttempts=0 } }
+ LaunchedEffect(solved) { if (solved && selected >= 0) { delay(900); val cat=categories[selected]; if (level+1 < cat.puzzles.size) { level++; message=extraText("enter_word",selectedLanguage) } else { selected=-1; message="Категоријата е завршена! Браво! 🎉" }; answer=""; solved=false; hint=false; wrongAttempts=0 } }
  MaterialTheme(colorScheme=if(darkMode) darkColorScheme(primary=Color(0xFF8DE1D2)) else lightColorScheme(primary=Color(0xFF008F83))){
  Box(Modifier.fillMaxSize().background(pageBg)) {
  Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(start=18.dp,end=18.dp,top=18.dp,bottom=88.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(14.dp)){
@@ -922,7 +967,7 @@ private fun startStation() {
  Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
   OutlinedButton(onClick={showSettings=true;play(ToneGenerator.TONE_PROP_BEEP)},modifier=Modifier.weight(1f)){Text("⚙",fontSize=17.sp)}
   OutlinedButton(onClick={
-  updateStatus="Проверка за ажурирање…"
+  updateStatus=extraText("checking",selectedLanguage)
   scope.launch {
    try {
     val result=withContext(Dispatchers.IO) {
@@ -941,12 +986,12 @@ private fun startStation() {
     fun parts(v:String)=v.split(".").map{it.toIntOrNull()?:0}
     val latestParts=parts(result.first); val currentParts=parts(current)
     val newer=(0 until maxOf(latestParts.size,currentParts.size)).firstNotNullOfOrNull { i -> val a=latestParts.getOrElse(i){0}; val b=currentParts.getOrElse(i){0}; if(a!=b) a>b else null } ?: false
-    if(result.first.isBlank() || result.second.isBlank()) updateStatus="Aucune version publiée pour le moment."
-    else if(!newer) updateStatus="Tu as déjà la dernière version ($current)."
-    else { updateStatus="Nouvelle version ${result.first} trouvée. Téléchargement…"; onUpdate(result.second) }
-   } catch(e:Exception) { updateStatus="Vérification impossible. Vérifie ta connexion Internet et réessaie." }
+    if(result.first.isBlank() || result.second.isBlank()) updateStatus=extraText("no_release",selectedLanguage)
+    else if(!newer) updateStatus=extraText("latest",selectedLanguage)+" ($current)."
+    else { updateStatus=extraText("found",selectedLanguage)+" ${result.first}"; onUpdate(result.second) }
+   } catch(e:Exception) { updateStatus=extraText("failed",selectedLanguage) }
   }
- },modifier=Modifier.weight(1f)){Text("🔄 АЖУРИРАЊЕ")}
+ },modifier=Modifier.weight(1f)){Text("🔄 "+extraText("update",selectedLanguage))}
   OutlinedButton(onClick={showExitDialog=true},modifier=Modifier.weight(1f)){Text("🚪 ИЗЛЕЗ")}
  }
  if(updateStatus.isNotBlank()) Text(updateStatus,color=Color(0xFFFFD782),textAlign=TextAlign.Center,fontSize=13.sp)
@@ -956,7 +1001,7 @@ private fun startStation() {
    Card(onClick={selected=i;level=0;answer="";solved=false;hint=false;wrongAttempts=0;message="Внеси го точниот збор!";play(ToneGenerator.TONE_PROP_BEEP)},colors=CardDefaults.cardColors(containerColor=panel),shape=RoundedCornerShape(18.dp),modifier=Modifier.fillMaxWidth()){
     Row(Modifier.padding(18.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(14.dp)){
      Text(cat.emoji,fontSize=32.sp)
-     Column(Modifier.weight(1f)){Text(translatedCategory(cat.title,selectedLanguage),color=mainText,fontWeight=FontWeight.Bold,fontSize=18.sp);Text(cat.puzzles.size.toString()+" зборови со фотографии",color=secondaryText,fontSize=13.sp)}
+     Column(Modifier.weight(1f)){Text(translatedCategory(cat.title,selectedLanguage),color=mainText,fontWeight=FontWeight.Bold,fontSize=18.sp);Text(cat.puzzles.size.toString()+" "+extraText("words_photos",selectedLanguage),color=secondaryText,fontSize=13.sp)}
      Text("›",color=Color(0xFF8DE1D2),fontSize=28.sp)
     }
    }
@@ -965,7 +1010,7 @@ private fun startStation() {
   val cat=categories[selected]; val p=cat.puzzles[level % cat.puzzles.size]; val displayWord=translatedPuzzleWord(p.word,selectedLanguage); val displayClue=translatedPuzzleClue(p.word,p.clue,selectedLanguage)
   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
    TextButton(onClick={selected=-1;answer="";solved=false;hint=false;play(ToneGenerator.TONE_PROP_BEEP)}){Text(uiText("back_categories",selectedLanguage))}
-   Text("НИВО "+(level+1)+"/"+cat.puzzles.size,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
+   Text(extraText("level",selectedLanguage)+" "+(level+1)+"/"+cat.puzzles.size,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
   }
   Text(translatedCategory(cat.title,selectedLanguage),color=Color(0xFF8DE1D2),fontWeight=FontWeight.Bold)
   Card(colors=CardDefaults.cardColors(containerColor=Color(0xFF24365F)),shape=RoundedCornerShape(22.dp),modifier=Modifier.fillMaxWidth()){
@@ -975,10 +1020,10 @@ private fun startStation() {
     Text(displayClue,color=mainText,fontSize=17.sp,textAlign=TextAlign.Center)
     Text(uiText("letter_count",selectedLanguage)+displayWord.length,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
     OutlinedTextField(value=answer,onValueChange={answer=it.uppercase()},label={Text(uiText("answer",selectedLanguage))},enabled=!solved,singleLine=true)
-    Button(onClick={if(normalizeAnswer(answer)==normalizeAnswer(displayWord)){score+=if(hint)5 else 10;correctAnswers++;settings.edit().putInt("score",score).putInt("correct_answers",correctAnswers).apply();solved=true;message=if(correctAnswers%10==0) "🎵 ${correctAnswers} ТОЧНИ ОДГОВОРИ! ВРЕМЕ Е ЗА МУЗИКА!" else "БРАВО! ТОЧЕН ОДГОВОР! 🎉";play(ToneGenerator.TONE_PROP_ACK)}else{wrongAttempts++;if(wrongAttempts>=3){score=(score-2).coerceAtLeast(0);settings.edit().putInt("score",score).apply();message="3 ПОГРЕШНИ ОБИДИ! -2 ПОЕНИ. Следното прашање…";solved=true}else{message="Не е точно. Обиди се повторно! ${wrongAttempts}/3"};play(ToneGenerator.TONE_PROP_NACK)}},enabled=!solved,modifier=Modifier.fillMaxWidth()){Text(uiText("check",selectedLanguage))}
-    OutlinedButton(onClick={hint=true;message=if(selectedLanguage=="fr") "PREMIÈRE LETTRE : "+displayWord.first() else "ПРВА БУКВА: "+displayWord.first();play(ToneGenerator.TONE_PROP_BEEP)},enabled=!solved&&!hint){Text(uiText("hint",selectedLanguage))}
+    Button(onClick={if(normalizeAnswer(answer)==normalizeAnswer(displayWord)){score+=if(hint)5 else 10;correctAnswers++;settings.edit().putInt("score",score).putInt("correct_answers",correctAnswers).apply();solved=true;message=if(correctAnswers%10==0) "🎵 ${correctAnswers} "+extraText("ten_correct",selectedLanguage) else extraText("correct",selectedLanguage);play(ToneGenerator.TONE_PROP_ACK)}else{wrongAttempts++;if(wrongAttempts>=3){score=(score-2).coerceAtLeast(0);settings.edit().putInt("score",score).apply();message=extraText("wrong_final",selectedLanguage);solved=true}else{message=extraText("wrong",selectedLanguage)+" ${wrongAttempts}/3"};play(ToneGenerator.TONE_PROP_NACK)}},enabled=!solved,modifier=Modifier.fillMaxWidth()){Text(uiText("check",selectedLanguage))}
+    OutlinedButton(onClick={hint=true;message=extraText("first_letter",selectedLanguage)+displayWord.first();play(ToneGenerator.TONE_PROP_BEEP)},enabled=!solved&&!hint){Text(uiText("hint",selectedLanguage))}
     Text(message,color=Color(0xFFFFD782),textAlign=TextAlign.Center)
-    if(solved) Text("СЛЕДНОТО НИВО СЕ ОТВОРА АВТОМАТСКИ…",color=Color(0xFF8DE1D2),fontWeight=FontWeight.Bold,textAlign=TextAlign.Center)
+    if(solved) Text(extraText("next_level",selectedLanguage),color=Color(0xFF8DE1D2),fontWeight=FontWeight.Bold,textAlign=TextAlign.Center)
    }
   }
  }
@@ -992,20 +1037,20 @@ private fun startStation() {
  }
  if(showSettings) {
   AlertDialog(onDismissRequest={showSettings=false},title={Text(uiText("settings",selectedLanguage))},text={Column {
-   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text("Темна тема / Светла тема");Switch(checked=darkMode,onCheckedChange={darkMode=it;settings.edit().putBoolean("dark_mode",it).apply()})}
-   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text("Музика во позадина");Switch(checked=musicOn,onCheckedChange={musicOn=it;settings.edit().putBoolean("music_on",it).apply()})}
-   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text("Звуци во играта");Switch(checked=soundsOn,onCheckedChange={soundsOn=it;settings.edit().putBoolean("sounds_on",it).apply();if(it)playGameSound(context,ToneGenerator.TONE_PROP_ACK,true,soundVolume)})}
-   Text("Јачина на музиката: ${(musicVolume*100).toInt()}%",fontSize=13.sp)
+   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text(extraText("dark_light",selectedLanguage));Switch(checked=darkMode,onCheckedChange={darkMode=it;settings.edit().putBoolean("dark_mode",it).apply()})}
+   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text(extraText("background_music",selectedLanguage));Switch(checked=musicOn,onCheckedChange={musicOn=it;settings.edit().putBoolean("music_on",it).apply()})}
+   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text(extraText("game_sounds",selectedLanguage));Switch(checked=soundsOn,onCheckedChange={soundsOn=it;settings.edit().putBoolean("sounds_on",it).apply();if(it)playGameSound(context,ToneGenerator.TONE_PROP_ACK,true,soundVolume)})}
+   Text(extraText("music_volume",selectedLanguage)+"${(musicVolume*100).toInt()}%",fontSize=13.sp)
    Slider(value=musicVolume,onValueChange={musicVolume=it;settings.edit().putFloat("music_volume",it).apply()},valueRange=0f..0.5f)
-   Text("Јачина на звучните ефекти: ${(soundVolume*100).toInt()}%",fontSize=13.sp)
+   Text(extraText("effects_volume",selectedLanguage)+"${(soundVolume*100).toInt()}%",fontSize=13.sp)
    Slider(value=soundVolume,onValueChange={soundVolume=it;settings.edit().putFloat("sound_volume",it).apply()},valueRange=0f..1f)
-   Text("Можеш одделно да ја намалиш или зголемиш музиката и звуците.",fontSize=13.sp)
+   Text(extraText("volume_help",selectedLanguage),fontSize=13.sp)
   }},confirmButton={TextButton(onClick={showSettings=false}){Text(uiText("done",selectedLanguage))}})
  }
  if(showExitDialog) {
   AlertDialog(onDismissRequest={showExitDialog=false},
-   title={Text("Излез од играта?")},
-   text={Text("Дали сигурно сакаш да ја затвориш апликацијата?")},
+   title={Text(extraText("exit_title",selectedLanguage))},
+   text={Text(extraText("exit_confirm",selectedLanguage))},
    confirmButton={TextButton(onClick={showExitDialog=false;onExit()}){Text(uiText("exit",selectedLanguage))}},
    dismissButton={TextButton(onClick={showExitDialog=false}){Text(uiText("cancel",selectedLanguage))}}
   )
