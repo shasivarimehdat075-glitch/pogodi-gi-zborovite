@@ -530,7 +530,6 @@ private class OnlineHipHopRadio(context: Context) {
  var musicVolume by remember { mutableFloatStateOf(settings.getFloat("music_volume",0.13f)) }
  var soundVolume by remember { mutableFloatStateOf(settings.getFloat("sound_volume",0.75f)) }
  val onlineRadio = remember { OnlineHipHopRadio(context) }
- var lastRadioMilestone by remember { mutableIntStateOf(correctAnswers / 10) }
 
  LaunchedEffect(musicOn, musicVolume) {
   if (!musicOn || musicVolume <= 0f) onlineRadio.stop()
@@ -545,6 +544,7 @@ private class OnlineHipHopRadio(context: Context) {
  val gold=if(darkMode) Color(0xFFFFD782) else Color(0xFF805400)
  var selected by remember { mutableIntStateOf(-1) }; var level by remember { mutableIntStateOf(0) }
  var answer by remember { mutableStateOf("") }; var score by remember { mutableIntStateOf(settings.getInt("score",0)) }; var correctAnswers by remember { mutableIntStateOf(settings.getInt("correct_answers",0)) }
+ var lastRadioMilestone by remember { mutableIntStateOf(correctAnswers / 10) }
  LaunchedEffect(correctAnswers) {
   val milestone = correctAnswers / 10
   if (milestone > lastRadioMilestone) {
