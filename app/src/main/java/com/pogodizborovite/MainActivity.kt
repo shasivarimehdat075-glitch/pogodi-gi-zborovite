@@ -476,9 +476,18 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
  var soundEnabled by remember { mutableStateOf(prefs.getBoolean("sound_enabled", true)) }
  var soundVolume by remember { mutableFloatStateOf(prefs.getFloat("sound_volume", 0.65f)) }
  var darkMode by remember { mutableStateOf(prefs.getBoolean("dark_mode", true)) }
+ var backgroundMusic by remember { mutableStateOf<AudioTrack?>(null) }
  DisposableEffect(soundEnabled, soundVolume) {
   val music = if (soundEnabled) startBackgroundMusic(soundVolume) else null
-  onDispose { music?.pause(); music?.release() }
+  backgroundMusic = music
+  onDispose {
+   backgroundMusic?.let { track ->
+    runCatching { track.pause() }
+    runCatching { track.flush() }
+    runCatching { track.release() }
+   }
+   backgroundMusic = null
+  }
  }
  LaunchedEffect(selected, level, score) {
   prefs.edit().putInt("selected", selected).putInt("level", level).putInt("score", score).apply()
@@ -496,7 +505,15 @@ class MainActivity:ComponentActivity(){override fun onCreate(savedInstanceState:
  Text("🧩 ПОГОДИ ГИ ЗБОРОВИТЕ",color=primaryText,fontSize=24.sp,fontWeight=FontWeight.ExtraBold,textAlign=TextAlign.Center)
  Text("Македонска игра со зборови",color=secondaryText)
  Row(Modifier.fillMaxWidth(), horizontalArrangement=Arrangement.End) {
-  TextButton(onClick={(context as? Activity)?.finish()}) { Text("🚪 ИЗЛЕЗ ОД ИГРАТА", color=accent, fontWeight=FontWeight.Bold) }
+  TextButton(onClick={
+   backgroundMusic?.let { track ->
+    runCatching { track.pause() }
+    runCatching { track.flush() }
+    runCatching { track.release() }
+   }
+   backgroundMusic = null
+   (context as? Activity)?.finish()
+  }) { Text("🚪 ИЗЛЕЗ ОД ИГРАТА", color=accent, fontWeight=FontWeight.Bold) }
  }
  Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
   Text("ПОЕНИ: "+score,color=if(darkMode) Color(0xFFFFD782) else Color(0xFF9A6500),fontWeight=FontWeight.Bold)
