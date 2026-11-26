@@ -41,6 +41,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.viewinterop.AndroidView
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.webkit.WebChromeClient
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -1528,9 +1532,10 @@ private fun startStation() {
  var darkMode by remember { mutableStateOf(settings.getBoolean("dark_mode",true)) }
  var soundsOn by remember { mutableStateOf(settings.getBoolean("sounds_on",true)) }
  var youtubeQuery by remember { mutableStateOf("") }
+ var youtubeSearchUrl by remember { mutableStateOf("") }
  var soundVolume by remember { mutableFloatStateOf(settings.getFloat("sound_volume",0.75f)) }
  BackHandler { onExit() }
- fun searchYoutubeMusic() { val query=youtubeQuery.trim(); if(query.isBlank())return; val url="https://music.youtube.com/search?q="+java.net.URLEncoder.encode(query,"UTF-8"); try { context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(url)).setPackage("com.google.android.apps.youtube.music")) } catch (_:Exception) { try { context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(url))) } catch (_:Exception) { Toast.makeText(context,"Impossible d’ouvrir YouTube Music",Toast.LENGTH_LONG).show() } } }
+ fun searchYoutubeMusic() { val query=youtubeQuery.trim(); if(query.isBlank())return; youtubeSearchUrl="https://m.youtube.com/results?search_query="+java.net.URLEncoder.encode(query,"UTF-8") }
  fun play(tone:Int) { playGameSound(context,tone,soundsOn,soundVolume) }
  val pageBg=if(darkMode) Color(0xFF101B3D) else Color(0xFFF3F6FC)
  val panel=if(darkMode) Color(0xFF24365F) else Color.White
@@ -1568,6 +1573,23 @@ private fun startStation() {
    OutlinedTextField(value=youtubeQuery,onValueChange={youtubeQuery=it},modifier=Modifier.fillMaxWidth(),singleLine=true,label={Text(when(selectedLanguage){"fr"->"Titre ou artiste";"sq"->"Titulli ose artisti";"en"->"Song or artist";else->"Наслов или изведувач"})},placeholder={Text("Ex. : Sami Yusuf")})
    Button(onClick={searchYoutubeMusic()},enabled=youtubeQuery.isNotBlank(),modifier=Modifier.fillMaxWidth()) { Text("🔎 "+when(selectedLanguage){"fr"->"Rechercher et écouter";"sq"->"Kërko dhe dëgjo";"en"->"Search and listen";else->"Пребарај и слушај"}) }
    Text(when(selectedLanguage){"fr"->"Les résultats s’ouvrent dans YouTube Music si l’application est installée.";"sq"->"Rezultatet hapen në YouTube Music nëse aplikacioni është i instaluar.";"en"->"Results open in YouTube Music if the app is installed.";else->"Резултатите се отвораат во YouTube Music ако е инсталирана."},color=secondaryText,fontSize=10.sp)
+   if(youtubeSearchUrl.isNotBlank()) {
+    Text(when(selectedLanguage){"fr"->"Choisis une vidéo ci-dessous pour la lire dans l’application.";"sq"->"Zgjidh një video më poshtë për ta luajtur në aplikacion.";"en"->"Choose a video below to play it inside the app.";else->"Избери видео подолу за да ја пуштиш во апликацијата."},color=secondaryText,fontSize=11.sp)
+    AndroidView(
+     modifier=Modifier.fillMaxWidth().height(420.dp),
+     factory={ ctx -> WebView(ctx).apply {
+      settings.javaScriptEnabled=true
+      settings.domStorageEnabled=true
+      settings.mediaPlaybackRequiresUserGesture=true
+      settings.javaScriptCanOpenWindowsAutomatically=false
+      settings.setSupportMultipleWindows(false)
+      webViewClient=WebViewClient()
+      webChromeClient=WebChromeClient()
+      loadUrl(youtubeSearchUrl)
+     } },
+     update={ view -> if(view.url!=youtubeSearchUrl) view.loadUrl(youtubeSearchUrl) }
+    )
+   }
   }
  }
 Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
