@@ -1581,7 +1581,7 @@ private fun startStation() {
  Text("🧩 "+when(selectedLanguage){"fr"->"DEVINE LES MOTS";"sq"->"GJEJI FJALËT";"en"->"GUESS THE WORDS";else->"ПОГОДИ ГИ ЗБОРОВИТЕ"},color=mainText,fontSize=24.sp,fontWeight=FontWeight.ExtraBold,textAlign=TextAlign.Center)
  Box(Modifier.fillMaxWidth()) {
   OutlinedButton(onClick={languageMenuExpanded=true},modifier=Modifier.fillMaxWidth()) {
-   Text("🌍 ЈАЗИК / LANGUE: $selectedLanguageName  ▾",fontSize=14.sp)
+   Text("🌍 "+when(selectedLanguage){"fr"->"LANGUE";"sq"->"GJUHA";"en"->"LANGUAGE";else->"ЈАЗИК"}+": $selectedLanguageName  ▾",fontSize=14.sp)
   }
   DropdownMenu(expanded=languageMenuExpanded,onDismissRequest={languageMenuExpanded=false}) {
    supportedLanguages.forEach { language ->
@@ -1598,7 +1598,7 @@ private fun startStation() {
   Row(Modifier.fillMaxWidth().padding(horizontal=10.dp,vertical=7.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(6.dp)) {
    Column(Modifier.weight(1f)) {
     Text("📻 ${radioName}",color=mainText,fontWeight=FontWeight.Bold,fontSize=12.sp,maxLines=1)
-    Text(radioStatus,color=secondaryText,fontSize=10.sp,maxLines=1)
+    Text(if(radioStatus=="Се подготвува…") radioUiText(selectedLanguage,"preparing") else translateRadioStatus(radioStatus,selectedLanguage),color=secondaryText,fontSize=10.sp,maxLines=1)
    }
    IconButton(onClick={if(musicOn) onlineRadio.previous()}) { Text("⏮",fontSize=15.sp) }
    IconButton(onClick={if(musicOn) onlineRadio.togglePlayback() else {musicOn=true;settings.edit().putBoolean("music_on",true).apply()}}) { Text(if(radioPlaying) "⏸" else "▶",fontSize=18.sp) }
@@ -1649,7 +1649,7 @@ private fun startStation() {
    } catch(e:Exception) { updateStatus=extraText("failed",selectedLanguage) }
   }
  },modifier=Modifier.weight(1f)){Text("🔄 "+extraText("update",selectedLanguage),fontSize=12.sp,maxLines=1,softWrap=false)}
-  OutlinedButton(onClick={showExitDialog=true},modifier=Modifier.weight(1f)){Text("🚪 ИЗЛЕЗ")}
+  OutlinedButton(onClick={showExitDialog=true},modifier=Modifier.weight(1f)){Text("🚪 "+uiText("exit",selectedLanguage))}
  }
  if(updateStatus.isNotBlank()) Text(updateStatus,color=Color(0xFFFFD782),textAlign=TextAlign.Center,fontSize=13.sp)
  if(selected<0){
