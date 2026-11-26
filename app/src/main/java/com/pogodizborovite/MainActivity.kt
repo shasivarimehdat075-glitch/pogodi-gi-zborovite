@@ -1631,6 +1631,22 @@ private fun startStation() {
       FilledTonalButton(onClick={musicWebView?.evaluateJavascript("document.querySelector('video')?.currentTime+=15",null)}) { Text("↓ 15 s") }
      }
     } else {
+     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(10.dp),verticalAlignment=Alignment.CenterVertically) {
+      Button(
+       onClick={
+        musicWebView?.evaluateJavascript("(function(){var d=-1;var h=Math.max(window.innerHeight,600);var a=[...document.querySelectorAll('ytd-reel-video-renderer,#shorts-container,[role=main],body')];var e=a.filter(function(x){return x.scrollHeight>x.clientHeight+80}).sort(function(x,y){return (y.scrollHeight-y.clientHeight)-(x.scrollHeight-x.clientHeight)})[0];if(e&&e!==document.body){e.scrollBy({top:d*h,behavior:'smooth'});}else{window.scrollBy({top:d*h,behavior:'smooth'});}window.dispatchEvent(new WheelEvent('wheel',{deltaY:d*h,bubbles:true}));})()",null)
+       },
+       modifier=Modifier.weight(1f),
+       colors=ButtonDefaults.buttonColors(containerColor=Color(0xFFD32F2F),contentColor=Color.White)
+      ) { Text("⬆  HAUT",fontWeight=FontWeight.Bold,fontSize=16.sp) }
+      Button(
+       onClick={
+        musicWebView?.evaluateJavascript("(function(){var d=1;var h=Math.max(window.innerHeight,600);var a=[...document.querySelectorAll('ytd-reel-video-renderer,#shorts-container,[role=main],body')];var e=a.filter(function(x){return x.scrollHeight>x.clientHeight+80}).sort(function(x,y){return (y.scrollHeight-y.clientHeight)-(x.scrollHeight-x.clientHeight)})[0];if(e&&e!==document.body){e.scrollBy({top:d*h,behavior:'smooth'});}else{window.scrollBy({top:d*h,behavior:'smooth'});}window.dispatchEvent(new WheelEvent('wheel',{deltaY:d*h,bubbles:true}));})()",null)
+       },
+       modifier=Modifier.weight(1f),
+       colors=ButtonDefaults.buttonColors(containerColor=Color(0xFFD32F2F),contentColor=Color.White)
+      ) { Text("⬇  BAS",fontWeight=FontWeight.Bold,fontSize=16.sp) }
+     }
      Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp),verticalAlignment=Alignment.CenterVertically) {
       OutlinedButton(onClick={ if(musicWebView?.canGoBack()==true) musicWebView?.goBack() },modifier=Modifier.weight(1f)) { Text("←") }
       OutlinedButton(onClick={ if(musicWebView?.canGoForward()==true) musicWebView?.goForward() },modifier=Modifier.weight(1f)) { Text("→") }
