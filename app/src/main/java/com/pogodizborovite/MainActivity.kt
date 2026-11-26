@@ -1597,99 +1597,95 @@ private fun startStation() {
    }
    if(youtubeSearchUrl.isNotBlank()) {
     Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
-     Text(if(selectedStreamUrl.isBlank()) "Résultats vidéo" else "Lecteur vidéo",color=mainText,fontWeight=FontWeight.SemiBold,fontSize=13.sp)
+     Text(when(selectedLanguage){"fr"->"Lecteur YouTube";"sq"->"YouTube luajtësi";"en"->"YouTube player";else->"YouTube плеер"},color=mainText,fontWeight=FontWeight.SemiBold,fontSize=13.sp)
      TextButton(onClick={
-      if(selectedStreamUrl.isNotBlank()) selectedStreamUrl=""
-      else { youtubeSearchUrl=""; extractorResults=emptyList(); extractorStatus="" }
-     }) { Text("← Retour") }
+      val player=musicWebView
+      if(player?.canGoBack()==true) player.goBack() else { youtubeSearchUrl=""; musicWebView=null }
+     }) { Text(when(selectedLanguage){"fr"->"← Retour";"sq"->"← Mbrapa";"en"->"← Back";else->"← Назад"}) }
     }
-    if(selectedStreamUrl.isNotBlank()) {
+    Box(Modifier.fillMaxWidth().height(youtubePlayerHeight)) {
      AndroidView(
-      modifier=Modifier.fillMaxWidth().height(youtubePlayerHeight),
+      modifier=Modifier.fillMaxSize(),
       factory={ ctx ->
        WebView(ctx).also { player ->
         player.settings.javaScriptEnabled=true
         player.settings.domStorageEnabled=true
         player.settings.mediaPlaybackRequiresUserGesture=true
-        player.webChromeClient=WebChromeClient()
-        player.webViewClient=object:WebViewClient(){}
-        musicWebView=player
-        val html="""<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>html,body{margin:0;background:#000;width:100%;height:100%;}video{width:100%;height:100%;object-fit:contain;background:#000}</style></head><body><video controls autoplay playsinline><source src="$selectedStreamUrl"></video></body></html>"""
-        player.loadDataWithBaseURL("https://www.youtube.com/",html,"text/html","UTF-8",null)
-       }
-      },
-      update={ player ->
-       if(player.tag!=selectedStreamUrl) {
-        player.tag=selectedStreamUrl
-        val html="""<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>html,body{margin:0;background:#000;width:100%;height:100%;}video{width:100%;height:100%;object-fit:contain;background:#000}</style></head><body><video controls autoplay playsinline><source src="$selectedStreamUrl"></video></body></html>"""
-        player.loadDataWithBaseURL("https://www.youtube.com/",html,"text/html","UTF-8",null)
-       }
-      }
-     )
-     Column(Modifier.fillMaxWidth(),horizontalAlignment=Alignment.End) {
-      FilledTonalButton(onClick={musicWebView?.evaluateJavascript("document.querySelector('video')?.currentTime=Math.max(0,document.querySelector('video')?.currentTime-15)",null)}) { Text("↑ 15 s") }
-      FilledTonalButton(onClick={musicWebView?.evaluateJavascript("document.querySelector('video')?.currentTime+=15",null)}) { Text("↓ 15 s") }
-     }
-    } else {
-     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(10.dp),verticalAlignment=Alignment.CenterVertically) {
-      Button(
-       onClick={
-        musicWebView?.evaluateJavascript("(function(){var d=-1;var h=Math.max(window.innerHeight,600);var a=[...document.querySelectorAll('ytd-reel-video-renderer,#shorts-container,[role=main],body')];var e=a.filter(function(x){return x.scrollHeight>x.clientHeight+80}).sort(function(x,y){return (y.scrollHeight-y.clientHeight)-(x.scrollHeight-x.clientHeight)})[0];if(e&&e!==document.body){e.scrollBy({top:d*h,behavior:'smooth'});}else{window.scrollBy({top:d*h,behavior:'smooth'});}window.dispatchEvent(new WheelEvent('wheel',{deltaY:d*h,bubbles:true}));})()",null)
-       },
-       modifier=Modifier.weight(1f),
-       colors=ButtonDefaults.buttonColors(containerColor=Color(0xFFD32F2F),contentColor=Color.White)
-      ) { Text("⬆  HAUT",fontWeight=FontWeight.Bold,fontSize=16.sp) }
-      Button(
-       onClick={
-        musicWebView?.evaluateJavascript("(function(){var d=1;var h=Math.max(window.innerHeight,600);var a=[...document.querySelectorAll('ytd-reel-video-renderer,#shorts-container,[role=main],body')];var e=a.filter(function(x){return x.scrollHeight>x.clientHeight+80}).sort(function(x,y){return (y.scrollHeight-y.clientHeight)-(x.scrollHeight-x.clientHeight)})[0];if(e&&e!==document.body){e.scrollBy({top:d*h,behavior:'smooth'});}else{window.scrollBy({top:d*h,behavior:'smooth'});}window.dispatchEvent(new WheelEvent('wheel',{deltaY:d*h,bubbles:true}));})()",null)
-       },
-       modifier=Modifier.weight(1f),
-       colors=ButtonDefaults.buttonColors(containerColor=Color(0xFFD32F2F),contentColor=Color.White)
-      ) { Text("⬇  BAS",fontWeight=FontWeight.Bold,fontSize=16.sp) }
-     }
-     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp),verticalAlignment=Alignment.CenterVertically) {
-      OutlinedButton(onClick={ if(musicWebView?.canGoBack()==true) musicWebView?.goBack() },modifier=Modifier.weight(1f)) { Text("←") }
-      OutlinedButton(onClick={ if(musicWebView?.canGoForward()==true) musicWebView?.goForward() },modifier=Modifier.weight(1f)) { Text("→") }
-      OutlinedButton(onClick={ musicWebView?.reload() },modifier=Modifier.weight(1f)) { Text("⟳") }
-      OutlinedButton(onClick={ musicWebView?.loadUrl("https://m.youtube.com") },modifier=Modifier.weight(1f)) { Text("⌂") }
-     }
-     AndroidView(
-      modifier=Modifier.fillMaxWidth().height(youtubePlayerHeight),
-      factory={ ctx ->
-       WebView(ctx).also { browser ->
-        browser.settings.javaScriptEnabled=true
-        browser.settings.domStorageEnabled=true
-        browser.settings.mediaPlaybackRequiresUserGesture=true
-        browser.settings.useWideViewPort=true
-        browser.settings.loadWithOverviewMode=true
-        browser.settings.setSupportZoom(false)
-        browser.settings.builtInZoomControls=false
-        browser.settings.userAgentString="Mozilla/5.0 (Linux; Android 11; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36"
-        browser.setLayerType(View.LAYER_TYPE_SOFTWARE,null)
-        browser.setBackgroundColor(android.graphics.Color.WHITE)
-        browser.isVerticalScrollBarEnabled=true
-        browser.isHorizontalScrollBarEnabled=false
-        browser.webChromeClient=WebChromeClient()
-        browser.webViewClient=object:WebViewClient() {
-         override fun onPageFinished(view:WebView,url:String) {
+        player.settings.javaScriptCanOpenWindowsAutomatically=false
+        player.settings.setSupportMultipleWindows(false)
+        player.settings.useWideViewPort=false
+        player.settings.loadWithOverviewMode=false
+        player.settings.textZoom=100
+        player.webViewClient=object:WebViewClient() {
+         override fun onPageFinished(view:WebView?, url:String?) {
           super.onPageFinished(view,url)
-          view.scrollTo(0,0)
-          view.evaluateJavascript("(function(){var m=document.querySelector('meta[name=viewport]');if(!m){m=document.createElement('meta');m.name='viewport';document.head.appendChild(m);}m.content='width=device-width, initial-scale=1, maximum-scale=1';document.documentElement.style.maxWidth='100%';document.documentElement.style.overflowX='hidden';document.body.style.maxWidth='100%';document.body.style.overflowX='hidden';window.scrollTo(0,0);})()",null)
+          view?.evaluateJavascript("""
+           (function() {
+            /* Restore YouTube's native mobile layout: previous forced widths,
+               negative offsets and hidden navigation rules conflicted with each other. */
+            var vp=document.querySelector('meta[name="viewport"]');
+            if(!vp){vp=document.createElement('meta');vp.name='viewport';document.head.appendChild(vp);}
+            vp.content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no';
+            ['app-youtube-mobile-fix','app-youtube-dark-theme'].forEach(function(id){
+              var el=document.getElementById(id);if(el)el.remove();
+            });
+            document.querySelectorAll('ytm-browse[has-side-navigation],ytm-app[has-side-navigation]').forEach(function(el){
+              el.removeAttribute('has-side-navigation');
+            });
+            document.documentElement.style.removeProperty('color-scheme');
+            window.scrollTo(0,0);
+           })();
+          """.trimIndent(),null)
+          view?.scrollTo(0,0)
          }
         }
-        browser.tag=youtubeSearchUrl
-        musicWebView=browser
-        browser.loadUrl(youtubeSearchUrl)
+        player.webChromeClient=WebChromeClient()
+        musicWebView=player
+        player.loadUrl(youtubeSearchUrl)
        }
       },
-      update={ browser ->
-       if(browser.tag!=youtubeSearchUrl) {
-        browser.tag=youtubeSearchUrl
-        browser.loadUrl(youtubeSearchUrl)
-       }
-      }
+      update={ view -> if(view.url!=youtubeSearchUrl) view.loadUrl(youtubeSearchUrl) }
      )
-
+     Column(
+      modifier=Modifier.align(Alignment.BottomEnd).padding(end=8.dp,bottom=155.dp),
+      verticalArrangement=Arrangement.spacedBy(6.dp),
+      horizontalAlignment=Alignment.CenterHorizontally
+     ) {
+      FilledTonalButton(
+       onClick={
+        musicWebView?.evaluateJavascript("""
+         (function(){
+          var amount=Math.max(window.innerHeight*0.85,500);
+          window.dispatchEvent(new WheelEvent('wheel',{deltaY:-amount,bubbles:true,cancelable:true}));
+          Array.from(document.querySelectorAll('*')).filter(function(e){var s=getComputedStyle(e);return /(auto|scroll)/.test(s.overflowY)&&e.scrollHeight>e.clientHeight+40;}).forEach(function(e){e.scrollTo({top:0,behavior:'smooth'});});
+          if(document.scrollingElement)document.scrollingElement.scrollTo({top:0,behavior:'smooth'});
+          window.scrollTo({top:0,behavior:'smooth'});
+          document.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowUp',code:'ArrowUp',bubbles:true}));
+         })();
+        """.trimIndent(),null)
+       },
+       contentPadding=PaddingValues(horizontal=12.dp,vertical=5.dp),
+       modifier=Modifier.height(38.dp)
+      ) { Text("↑",fontSize=19.sp,fontWeight=FontWeight.Bold) }
+      FilledTonalButton(
+       onClick={
+        musicWebView?.evaluateJavascript("""
+         (function(){
+          var amount=Math.max(window.innerHeight*0.85,500);
+          window.dispatchEvent(new WheelEvent('wheel',{deltaY:amount,bubbles:true,cancelable:true}));
+          var candidates=Array.from(document.querySelectorAll('*')).filter(function(e){var s=getComputedStyle(e);return /(auto|scroll)/.test(s.overflowY)&&e.scrollHeight>e.clientHeight+40;});
+          candidates.sort(function(a,b){return (b.scrollHeight-b.clientHeight)-(a.scrollHeight-a.clientHeight);});
+          candidates.forEach(function(e){e.scrollBy({top:amount,behavior:'smooth'});});
+          if(document.scrollingElement)document.scrollingElement.scrollBy({top:amount,behavior:'smooth'});
+          window.scrollBy({top:amount,behavior:'smooth'});
+          document.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown',code:'ArrowDown',bubbles:true}));
+         })();
+        """.trimIndent(),null)
+       },
+       contentPadding=PaddingValues(horizontal=12.dp,vertical=5.dp),
+       modifier=Modifier.height(38.dp)
+      ) { Text("↓",fontSize=19.sp,fontWeight=FontWeight.Bold) }
+     }
     }
    }
   }
