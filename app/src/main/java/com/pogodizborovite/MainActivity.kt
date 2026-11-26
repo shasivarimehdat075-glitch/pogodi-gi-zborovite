@@ -1544,7 +1544,7 @@ private fun startStation() {
   if (player?.canGoBack() == true) player.goBack() else { youtubeSearchUrl = ""; musicWebView = null }
  }
  BackHandler(enabled = youtubeSearchUrl.isBlank()) { onExit() }
- fun searchYoutubeMusic() { val query=youtubeQuery.trim(); if(query.isBlank())return; youtubeSearchUrl="https://m.youtube.com/results?search_query="+java.net.URLEncoder.encode(query,"UTF-8") }
+ fun searchYoutubeMusic() { val query=youtubeQuery.trim(); if(query.isBlank())return; youtubeSearchUrl="https://piped.video/results?search_query="+java.net.URLEncoder.encode(query,"UTF-8") }
  fun play(tone:Int) { playGameSound(context,tone,soundsOn,soundVolume) }
  val pageBg=if(darkMode) Color(0xFF101B3D) else Color(0xFFF3F6FC)
  val panel=if(darkMode) Color(0xFF24365F) else Color.White
@@ -1586,7 +1586,7 @@ private fun startStation() {
    }
    if(youtubeSearchUrl.isNotBlank()) {
     Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
-     Text(when(selectedLanguage){"fr"->"Lecteur YouTube";"sq"->"YouTube luajtësi";"en"->"YouTube player";else->"YouTube плеер"},color=mainText,fontWeight=FontWeight.SemiBold,fontSize=13.sp)
+     Text(when(selectedLanguage){"fr"->"Lecteur vidéo";"sq"->"Luajtësi i videove";"en"->"Video player";else->"Видео плеер"},color=mainText,fontWeight=FontWeight.SemiBold,fontSize=13.sp)
      TextButton(onClick={
       val player=musicWebView
       if(player?.canGoBack()==true) player.goBack() else { youtubeSearchUrl=""; musicWebView=null }
