@@ -1577,18 +1577,18 @@ private fun startStation() {
     Text(when(selectedLanguage){"fr"->"Choisis une vidéo ci-dessous pour la lire dans l’application.";"sq"->"Zgjidh një video më poshtë për ta luajtur në aplikacion.";"en"->"Choose a video below to play it inside the app.";else->"Избери видео подолу за да ја пуштиш во апликацијата."},color=secondaryText,fontSize=11.sp)
     AndroidView(
      modifier=Modifier.fillMaxWidth().height(420.dp),
-     factory={ ctx -> WebView(ctx).apply {
-      settings.apply {
-      javaScriptEnabled=true
-      domStorageEnabled=true
-      mediaPlaybackRequiresUserGesture=true
-      javaScriptCanOpenWindowsAutomatically=false
-      setSupportMultipleWindows(false)
-     }
-      webViewClient=WebViewClient()
-      webChromeClient=WebChromeClient()
-      loadUrl(youtubeSearchUrl)
-     } },
+     factory={ ctx ->
+      val musicWebView=WebView(ctx)
+      musicWebView.settings.javaScriptEnabled=true
+      musicWebView.settings.domStorageEnabled=true
+      musicWebView.settings.mediaPlaybackRequiresUserGesture=true
+      musicWebView.settings.javaScriptCanOpenWindowsAutomatically=false
+      musicWebView.settings.setSupportMultipleWindows(false)
+      musicWebView.webViewClient=WebViewClient()
+      musicWebView.webChromeClient=WebChromeClient()
+      musicWebView.loadUrl(youtubeSearchUrl)
+      musicWebView
+     },
      update={ view -> if(view.url!=youtubeSearchUrl) view.loadUrl(youtubeSearchUrl) }
     )
    }
