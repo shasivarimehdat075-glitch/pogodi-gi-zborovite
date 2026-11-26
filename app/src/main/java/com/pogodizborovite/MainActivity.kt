@@ -1727,6 +1727,43 @@ private fun startStation() {
    OutlinedButton(onClick={resetSnake()}){Text(if(selectedLanguage=="fr")"Recommencer" else if(selectedLanguage=="sq")"Rifillo" else if(selectedLanguage=="en")"Restart" else "Почни повторно")}
   }
   TextButton(onClick={selected=-1}){Text(uiText("back_categories",selectedLanguage))}
+ } else if(selected==2){
+  val shapes=listOf(listOf(0 to 0,1 to 0,2 to 0,3 to 0),listOf(0 to 0,0 to 1,1 to 1,2 to 1),listOf(2 to 0,0 to 1,1 to 1,2 to 1),listOf(1 to 0,2 to 0,1 to 1,2 to 1),listOf(1 to 0,2 to 0,0 to 1,1 to 1),listOf(1 to 0,0 to 1,1 to 1,2 to 1),listOf(0 to 0,1 to 0,1 to 1,2 to 1))
+  var board by remember { mutableStateOf(List(18){List(10){0}}) }
+  var piece by remember { mutableStateOf(shapes.random()) }
+  var px by remember { mutableIntStateOf(3) }; var py by remember { mutableIntStateOf(0) }
+  var ticks by remember { mutableIntStateOf(0) }; var tetrisOver by remember { mutableStateOf(false) }; var tetrisScore by remember { mutableIntStateOf(0) }
+  fun fits(s:List<Pair<Int,Int>>,x:Int,y:Int):Boolean=s.all{(a,b)->x+a in 0..9 && y+b in 0..17 && board[y+b][x+a]==0}
+  fun spawn(){piece=shapes.random();px=3;py=0;if(!fits(piece,px,py))tetrisOver=true}
+  fun settle(){
+   val next=board.map{it.toMutableList()}
+   piece.forEach{(a,b)->if(py+b in 0..17 && px+a in 0..9)next[py+b][px+a]=1}
+   val kept=next.filter{row->row.any{it==0}}
+   val cleared=18-kept.size
+   board=List(cleared){List(10){0}}+kept
+   tetrisScore+=cleared*100
+   spawn()
+  }
+  LaunchedEffect(selected,tetrisOver){
+   while(selected==2 && !tetrisOver){delay(550);if(fits(piece,px,py+1))py++ else settle()}
+  }
+  Text("🧱 Tetris",color=mainText,fontSize=22.sp,fontWeight=FontWeight.Bold)
+  Text("Score : $tetrisScore",color=gold,fontSize=18.sp,fontWeight=FontWeight.Bold)
+  val display=board.map{it.toMutableList()}.also{grid->piece.forEach{(a,b)->if(py+b in 0..17 && px+a in 0..9)grid[py+b][px+a]=2}}
+  Column(Modifier.fillMaxWidth().aspectRatio(10f/18f).background(Color(0xFF101827),RoundedCornerShape(8.dp)).padding(3.dp),verticalArrangement=Arrangement.spacedBy(2.dp)){
+   display.forEach{row->Row(Modifier.weight(1f),horizontalArrangement=Arrangement.spacedBy(2.dp)){row.forEach{v->Box(Modifier.weight(1f).fillMaxHeight().background(when(v){1->Color(0xFF46B7A4);2->Color(0xFFFFC857);else->Color(0xFF26344B},RoundedCornerShape(2.dp)))}}}
+  }
+  if(tetrisOver)Text(if(selectedLanguage=="fr")"Partie terminée !" else "Game over!",color=Color(0xFFFF7777),fontWeight=FontWeight.Bold)
+  Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){
+   OutlinedButton(onClick={if(fits(piece,px-1,py))px--}){Text("◀")}
+   OutlinedButton(onClick={val rotated=piece.map{(x,y)->(y to (2-x))};if(fits(rotated,px,py))piece=rotated}){Text("↻")}
+   OutlinedButton(onClick={if(fits(piece,px+1,py))px++}){Text("▶")}
+   Button(onClick={while(fits(piece,px,py+1))py++;settle()}){Text("⬇")}
+  }
+  Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){
+   Button(onClick={board=List(18){List(10){0}};tetrisScore=0;tetrisOver=false;spawn()}){Text(if(selectedLanguage=="fr")"Recommencer" else "Restart")}
+   TextButton(onClick={selected=-1}){Text(uiText("back_categories",selectedLanguage))}
+  }
  } else {
   Text(when(selectedLanguage){"fr"->"Ce jeu arrive bientôt";"sq"->"Kjo lojë vjen së shpejti";"en"->"This game is coming soon";else->"Оваа игра доаѓа наскоро"},color=mainText,fontSize=20.sp)
   TextButton(onClick={selected=-1}){Text(uiText("back_categories",selectedLanguage))}
