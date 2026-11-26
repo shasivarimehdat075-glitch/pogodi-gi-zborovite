@@ -1527,43 +1527,10 @@ private fun startStation() {
  val selectedLanguageName = supportedLanguages.firstOrNull { it.second == selectedLanguage }?.first ?: "Македонски"
  var darkMode by remember { mutableStateOf(settings.getBoolean("dark_mode",true)) }
  var soundsOn by remember { mutableStateOf(settings.getBoolean("sounds_on",true)) }
- var musicOn by remember { mutableStateOf(settings.getBoolean("music_on",true)) }
- var musicVolume by remember { mutableFloatStateOf(settings.getFloat("music_volume",0.13f)) }
+ var youtubeQuery by remember { mutableStateOf("") }
  var soundVolume by remember { mutableFloatStateOf(settings.getFloat("sound_volume",0.75f)) }
- var radioName by remember { mutableStateOf("Hip-Hop Radio") }
- var radioStatus by remember { mutableStateOf("Се подготвува…") }
- var radioPlaying by remember { mutableStateOf(false) }
- var selectedRadioCountry by remember { mutableStateOf(settings.getString("radio_country_name","Македонија") ?: "Македонија") }
- var selectedRadioCode by remember { mutableStateOf(settings.getString("radio_country_code","MK") ?: "MK") }
- var selectedRadioGenre by remember { mutableStateOf(settings.getString("radio_genre_name","Сите категории") ?: "Сите категории") }
- var selectedRadioTag by remember { mutableStateOf(settings.getString("radio_genre_tag","") ?: "") }
- var countryMenuExpanded by remember { mutableStateOf(false) }
- var genreMenuExpanded by remember { mutableStateOf(false) }
- val lifecycleOwner = LocalLifecycleOwner.current
- val onlineRadio = remember { OnlineHipHopRadio(context) { name,status,playing ->
-  radioName=name; radioStatus=status; radioPlaying=playing
- } }
- BackHandler { onlineRadio.stop(); onExit() }
- LaunchedEffect(selectedRadioCode,selectedRadioTag) {
-  onlineRadio.setCountry(selectedRadioCountry,selectedRadioCode)
-  onlineRadio.setGenre(selectedRadioGenre,selectedRadioTag)
-  if (musicOn && musicVolume > 0f && lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) onlineRadio.play()
- }
- DisposableEffect(lifecycleOwner,onlineRadio) {
-  val observer = LifecycleEventObserver { _, event ->
-   if (event == Lifecycle.Event.ON_STOP) onlineRadio.stop()
-   if (event == Lifecycle.Event.ON_START && musicOn && musicVolume > 0f) onlineRadio.play()
-  }
-  lifecycleOwner.lifecycle.addObserver(observer)
-  onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
- }
-
- LaunchedEffect(musicOn) {
-  if (!musicOn || musicVolume <= 0f) onlineRadio.stop()
-  else if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) onlineRadio.play()
- }
- LaunchedEffect(musicVolume) { onlineRadio.setVolume(musicVolume) }
- DisposableEffect(onlineRadio) { onDispose { onlineRadio.release() } }
+ BackHandler { onExit() }
+ fun searchYoutubeMusic() { val query=youtubeQuery.trim(); if(query.isBlank())return; val url="https://music.youtube.com/search?q="+java.net.URLEncoder.encode(query,"UTF-8"); try { context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(url)).setPackage("com.google.android.apps.youtube.music")) } catch (_:Exception) { try { context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(url))) } catch (_:Exception) { Toast.makeText(context,"Impossible d’ouvrir YouTube Music",Toast.LENGTH_LONG).show() } } }
  fun play(tone:Int) { playGameSound(context,tone,soundsOn,soundVolume) }
  val pageBg=if(darkMode) Color(0xFF101B3D) else Color(0xFFF3F6FC)
  val panel=if(darkMode) Color(0xFF24365F) else Color.White
@@ -1595,33 +1562,15 @@ private fun startStation() {
  }
  Text(when(selectedLanguage){"fr"->"Jeu de mots";"sq"->"Lojë me fjalë";"en"->"Word game";else->"Игра со зборови"},color=secondaryText)
  Card(colors=CardDefaults.cardColors(containerColor=panel),shape=RoundedCornerShape(14.dp),modifier=Modifier.fillMaxWidth()) {
-  Row(Modifier.fillMaxWidth().padding(horizontal=10.dp,vertical=7.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(6.dp)) {
-   Column(Modifier.weight(1f)) {
-    Text("📻 ${radioName}",color=mainText,fontWeight=FontWeight.Bold,fontSize=12.sp,maxLines=1)
-    Text(if(radioStatus=="Се подготвува…") radioUiText(selectedLanguage,"preparing") else translateRadioStatus(radioStatus,selectedLanguage),color=secondaryText,fontSize=10.sp,maxLines=1)
-   }
-   IconButton(onClick={if(musicOn) onlineRadio.previous()}) { Text("⏮",fontSize=15.sp) }
-   IconButton(onClick={if(musicOn) onlineRadio.togglePlayback() else {musicOn=true;settings.edit().putBoolean("music_on",true).apply()}}) { Text(if(radioPlaying) "⏸" else "▶",fontSize=18.sp) }
-   IconButton(onClick={if(musicOn) onlineRadio.next()}) { Text("⏭",fontSize=15.sp) }
-   Switch(checked=musicOn,onCheckedChange={musicOn=it;settings.edit().putBoolean("music_on",it).apply()})
+  Column(Modifier.fillMaxWidth().padding(12.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
+   Text("▶ YouTube Music",color=mainText,fontWeight=FontWeight.Bold,fontSize=16.sp)
+   Text(when(selectedLanguage){"fr"->"Recherche ta musique préférée";"sq"->"Kërko muzikën tënde të preferuar";"en"->"Search for your favourite music";else->"Пребарај ја омилената музика"},color=secondaryText,fontSize=11.sp)
+   OutlinedTextField(value=youtubeQuery,onValueChange={youtubeQuery=it},modifier=Modifier.fillMaxWidth(),singleLine=true,label={Text(when(selectedLanguage){"fr"->"Titre ou artiste";"sq"->"Titulli ose artisti";"en"->"Song or artist";else->"Наслов или изведувач"})},placeholder={Text("Ex. : Sami Yusuf")})
+   Button(onClick={searchYoutubeMusic},enabled=youtubeQuery.isNotBlank(),modifier=Modifier.fillMaxWidth()) { Text("🔎 "+when(selectedLanguage){"fr"->"Rechercher et écouter";"sq"->"Kërko dhe dëgjo";"en"->"Search and listen";else->"Пребарај и слушај"}) }
+   Text(when(selectedLanguage){"fr"->"Les résultats s’ouvrent dans YouTube Music si l’application est installée.";"sq"->"Rezultatet hapen në YouTube Music nëse aplikacioni është i instaluar.";"en"->"Results open in YouTube Music if the app is installed.";else->"Резултатите се отвораат во YouTube Music ако е инсталирана."},color=secondaryText,fontSize=10.sp)
   }
  }
- Box(Modifier.fillMaxWidth()) {
-  OutlinedButton(onClick={countryMenuExpanded=true},modifier=Modifier.fillMaxWidth()) {
-   Text("🌍 ${radioUiText(selectedLanguage,"country")}: ${radioCountryName(selectedRadioCode,selectedLanguage)}  ▾",fontSize=13.sp)
-  }
-  DropdownMenu(expanded=countryMenuExpanded,onDismissRequest={countryMenuExpanded=false}) {
-   radioCountries.forEach { country ->
-    DropdownMenuItem(text={Text(radioCountryName(country.code,selectedLanguage))},onClick={
-     selectedRadioCountry=country.name
-     selectedRadioCode=country.code
-     settings.edit().putString("radio_country_name",country.name).putString("radio_country_code",country.code).apply()
-     countryMenuExpanded=false
-    })
-   }
-  }
- }
- Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
+Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
   OutlinedButton(onClick={showSettings=true;play(ToneGenerator.TONE_PROP_BEEP)},modifier=Modifier.weight(1f)){Text("⚙",fontSize=17.sp)}
   OutlinedButton(onClick={
   updateStatus=extraText("checking",selectedLanguage)
@@ -1786,10 +1735,7 @@ private fun startStation() {
  if(showSettings) {
   AlertDialog(onDismissRequest={showSettings=false},title={Text(uiText("settings",selectedLanguage))},text={Column {
    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text(extraText("dark_light",selectedLanguage));Switch(checked=darkMode,onCheckedChange={darkMode=it;settings.edit().putBoolean("dark_mode",it).apply()})}
-   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text(extraText("background_music",selectedLanguage));Switch(checked=musicOn,onCheckedChange={musicOn=it;settings.edit().putBoolean("music_on",it).apply()})}
    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Text(extraText("game_sounds",selectedLanguage));Switch(checked=soundsOn,onCheckedChange={soundsOn=it;settings.edit().putBoolean("sounds_on",it).apply();if(it)playGameSound(context,ToneGenerator.TONE_PROP_ACK,true,soundVolume)})}
-   Text(extraText("music_volume",selectedLanguage)+"${(musicVolume*100).toInt()}%",fontSize=13.sp)
-   Slider(value=musicVolume,onValueChange={musicVolume=it;settings.edit().putFloat("music_volume",it).apply()},valueRange=0f..0.5f)
    Text(extraText("effects_volume",selectedLanguage)+"${(soundVolume*100).toInt()}%",fontSize=13.sp)
    Slider(value=soundVolume,onValueChange={soundVolume=it;settings.edit().putFloat("sound_volume",it).apply()},valueRange=0f..1f)
    Text(extraText("volume_help",selectedLanguage),fontSize=13.sp)
