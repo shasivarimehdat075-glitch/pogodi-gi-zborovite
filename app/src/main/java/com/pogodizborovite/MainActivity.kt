@@ -1536,6 +1536,7 @@ private fun startStation() {
  var youtubeSearchUrl by remember { mutableStateOf("") }
  var musicWebView by remember { mutableStateOf<WebView?>(null) }
  val youtubePlayerHeight = (LocalConfiguration.current.screenHeightDp.dp * 0.58f).coerceIn(340.dp, 500.dp)
+ val youtubeScrollStepPx = (youtubePlayerHeight.value * LocalContext.current.resources.displayMetrics.density * 0.75f).toInt()
  val pageScrollState = rememberScrollState()
  var soundVolume by remember { mutableFloatStateOf(settings.getFloat("sound_volume",0.75f)) }
  BackHandler(enabled = youtubeSearchUrl.isNotBlank()) {
@@ -1628,7 +1629,7 @@ private fun startStation() {
        modifier=Modifier.height(38.dp)
       ) { Text("↑",fontSize=19.sp,fontWeight=FontWeight.Bold) }
       FilledTonalButton(
-       onClick={musicWebView?.scrollBy(0,(youtubePlayerHeight.value*LocalContext.current.resources.displayMetrics.density*0.75f).toInt())},
+       onClick={musicWebView?.scrollBy(0,youtubeScrollStepPx)},
        contentPadding=PaddingValues(horizontal=12.dp,vertical=5.dp),
        modifier=Modifier.height(38.dp)
       ) { Text("↓",fontSize=19.sp,fontWeight=FontWeight.Bold) }
