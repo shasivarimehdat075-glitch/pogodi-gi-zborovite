@@ -1535,6 +1535,9 @@ private fun startStation() {
  var youtubeQuery by remember { mutableStateOf("") }
  var youtubeSearchUrl by remember { mutableStateOf("") }
  var musicWebView by remember { mutableStateOf<WebView?>(null) }
+ var extractorResults by remember { mutableStateOf(emptyList<ExtractedVideo>()) }
+ var extractorStatus by remember { mutableStateOf("") }
+ var selectedStreamUrl by remember { mutableStateOf("") }
  val youtubePlayerHeight = (LocalConfiguration.current.screenHeightDp.dp * 0.58f).coerceIn(340.dp, 500.dp)
  val youtubeScrollStepPx = (youtubePlayerHeight.value * LocalContext.current.resources.displayMetrics.density * 0.75f).toInt()
  val pageScrollState = rememberScrollState()
@@ -1544,7 +1547,23 @@ private fun startStation() {
   if (player?.canGoBack() == true) player.goBack() else { youtubeSearchUrl = ""; musicWebView = null }
  }
  BackHandler(enabled = youtubeSearchUrl.isBlank()) { onExit() }
- fun searchYoutubeMusic() { val query=youtubeQuery.trim(); if(query.isBlank())return; youtubeSearchUrl="https://piped.private.coffee/results?search_query="+java.net.URLEncoder.encode(query,"UTF-8") }
+ fun searchYoutubeMusic() {
+  val query=youtubeQuery.trim()
+  if(query.isBlank()) return
+  youtubeSearchUrl="newpipe://results"
+  selectedStreamUrl=""
+  extractorResults=emptyList()
+  extractorStatus=if(selectedLanguage=="fr") "Recherche YouTube…" else "Searching…"
+  scope.launch {
+   try {
+    val found=withContext(Dispatchers.IO) { NewPipeYoutube.search(query) }
+    extractorResults=found
+    extractorStatus=if(found.isEmpty()) "Aucun résultat vidéo." else ""
+   } catch(e:Exception) {
+    extractorStatus="Recherche impossible : ${e.message ?: "erreur réseau"}"
+   }
+  }
+ }
  fun play(tone:Int) { playGameSound(context,tone,soundsOn,soundVolume) }
  val pageBg=if(darkMode) Color(0xFF101B3D) else Color(0xFFF3F6FC)
  val panel=if(darkMode) Color(0xFF24365F) else Color.White
@@ -1586,76 +1605,67 @@ private fun startStation() {
    }
    if(youtubeSearchUrl.isNotBlank()) {
     Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
-     Text(when(selectedLanguage){"fr"->"Lecteur vidéo";"sq"->"Luajtësi i videove";"en"->"Video player";else->"Видео плеер"},color=mainText,fontWeight=FontWeight.SemiBold,fontSize=13.sp)
+     Text(if(selectedStreamUrl.isBlank()) "Résultats vidéo" else "Lecteur vidéo",color=mainText,fontWeight=FontWeight.SemiBold,fontSize=13.sp)
      TextButton(onClick={
-      val player=musicWebView
-      if(player?.canGoBack()==true) player.goBack() else { youtubeSearchUrl=""; musicWebView=null }
-     }) { Text(when(selectedLanguage){"fr"->"← Retour";"sq"->"← Mbrapa";"en"->"← Back";else->"← Назад"}) }
+      if(selectedStreamUrl.isNotBlank()) selectedStreamUrl=""
+      else { youtubeSearchUrl=""; extractorResults=emptyList(); extractorStatus="" }
+     }) { Text("← Retour") }
     }
-    Box(Modifier.fillMaxWidth().height(youtubePlayerHeight)) {
+    if(selectedStreamUrl.isNotBlank()) {
      AndroidView(
-      modifier=Modifier.fillMaxSize(),
+      modifier=Modifier.fillMaxWidth().height(youtubePlayerHeight),
       factory={ ctx ->
        WebView(ctx).also { player ->
-        player.isVerticalScrollBarEnabled=false
-        player.isHorizontalScrollBarEnabled=false
         player.settings.javaScriptEnabled=true
         player.settings.domStorageEnabled=true
         player.settings.mediaPlaybackRequiresUserGesture=true
-        player.settings.javaScriptCanOpenWindowsAutomatically=false
-        player.settings.setSupportMultipleWindows(false)
-        /* Ask YouTube for its real Android mobile layout instead of forcing page widths with CSS. */
-        player.settings.userAgentString="Mozilla/5.0 (Linux; Android 11; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36"
-        player.settings.useWideViewPort=true
-        player.settings.loadWithOverviewMode=true
-        player.settings.textZoom=100
-        player.webViewClient=object:WebViewClient() {}
         player.webChromeClient=WebChromeClient()
+        player.webViewClient=object:WebViewClient(){}
         musicWebView=player
-        player.loadUrl(youtubeSearchUrl)
+        val html="""<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>html,body{margin:0;background:#000;width:100%;height:100%;}video{width:100%;height:100%;object-fit:contain;background:#000}</style></head><body><video controls autoplay playsinline><source src="$selectedStreamUrl"></video></body></html>"""
+        player.loadDataWithBaseURL("https://www.youtube.com/",html,"text/html","UTF-8",null)
        }
       },
-      update={ view -> if(view.url!=youtubeSearchUrl) view.loadUrl(youtubeSearchUrl) }
+      update={ player ->
+       if(player.tag!=selectedStreamUrl) {
+        player.tag=selectedStreamUrl
+        val html="""<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>html,body{margin:0;background:#000;width:100%;height:100%;}video{width:100%;height:100%;object-fit:contain;background:#000}</style></head><body><video controls autoplay playsinline><source src="$selectedStreamUrl"></video></body></html>"""
+        player.loadDataWithBaseURL("https://www.youtube.com/",html,"text/html","UTF-8",null)
+       }
+      }
      )
-     Column(
-      modifier=Modifier.align(Alignment.BottomEnd).padding(end=8.dp,bottom=155.dp),
-      verticalArrangement=Arrangement.spacedBy(6.dp),
-      horizontalAlignment=Alignment.CenterHorizontally
-     ) {
-      FilledTonalButton(
+     Column(Modifier.fillMaxWidth(),horizontalAlignment=Alignment.End) {
+      FilledTonalButton(onClick={musicWebView?.evaluateJavascript("document.querySelector('video')?.currentTime=Math.max(0,document.querySelector('video')?.currentTime-15)",null)}) { Text("↑ 15 s") }
+      FilledTonalButton(onClick={musicWebView?.evaluateJavascript("document.querySelector('video')?.currentTime+=15",null)}) { Text("↓ 15 s") }
+     }
+    } else {
+     if(extractorStatus.isNotBlank()) Text(extractorStatus,color=secondaryText,fontSize=13.sp)
+     extractorResults.forEach { video ->
+      Card(
        onClick={
-        musicWebView?.evaluateJavascript("""
-         (function(){
-          var amount=Math.max(window.innerHeight*0.85,500);
-          window.dispatchEvent(new WheelEvent('wheel',{deltaY:-amount,bubbles:true,cancelable:true}));
-          Array.from(document.querySelectorAll('*')).filter(function(e){var s=getComputedStyle(e);return /(auto|scroll)/.test(s.overflowY)&&e.scrollHeight>e.clientHeight+40;}).forEach(function(e){e.scrollTo({top:0,behavior:'smooth'});});
-          if(document.scrollingElement)document.scrollingElement.scrollTo({top:0,behavior:'smooth'});
-          window.scrollTo({top:0,behavior:'smooth'});
-          document.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowUp',code:'ArrowUp',bubbles:true}));
-         })();
-        """.trimIndent(),null)
+        extractorStatus="Chargement de la vidéo…"
+        scope.launch {
+         try {
+          val stream=withContext(Dispatchers.IO){NewPipeYoutube.getPlayableStream(video.url)}
+          selectedStreamUrl=stream
+          extractorStatus=""
+         } catch(e:Exception) {
+          extractorStatus="Lecture indisponible pour cette vidéo : ${e.message ?: "flux non accessible"}"
+         }
+        }
        },
-       contentPadding=PaddingValues(horizontal=12.dp,vertical=5.dp),
-       modifier=Modifier.height(38.dp)
-      ) { Text("↑",fontSize=19.sp,fontWeight=FontWeight.Bold) }
-      FilledTonalButton(
-       onClick={
-        musicWebView?.evaluateJavascript("""
-         (function(){
-          var amount=Math.max(window.innerHeight*0.85,500);
-          window.dispatchEvent(new WheelEvent('wheel',{deltaY:amount,bubbles:true,cancelable:true}));
-          var candidates=Array.from(document.querySelectorAll('*')).filter(function(e){var s=getComputedStyle(e);return /(auto|scroll)/.test(s.overflowY)&&e.scrollHeight>e.clientHeight+40;});
-          candidates.sort(function(a,b){return (b.scrollHeight-b.clientHeight)-(a.scrollHeight-a.clientHeight);});
-          candidates.forEach(function(e){e.scrollBy({top:amount,behavior:'smooth'});});
-          if(document.scrollingElement)document.scrollingElement.scrollBy({top:amount,behavior:'smooth'});
-          window.scrollBy({top:amount,behavior:'smooth'});
-          document.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown',code:'ArrowDown',bubbles:true}));
-         })();
-        """.trimIndent(),null)
-       },
-       contentPadding=PaddingValues(horizontal=12.dp,vertical=5.dp),
-       modifier=Modifier.height(38.dp)
-      ) { Text("↓",fontSize=19.sp,fontWeight=FontWeight.Bold) }
+       modifier=Modifier.fillMaxWidth(),
+       colors=CardDefaults.cardColors(containerColor=panel),
+       shape=RoundedCornerShape(12.dp)
+      ) {
+       Row(Modifier.fillMaxWidth().padding(8.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(10.dp)) {
+        if(video.thumbnail.isNotBlank()) AsyncImage(model=video.thumbnail,contentDescription=video.title,modifier=Modifier.width(112.dp).height(68.dp),contentScale=ContentScale.Crop)
+        Column(Modifier.weight(1f)) {
+         Text(video.title,color=mainText,fontWeight=FontWeight.SemiBold,fontSize=13.sp,maxLines=2)
+         if(video.uploader.isNotBlank()) Text(video.uploader,color=secondaryText,fontSize=11.sp,maxLines=1)
+        }
+       }
+      }
      }
     }
    }
