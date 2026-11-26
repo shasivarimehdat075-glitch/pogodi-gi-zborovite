@@ -76,7 +76,7 @@ jobs:
         run: |
           EXISTING_VERSION=$(gh release view latest --json name --jq .name 2>/dev/null || true)
           if [ -n "$EXISTING_VERSION" ] && [ "$EXISTING_VERSION" != "$VERSION_NAME" ]; then
-            NEWEST_VERSION=$(printf '%s\\n%s\\n' "$EXISTING_VERSION" "$VERSION_NAME" | sort -V | tail -n1)
+            NEWEST_VERSION=$(printf '%s\n%s\n' "$EXISTING_VERSION" "$VERSION_NAME" | sort -V | tail -n1)
             if [ "$NEWEST_VERSION" != "$VERSION_NAME" ]; then
               echo "Skipping stale release $VERSION_NAME; latest is $EXISTING_VERSION"
               echo "publish=false" >> "$GITHUB_OUTPUT"
