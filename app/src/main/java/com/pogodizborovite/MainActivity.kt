@@ -1660,8 +1660,8 @@ private fun startStation() {
         browser.settings.javaScriptEnabled=true
         browser.settings.domStorageEnabled=true
         browser.settings.mediaPlaybackRequiresUserGesture=true
-        browser.settings.useWideViewPort=false
-        browser.settings.loadWithOverviewMode=false
+        browser.settings.useWideViewPort=true
+        browser.settings.loadWithOverviewMode=true
         browser.settings.setSupportZoom(false)
         browser.settings.builtInZoomControls=false
         browser.settings.userAgentString="Mozilla/5.0 (Linux; Android 11; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36"
@@ -1670,7 +1670,13 @@ private fun startStation() {
         browser.isVerticalScrollBarEnabled=true
         browser.isHorizontalScrollBarEnabled=false
         browser.webChromeClient=WebChromeClient()
-        browser.webViewClient=WebViewClient()
+        browser.webViewClient=object:WebViewClient() {
+         override fun onPageFinished(view:WebView,url:String) {
+          super.onPageFinished(view,url)
+          view.scrollTo(0,0)
+          view.evaluateJavascript("(function(){var m=document.querySelector('meta[name=viewport]');if(!m){m=document.createElement('meta');m.name='viewport';document.head.appendChild(m);}m.content='width=device-width, initial-scale=1, maximum-scale=1';document.documentElement.style.maxWidth='100%';document.documentElement.style.overflowX='hidden';document.body.style.maxWidth='100%';document.body.style.overflowX='hidden';window.scrollTo(0,0);})()",null)
+         }
+        }
         browser.tag=youtubeSearchUrl
         musicWebView=browser
         browser.loadUrl(youtubeSearchUrl)
