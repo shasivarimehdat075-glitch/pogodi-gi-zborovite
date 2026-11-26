@@ -1616,6 +1616,9 @@ private fun startStation() {
         player.settings.useWideViewPort=false
         player.settings.loadWithOverviewMode=false
         player.settings.textZoom=100
+        player.settings.userAgentString="Mozilla/5.0 (Linux; Android 11; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36"
+        player.isVerticalScrollBarEnabled=false
+        player.isHorizontalScrollBarEnabled=false
         player.webViewClient=object:WebViewClient() {
          override fun onPageFinished(view:WebView?, url:String?) {
           super.onPageFinished(view,url)
@@ -1633,6 +1636,11 @@ private fun startStation() {
               el.removeAttribute('has-side-navigation');
             });
             document.documentElement.style.removeProperty('color-scheme');
+            /* Keep YouTube's own bottom navigation visible in its mobile layout. */
+            var navCssId='app-youtube-bottom-nav-visible';
+            var navCss=document.getElementById(navCssId);
+            if(!navCss){navCss=document.createElement('style');navCss.id=navCssId;document.head.appendChild(navCss);}
+            navCss.textContent='ytm-pivot-bar-renderer{display:flex!important;visibility:visible!important;opacity:1!important;position:fixed!important;left:0!important;right:0!important;bottom:0!important;width:100%!important;z-index:2147483000!important;} ytm-pivot-bar-item-renderer{display:flex!important;visibility:visible!important;opacity:1!important;}';
             window.scrollTo(0,0);
            })();
           """.trimIndent(),null)
