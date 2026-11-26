@@ -36,4 +36,5 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
     implementation("io.coil-kt:coil-compose:2.7.0")
+    implementation("com.github.TeamNewPipe:NewPipeExtractor:v0.27.1")
 }
