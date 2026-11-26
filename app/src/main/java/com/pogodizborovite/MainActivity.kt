@@ -1296,10 +1296,14 @@ private fun radioUiText(lang:String,key:String):String {
  return values[lang]?.get(key) ?: values["mk"]!!.getValue(key)
 }
 private fun radioCountryName(code:String,lang:String):String {
- if(code.isBlank()) return mapOf("fr" to "Tous les pays","sq" to "Të gjitha shtetet","en" to "All countries")[lang] ?: "Сите земји"
- if(code=="XK") return mapOf("mk" to "Косово","fr" to "Kosovo","sq" to "Kosovë","en" to "Kosovo")[lang] ?: "Kosovo"
- val locale=Locale.forLanguageTag(lang)
- return Locale("",code).getDisplayCountry(locale).ifBlank { code }
+ if(code.isBlank()) return mapOf("mk" to "Сите земји","fr" to "Tous les pays","sq" to "Të gjitha shtetet","en" to "All countries")[lang] ?: "Сите земји"
+ val names=mapOf(
+  "MK" to mapOf("mk" to "Македонија","fr" to "Macédoine","sq" to "Maqedonia","en" to "North Macedonia"),
+  "FR" to mapOf("mk" to "Франција","fr" to "France","sq" to "Franca","en" to "France"),
+  "AL" to mapOf("mk" to "Албанија","fr" to "Albanie","sq" to "Shqipëria","en" to "Albania"),
+  "XK" to mapOf("mk" to "Косово","fr" to "Kosovo","sq" to "Kosova","en" to "Kosovo")
+ )
+ return names[code]?.get(lang) ?: Locale("",code).getDisplayCountry(Locale.forLanguageTag(lang)).ifBlank { code }
 }
 private fun translateRadioStatus(status:String,lang:String):String {
  val translations=mapOf(
@@ -1608,7 +1612,7 @@ private fun startStation() {
   }
   DropdownMenu(expanded=countryMenuExpanded,onDismissRequest={countryMenuExpanded=false}) {
    radioCountries.forEach { country ->
-    DropdownMenuItem(text={Text(country.name)},onClick={
+    DropdownMenuItem(text={Text(radioCountryName(country.code,selectedLanguage))},onClick={
      selectedRadioCountry=country.name
      selectedRadioCode=country.code
      settings.edit().putString("radio_country_name",country.name).putString("radio_country_code",country.code).apply()
@@ -1644,7 +1648,7 @@ private fun startStation() {
     else { updateStatus=extraText("found",selectedLanguage)+" ${result.first}"; onUpdate(result.second) }
    } catch(e:Exception) { updateStatus=extraText("failed",selectedLanguage) }
   }
- },modifier=Modifier.weight(1f)){Text("🔄 "+extraText("update",selectedLanguage))}
+ },modifier=Modifier.weight(1f)){Text("🔄 "+extraText("update",selectedLanguage),fontSize=12.sp,maxLines=1,softWrap=false)}
   OutlinedButton(onClick={showExitDialog=true},modifier=Modifier.weight(1f)){Text("🚪 ИЗЛЕЗ")}
  }
  if(updateStatus.isNotBlank()) Text(updateStatus,color=Color(0xFFFFD782),textAlign=TextAlign.Center,fontSize=13.sp)
