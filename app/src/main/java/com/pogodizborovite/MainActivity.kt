@@ -1535,7 +1535,7 @@ private fun startStation() {
  var youtubeQuery by remember { mutableStateOf("") }
  var youtubeSearchUrl by remember { mutableStateOf("") }
  var musicWebView by remember { mutableStateOf<WebView?>(null) }
- val youtubePlayerHeight = (LocalConfiguration.current.screenHeightDp.dp * 0.40f).coerceIn(240.dp, 360.dp)
+ val youtubePlayerHeight = (LocalConfiguration.current.screenHeightDp.dp * 0.62f).coerceIn(380.dp, 560.dp)
  var soundVolume by remember { mutableFloatStateOf(settings.getFloat("sound_volume",0.75f)) }
  BackHandler(enabled = youtubeSearchUrl.isNotBlank()) {
   val player = musicWebView
