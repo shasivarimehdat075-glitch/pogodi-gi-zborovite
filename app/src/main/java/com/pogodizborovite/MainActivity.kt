@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.viewinterop.AndroidView
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -1533,8 +1534,14 @@ private fun startStation() {
  var soundsOn by remember { mutableStateOf(settings.getBoolean("sounds_on",true)) }
  var youtubeQuery by remember { mutableStateOf("") }
  var youtubeSearchUrl by remember { mutableStateOf("") }
+ var musicWebView by remember { mutableStateOf<WebView?>(null) }
+ val youtubePlayerHeight = (LocalConfiguration.current.screenHeightDp.dp * 0.40f).coerceIn(240.dp, 360.dp)
  var soundVolume by remember { mutableFloatStateOf(settings.getFloat("sound_volume",0.75f)) }
- BackHandler { onExit() }
+ BackHandler(enabled = youtubeSearchUrl.isNotBlank()) {
+  val player = musicWebView
+  if (player?.canGoBack() == true) player.goBack() else { youtubeSearchUrl = ""; musicWebView = null }
+ }
+ BackHandler(enabled = youtubeSearchUrl.isBlank()) { onExit() }
  fun searchYoutubeMusic() { val query=youtubeQuery.trim(); if(query.isBlank())return; youtubeSearchUrl="https://m.youtube.com/results?search_query="+java.net.URLEncoder.encode(query,"UTF-8") }
  fun play(tone:Int) { playGameSound(context,tone,soundsOn,soundVolume) }
  val pageBg=if(darkMode) Color(0xFF101B3D) else Color(0xFFF3F6FC)
@@ -1572,22 +1579,31 @@ private fun startStation() {
    Text(when(selectedLanguage){"fr"->"Recherche ta musique préférée";"sq"->"Kërko muzikën tënde të preferuar";"en"->"Search for your favourite music";else->"Пребарај ја омилената музика"},color=secondaryText,fontSize=11.sp)
    OutlinedTextField(value=youtubeQuery,onValueChange={youtubeQuery=it},modifier=Modifier.fillMaxWidth(),singleLine=true,label={Text(when(selectedLanguage){"fr"->"Titre ou artiste";"sq"->"Titulli ose artisti";"en"->"Song or artist";else->"Наслов или изведувач"})},placeholder={Text("Ex. : Sami Yusuf")})
    Button(onClick={searchYoutubeMusic()},enabled=youtubeQuery.isNotBlank(),modifier=Modifier.fillMaxWidth()) { Text("🔎 "+when(selectedLanguage){"fr"->"Rechercher et écouter";"sq"->"Kërko dhe dëgjo";"en"->"Search and listen";else->"Пребарај и слушај"}) }
-   Text(when(selectedLanguage){"fr"->"Les résultats s’ouvrent dans YouTube Music si l’application est installée.";"sq"->"Rezultatet hapen në YouTube Music nëse aplikacioni është i instaluar.";"en"->"Results open in YouTube Music if the app is installed.";else->"Резултатите се отвораат во YouTube Music ако е инсталирана."},color=secondaryText,fontSize=10.sp)
+   if(youtubeSearchUrl.isBlank()) {
+    Text(when(selectedLanguage){"fr"->"Recherche et écoute sans quitter le jeu.";"sq"->"Kërko dhe dëgjo pa dalë nga loja.";"en"->"Search and listen without leaving the game.";else->"Пребарувај и слушај без да ја напуштиш играта."},color=secondaryText,fontSize=10.sp)
+   }
    if(youtubeSearchUrl.isNotBlank()) {
-    Text(when(selectedLanguage){"fr"->"Choisis une vidéo ci-dessous pour la lire dans l’application.";"sq"->"Zgjidh një video më poshtë për ta luajtur në aplikacion.";"en"->"Choose a video below to play it inside the app.";else->"Избери видео подолу за да ја пуштиш во апликацијата."},color=secondaryText,fontSize=11.sp)
+    Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
+     Text(when(selectedLanguage){"fr"->"Lecteur YouTube";"sq"->"YouTube luajtësi";"en"->"YouTube player";else->"YouTube плеер"},color=mainText,fontWeight=FontWeight.SemiBold,fontSize=13.sp)
+     TextButton(onClick={
+      val player=musicWebView
+      if(player?.canGoBack()==true) player.goBack() else { youtubeSearchUrl=""; musicWebView=null }
+     }) { Text(when(selectedLanguage){"fr"->"← Retour";"sq"->"← Mbrapa";"en"->"← Back";else->"← Назад"}) }
+    }
     AndroidView(
-     modifier=Modifier.fillMaxWidth().height(420.dp),
+     modifier=Modifier.fillMaxWidth().height(youtubePlayerHeight),
      factory={ ctx ->
-      val musicWebView=WebView(ctx)
-      musicWebView.settings.javaScriptEnabled=true
-      musicWebView.settings.domStorageEnabled=true
-      musicWebView.settings.mediaPlaybackRequiresUserGesture=true
-      musicWebView.settings.javaScriptCanOpenWindowsAutomatically=false
-      musicWebView.settings.setSupportMultipleWindows(false)
-      musicWebView.webViewClient=WebViewClient()
-      musicWebView.webChromeClient=WebChromeClient()
-      musicWebView.loadUrl(youtubeSearchUrl)
-      musicWebView
+      WebView(ctx).also { player ->
+       player.settings.javaScriptEnabled=true
+       player.settings.domStorageEnabled=true
+       player.settings.mediaPlaybackRequiresUserGesture=true
+       player.settings.javaScriptCanOpenWindowsAutomatically=false
+       player.settings.setSupportMultipleWindows(false)
+       player.webViewClient=WebViewClient()
+       player.webChromeClient=WebChromeClient()
+       musicWebView=player
+       player.loadUrl(youtubeSearchUrl)
+      }
      },
      update={ view -> if(view.url!=youtubeSearchUrl) view.loadUrl(youtubeSearchUrl) }
     )
