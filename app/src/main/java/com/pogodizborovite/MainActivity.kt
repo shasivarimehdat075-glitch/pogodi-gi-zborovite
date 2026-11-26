@@ -1653,36 +1653,83 @@ private fun startStation() {
  }
  if(updateStatus.isNotBlank()) Text(updateStatus,color=Color(0xFFFFD782),textAlign=TextAlign.Center,fontSize=13.sp)
  if(selected<0){
-  Text(uiText("choose_category",selectedLanguage),color=mainText,fontSize=20.sp,fontWeight=FontWeight.Bold)
-  categories.forEachIndexed { i,cat ->
-   Card(onClick={selected=i;level=0;answer="";solved=false;hint=false;wrongAttempts=0;message="Внеси го точниот збор!";play(ToneGenerator.TONE_PROP_BEEP)},colors=CardDefaults.cardColors(containerColor=panel),shape=RoundedCornerShape(18.dp),modifier=Modifier.fillMaxWidth()){
-    Row(Modifier.padding(18.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(14.dp)){
-     Text(cat.emoji,fontSize=32.sp)
-     Column(Modifier.weight(1f)){Text(translatedCategory(cat.title,selectedLanguage),color=mainText,fontWeight=FontWeight.Bold,fontSize=18.sp);Text(cat.puzzles.size.toString()+" "+extraText("words_photos",selectedLanguage),color=secondaryText,fontSize=13.sp)}
+  Text(when(selectedLanguage){"fr"->"CHOISIS UN JEU";"sq"->"ZGJIDH NJË LOJË";"en"->"CHOOSE A GAME";else->"ИЗБЕРИ ИГРА"},color=mainText,fontSize=20.sp,fontWeight=FontWeight.Bold)
+  val games=listOf(
+   "🧱" to listOf("Tetris","Tetris","Tetris","Тетрис"),
+   "🐍" to listOf("Snake","Snake","Snake","Змија"),
+   "🧱" to listOf("Casse-briques","Thyes tullash","Brick Breaker","Арканоид"),
+   "🔢" to listOf("2048","2048","2048","2048"),
+   "💣" to listOf("Démineur","Minëpastrues","Minesweeper","Минер"),
+   "🧠" to listOf("Jeu de mémoire","Lojë kujtese","Memory Match","Меморија"),
+   "⭕" to listOf("Morpion","Tic-tac-toe","Tic-tac-toe","Икс-точка"),
+   "🔣" to listOf("Sudoku","Sudoku","Sudoku","Судоку"),
+   "🐤" to listOf("Vol d'oiseau","Fluturimi i zogut","Bird Flight","Лет на птица"),
+   "🏃" to listOf("Course infinie","Vrapim pa fund","Endless Runner","Бескрајно трчање"),
+   "🫧" to listOf("Bubble Shooter","Bubble Shooter","Bubble Shooter","Меурчиња"),
+   "🔴" to listOf("Puissance 4","Katër në rresht","Connect Four","Четири во низа"),
+   "🧩" to listOf("Puzzle","Puzzle","Jigsaw Puzzle","Сложувалка"),
+   "♟️" to listOf("Échecs","Shah","Chess","Шах"),
+   "🎨" to listOf("Tri des couleurs","Renditja e ngjyrave","Color Sort","Подредување бои")
+  )
+  games.forEachIndexed { index,item ->
+   Card(onClick={if(index==1){selected=1;level=0;answer="";message=""}else{selected=2+index}},colors=CardDefaults.cardColors(containerColor=panel),shape=RoundedCornerShape(16.dp),modifier=Modifier.fillMaxWidth()){
+    Row(Modifier.fillMaxWidth().padding(16.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(14.dp)){
+     Text(item.first,fontSize=30.sp)
+     Text(item.second[when(selectedLanguage){"fr"->0;"sq"->1;"en"->2;else->3}],color=mainText,fontWeight=FontWeight.Bold,fontSize=18.sp,modifier=Modifier.weight(1f))
      Text("›",color=Color(0xFF8DE1D2),fontSize=28.sp)
     }
    }
   }
- }else{
-  val cat=categories[selected]; val p=cat.puzzles[level % cat.puzzles.size]; val displayWord=translatedPuzzleWord(p.word,selectedLanguage); val displayClue=translatedPuzzleClue(p.word,p.clue,selectedLanguage)
-  Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
-   TextButton(onClick={selected=-1;answer="";solved=false;hint=false;play(ToneGenerator.TONE_PROP_BEEP)}){Text(uiText("back_categories",selectedLanguage))}
-   Text(extraText("level",selectedLanguage)+" "+(level+1)+"/"+cat.puzzles.size,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
-  }
-  Text(translatedCategory(cat.title,selectedLanguage),color=Color(0xFF8DE1D2),fontWeight=FontWeight.Bold)
-  Card(colors=CardDefaults.cardColors(containerColor=Color(0xFF24365F)),shape=RoundedCornerShape(22.dp),modifier=Modifier.fillMaxWidth()){
-   Column(Modifier.padding(16.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(12.dp)){
-    AsyncImage(model=p.photo,contentDescription=p.category,modifier=Modifier.fillMaxWidth().height(190.dp),contentScale=ContentScale.Crop)
-    Text(uiText("what_word",selectedLanguage),color=mainText,fontSize=21.sp,fontWeight=FontWeight.Bold)
-    Text(displayClue,color=mainText,fontSize=17.sp,textAlign=TextAlign.Center)
-    Text(uiText("letter_count",selectedLanguage)+displayWord.length,color=Color(0xFFFFD782),fontWeight=FontWeight.Bold)
-    OutlinedTextField(value=answer,onValueChange={answer=it.uppercase()},label={Text(uiText("answer",selectedLanguage))},enabled=!solved,singleLine=true)
-    Button(onClick={if(normalizeAnswer(answer)==normalizeAnswer(displayWord)){score+=if(hint)5 else 10;correctAnswers++;settings.edit().putInt("score",score).putInt("correct_answers",correctAnswers).apply();solved=true;message=if(correctAnswers%10==0) "🎵 ${correctAnswers} "+extraText("ten_correct",selectedLanguage) else extraText("correct",selectedLanguage);play(ToneGenerator.TONE_PROP_ACK)}else{wrongAttempts++;if(wrongAttempts>=3){score=(score-2).coerceAtLeast(0);settings.edit().putInt("score",score).apply();message=extraText("wrong_final",selectedLanguage);solved=true}else{message=extraText("wrong",selectedLanguage)+" ${wrongAttempts}/3"};play(ToneGenerator.TONE_PROP_NACK)}},enabled=!solved,modifier=Modifier.fillMaxWidth()){Text(uiText("check",selectedLanguage))}
-    OutlinedButton(onClick={hint=true;message=extraText("first_letter",selectedLanguage)+displayWord.first();play(ToneGenerator.TONE_PROP_BEEP)},enabled=!solved&&!hint){Text(uiText("hint",selectedLanguage))}
-    Text(message,color=Color(0xFFFFD782),textAlign=TextAlign.Center)
-    if(solved) Text(extraText("next_level",selectedLanguage),color=Color(0xFF8DE1D2),fontWeight=FontWeight.Bold,textAlign=TextAlign.Center)
+ } else if(selected==1){
+  var snake by remember { mutableStateOf(listOf(7 to 7,6 to 7,5 to 7)) }
+  var food by remember { mutableStateOf(10 to 7) }
+  var direction by remember { mutableStateOf(1 to 0) }
+  var nextDirection by remember { mutableStateOf(1 to 0) }
+  var snakeScore by remember { mutableIntStateOf(0) }
+  var snakeOver by remember { mutableStateOf(false) }
+  var snakeRunning by remember { mutableStateOf(true) }
+  fun resetSnake(){snake=listOf(7 to 7,6 to 7,5 to 7);food=10 to 7;direction=1 to 0;nextDirection=1 to 0;snakeScore=0;snakeOver=false;snakeRunning=true}
+  LaunchedEffect(selected,snakeRunning,snakeOver) {
+   while(selected==1 && snakeRunning && !snakeOver){
+    delay(230)
+    direction=nextDirection
+    val head=snake.first()
+    val newHead=(head.first+direction.first) to (head.second+direction.second)
+    if(newHead.first !in 0..13 || newHead.second !in 0..13 || newHead in snake.dropLast(1)){snakeOver=true}
+    else{
+     val ate=newHead==food
+     snake=if(ate) listOf(newHead)+snake else listOf(newHead)+snake.dropLast(1)
+     if(ate){snakeScore+=10;var candidate=(kotlin.random.Random.nextInt(14) to kotlin.random.Random.nextInt(14));while(candidate in snake) candidate=(kotlin.random.Random.nextInt(14) to kotlin.random.Random.nextInt(14));food=candidate}
+    }
    }
   }
+  Text("🐍 Snake",color=mainText,fontSize=22.sp,fontWeight=FontWeight.Bold)
+  Text((if(selectedLanguage=="fr")"Score" else if(selectedLanguage=="sq")"Pikët" else if(selectedLanguage=="en")"Score" else "Поени")+": $snakeScore",color=gold,fontWeight=FontWeight.Bold,fontSize=18.sp)
+  androidx.compose.foundation.layout.Box(Modifier.fillMaxWidth().aspectRatio(1f).background(Color(0xFF14251F),RoundedCornerShape(12.dp)).padding(5.dp)){
+   Column(Modifier.fillMaxSize(),verticalArrangement=Arrangement.spacedBy(2.dp)){
+    (0..13).forEach { y -> Row(Modifier.weight(1f),horizontalArrangement=Arrangement.spacedBy(2.dp)){
+     (0..13).forEach { x ->
+      val cell=x to y
+      Box(Modifier.weight(1f).fillMaxHeight().background(if(cell==food) Color(0xFFFF5959) else if(cell in snake) Color(0xFF62D99B) else Color(0xFF203B32),RoundedCornerShape(2.dp)))
+     }
+    }}
+   }
+  }
+  if(snakeOver) Text(if(selectedLanguage=="fr")"Partie terminée !" else if(selectedLanguage=="sq")"Loja mbaroi!" else if(selectedLanguage=="en")"Game over!" else "Крај на играта!",color=Color(0xFFFF7777),fontWeight=FontWeight.Bold)
+  @androidx.compose.runtime.Composable
+  fun directionButton(label:String,dx:Int,dy:Int){OutlinedButton(onClick={if(!(direction.first+dx==0 && direction.second+dy==0))nextDirection=dx to dy},modifier=Modifier.size(64.dp)){Text(label,fontSize=22.sp)}}
+  Column(horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(5.dp)){
+   directionButton("⬆",0,-1)
+   Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){directionButton("⬅",-1,0);directionButton("⬇",0,1);directionButton("➡",1,0)}
+  }
+  Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){
+   Button(onClick={snakeRunning=!snakeRunning; if(snakeOver)resetSnake()}){Text(if(snakeRunning) (if(selectedLanguage=="fr")"Pause" else "Pause") else (if(selectedLanguage=="fr")"Reprendre" else if(selectedLanguage=="en")"Resume" else if(selectedLanguage=="sq")"Vazhdo" else "Продолжи"))}
+   OutlinedButton(onClick={resetSnake()}){Text(if(selectedLanguage=="fr")"Recommencer" else if(selectedLanguage=="sq")"Rifillo" else if(selectedLanguage=="en")"Restart" else "Почни повторно")}
+  }
+  TextButton(onClick={selected=-1}){Text(uiText("back_categories",selectedLanguage))}
+ } else {
+  Text(when(selectedLanguage){"fr"->"Ce jeu arrive bientôt";"sq"->"Kjo lojë vjen së shpejti";"en"->"This game is coming soon";else->"Оваа игра доаѓа наскоро"},color=mainText,fontSize=20.sp)
+  TextButton(onClick={selected=-1}){Text(uiText("back_categories",selectedLanguage))}
  }
  Text(uiText("tagline",selectedLanguage),color=secondaryText,fontSize=13.sp)
  }
