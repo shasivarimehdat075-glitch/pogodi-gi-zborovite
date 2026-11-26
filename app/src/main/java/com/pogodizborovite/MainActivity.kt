@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.viewinterop.AndroidView
+import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.webkit.WebChromeClient
@@ -1642,6 +1643,10 @@ private fun startStation() {
         browser.settings.setSupportZoom(false)
         browser.settings.builtInZoomControls=false
         browser.settings.userAgentString="Mozilla/5.0 (Linux; Android 11; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36"
+        browser.setLayerType(View.LAYER_TYPE_SOFTWARE,null)
+        browser.setBackgroundColor(android.graphics.Color.WHITE)
+        browser.isVerticalScrollBarEnabled=true
+        browser.isHorizontalScrollBarEnabled=false
         browser.webChromeClient=WebChromeClient()
         browser.webViewClient=WebViewClient()
         browser.tag=youtubeSearchUrl
