@@ -1597,41 +1597,19 @@ private fun startStation() {
       modifier=Modifier.fillMaxSize(),
       factory={ ctx ->
        WebView(ctx).also { player ->
+        player.isVerticalScrollBarEnabled=false
+        player.isHorizontalScrollBarEnabled=false
         player.settings.javaScriptEnabled=true
         player.settings.domStorageEnabled=true
         player.settings.mediaPlaybackRequiresUserGesture=true
         player.settings.javaScriptCanOpenWindowsAutomatically=false
         player.settings.setSupportMultipleWindows(false)
-        player.settings.useWideViewPort=false
-        player.settings.loadWithOverviewMode=false
+        /* Ask YouTube for its real Android mobile layout instead of forcing page widths with CSS. */
+        player.settings.userAgentString="Mozilla/5.0 (Linux; Android 11; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36"
+        player.settings.useWideViewPort=true
+        player.settings.loadWithOverviewMode=true
         player.settings.textZoom=100
-        player.webViewClient=object:WebViewClient() {
-         override fun onPageFinished(view:WebView?, url:String?) {
-          super.onPageFinished(view,url)
-          view?.evaluateJavascript("""
-           (function() {
-            /* Restore YouTube's native mobile layout: previous forced widths,
-               negative offsets and hidden navigation rules conflicted with each other. */
-            var vp=document.querySelector('meta[name="viewport"]');
-            if(!vp){vp=document.createElement('meta');vp.name='viewport';document.head.appendChild(vp);}
-            vp.content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no';
-            ['app-youtube-mobile-fix','app-youtube-dark-theme'].forEach(function(id){
-              var el=document.getElementById(id);if(el)el.remove();
-            });
-            document.querySelectorAll('ytm-browse[has-side-navigation],ytm-app[has-side-navigation]').forEach(function(el){
-              el.removeAttribute('has-side-navigation');
-            });
-            document.documentElement.style.removeProperty('color-scheme');
-            /* The whole YouTube app is offset inside this WebView. Shift its root left and widen it, rather than styling individual result cards. */
-            var gutterFix=document.getElementById('app-youtube-gutter-fix');
-            if(!gutterFix){gutterFix=document.createElement('style');gutterFix.id='app-youtube-gutter-fix';document.head.appendChild(gutterFix);}
-            gutterFix.textContent='ytm-app,ytd-app,#app{display:block!important;position:relative!important;left:-20vw!important;width:120vw!important;max-width:none!important;min-width:120vw!important;margin:0!important;padding:0!important;transform:none!important}ytm-browse,ytm-search,ytm-watch,ytm-shorts,ytd-browse,ytd-search{position:relative!important;left:-20vw!important;width:120vw!important;max-width:none!important;min-width:120vw!important;margin:0!important;padding:0!important;transform:none!important}ytm-browse #page-manager,ytm-browse #contents,ytm-search #page-manager,ytm-search #contents,ytd-browse #page-manager,ytd-search #page-manager{width:100%!important;max-width:100%!important;margin:0!important;padding:0!important;left:0!important}ytm-pivot-bar-renderer{left:0!important;right:0!important;width:100vw!important}';
-            window.scrollTo(0,0);
-           })();
-          """.trimIndent(),null)
-          view?.scrollTo(0,0)
-         }
-        }
+        player.webViewClient=object:WebViewClient() {}
         player.webChromeClient=WebChromeClient()
         musicWebView=player
         player.loadUrl(youtubeSearchUrl)
