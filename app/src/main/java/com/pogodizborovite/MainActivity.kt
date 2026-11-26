@@ -1553,7 +1553,7 @@ private fun startStation() {
   selectedStreamUrl=""
   extractorResults=emptyList()
   extractorStatus=""
-  youtubeSearchUrl="https://www.youtube.com/results?search_query="+java.net.URLEncoder.encode(query,"UTF-8")
+  youtubeSearchUrl="https://m.youtube.com/results?search_query="+java.net.URLEncoder.encode(query,"UTF-8")
  }
  fun play(tone:Int) { playGameSound(context,tone,soundsOn,soundVolume) }
  val pageBg=if(darkMode) Color(0xFF101B3D) else Color(0xFFF3F6FC)
@@ -1637,6 +1637,11 @@ private fun startStation() {
         browser.settings.javaScriptEnabled=true
         browser.settings.domStorageEnabled=true
         browser.settings.mediaPlaybackRequiresUserGesture=true
+        browser.settings.useWideViewPort=false
+        browser.settings.loadWithOverviewMode=false
+        browser.settings.setSupportZoom(false)
+        browser.settings.builtInZoomControls=false
+        browser.settings.userAgentString="Mozilla/5.0 (Linux; Android 11; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36"
         browser.webChromeClient=WebChromeClient()
         browser.webViewClient=WebViewClient()
         browser.tag=youtubeSearchUrl
