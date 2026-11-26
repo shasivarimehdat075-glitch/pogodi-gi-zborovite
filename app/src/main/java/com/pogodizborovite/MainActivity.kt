@@ -1559,8 +1559,9 @@ private fun startStation() {
     val found=withContext(Dispatchers.IO) { NewPipeYoutube.search(query) }
     extractorResults=found
     extractorStatus=if(found.isEmpty()) "Aucun résultat vidéo." else ""
-   } catch(e:Exception) {
-    extractorStatus="Recherche impossible : ${e.message ?: "erreur réseau"}"
+   } catch(e:Throwable) {
+    if (e is kotlinx.coroutines.CancellationException) throw e
+    extractorStatus="Recherche impossible (${e.javaClass.simpleName}) : ${e.message ?: "erreur réseau"}"
    }
   }
  }
@@ -1649,8 +1650,9 @@ private fun startStation() {
           val stream=withContext(Dispatchers.IO){NewPipeYoutube.getPlayableStream(video.url)}
           selectedStreamUrl=stream
           extractorStatus=""
-         } catch(e:Exception) {
-          extractorStatus="Lecture indisponible pour cette vidéo : ${e.message ?: "flux non accessible"}"
+         } catch(e:Throwable) {
+          if (e is kotlinx.coroutines.CancellationException) throw e
+          extractorStatus="Lecture indisponible (${e.javaClass.simpleName}) : ${e.message ?: "flux non accessible"}"
          }
         }
        },
