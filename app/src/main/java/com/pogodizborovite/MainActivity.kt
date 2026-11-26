@@ -1591,23 +1591,49 @@ private fun startStation() {
       if(player?.canGoBack()==true) player.goBack() else { youtubeSearchUrl=""; musicWebView=null }
      }) { Text(when(selectedLanguage){"fr"->"← Retour";"sq"->"← Mbrapa";"en"->"← Back";else->"← Назад"}) }
     }
-    AndroidView(
-     modifier=Modifier.fillMaxWidth().height(youtubePlayerHeight),
-     factory={ ctx ->
-      WebView(ctx).also { player ->
-       player.settings.javaScriptEnabled=true
-       player.settings.domStorageEnabled=true
-       player.settings.mediaPlaybackRequiresUserGesture=true
-       player.settings.javaScriptCanOpenWindowsAutomatically=false
-       player.settings.setSupportMultipleWindows(false)
-       player.webViewClient=WebViewClient()
-       player.webChromeClient=WebChromeClient()
-       musicWebView=player
-       player.loadUrl(youtubeSearchUrl)
-      }
-     },
-     update={ view -> if(view.url!=youtubeSearchUrl) view.loadUrl(youtubeSearchUrl) }
-    )
+    Box(Modifier.fillMaxWidth().height(youtubePlayerHeight)) {
+     AndroidView(
+      modifier=Modifier.fillMaxSize(),
+      factory={ ctx ->
+       WebView(ctx).also { player ->
+        player.settings.javaScriptEnabled=true
+        player.settings.domStorageEnabled=true
+        player.settings.mediaPlaybackRequiresUserGesture=true
+        player.settings.javaScriptCanOpenWindowsAutomatically=false
+        player.settings.setSupportMultipleWindows(false)
+        player.settings.useWideViewPort=true
+        player.settings.loadWithOverviewMode=true
+        player.settings.textZoom=100
+        player.webViewClient=object:WebViewClient() {
+         override fun onPageFinished(view:WebView?, url:String?) {
+          super.onPageFinished(view,url)
+          view?.scrollTo(0,0)
+         }
+        }
+        player.webChromeClient=WebChromeClient()
+        musicWebView=player
+        player.loadUrl(youtubeSearchUrl)
+       }
+      },
+      update={ view -> if(view.url!=youtubeSearchUrl) view.loadUrl(youtubeSearchUrl) }
+     )
+     Column(
+      modifier=Modifier.align(Alignment.BottomEnd).padding(8.dp),
+      verticalArrangement=Arrangement.spacedBy(6.dp),
+      horizontalAlignment=Alignment.CenterHorizontally
+     ) {
+      FilledTonalButton(
+       onClick={musicWebView?.scrollTo(0,0)},
+       contentPadding=PaddingValues(horizontal=12.dp,vertical=5.dp),
+       modifier=Modifier.height(38.dp)
+      ) { Text("↑",fontSize=19.sp,fontWeight=FontWeight.Bold) }
+      FilledTonalButton(
+       onClick={musicWebView?.scrollBy(0,(youtubePlayerHeight.value*LocalContext.current.resources.displayMetrics.density*0.75f).toInt())},
+       contentPadding=PaddingValues(horizontal=12.dp,vertical=5.dp),
+       modifier=Modifier.height(38.dp)
+      ) { Text("↓",fontSize=19.sp,fontWeight=FontWeight.Bold) }
+     }
+    }
    }
   }
  }
@@ -1766,22 +1792,6 @@ Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
   TextButton(onClick={selected=-1}){Text(uiText("back_categories",selectedLanguage))}
  }
  Text(uiText("tagline",selectedLanguage),color=secondaryText,fontSize=13.sp)
- }
- Column(
-  modifier=Modifier.align(Alignment.BottomEnd).padding(end=10.dp,bottom=88.dp),
-  verticalArrangement=Arrangement.spacedBy(8.dp),
-  horizontalAlignment=Alignment.CenterHorizontally
- ) {
-  FilledTonalButton(
-   onClick={scope.launch { pageScrollState.animateScrollTo(0) }},
-   contentPadding=PaddingValues(horizontal=13.dp,vertical=7.dp),
-   modifier=Modifier.height(42.dp)
-  ) { Text("↑",fontSize=20.sp,fontWeight=FontWeight.Bold) }
-  FilledTonalButton(
-   onClick={scope.launch { pageScrollState.animateScrollTo(pageScrollState.maxValue) }},
-   contentPadding=PaddingValues(horizontal=13.dp,vertical=7.dp),
-   modifier=Modifier.height(42.dp)
-  ) { Text("↓",fontSize=20.sp,fontWeight=FontWeight.Bold) }
  }
  Surface(Modifier.align(Alignment.BottomCenter).fillMaxWidth(),color=panel,shadowElevation=8.dp) {
   Row(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal=22.dp,vertical=12.dp),horizontalArrangement=Arrangement.Center,verticalAlignment=Alignment.CenterVertically) {
