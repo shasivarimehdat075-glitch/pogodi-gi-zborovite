@@ -1637,12 +1637,36 @@ private fun startStation() {
       horizontalAlignment=Alignment.CenterHorizontally
      ) {
       FilledTonalButton(
-       onClick={musicWebView?.scrollTo(0,0)},
+       onClick={
+        musicWebView?.evaluateJavascript("""
+         (function(){
+          var amount=Math.max(window.innerHeight*0.85,500);
+          window.dispatchEvent(new WheelEvent('wheel',{deltaY:-amount,bubbles:true,cancelable:true}));
+          Array.from(document.querySelectorAll('*')).filter(function(e){var s=getComputedStyle(e);return /(auto|scroll)/.test(s.overflowY)&&e.scrollHeight>e.clientHeight+40;}).forEach(function(e){e.scrollTo({top:0,behavior:'smooth'});});
+          if(document.scrollingElement)document.scrollingElement.scrollTo({top:0,behavior:'smooth'});
+          window.scrollTo({top:0,behavior:'smooth'});
+          document.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowUp',code:'ArrowUp',bubbles:true}));
+         })();
+        """.trimIndent(),null)
+       },
        contentPadding=PaddingValues(horizontal=12.dp,vertical=5.dp),
        modifier=Modifier.height(38.dp)
       ) { Text("↑",fontSize=19.sp,fontWeight=FontWeight.Bold) }
       FilledTonalButton(
-       onClick={musicWebView?.scrollBy(0,youtubeScrollStepPx)},
+       onClick={
+        musicWebView?.evaluateJavascript("""
+         (function(){
+          var amount=Math.max(window.innerHeight*0.85,500);
+          window.dispatchEvent(new WheelEvent('wheel',{deltaY:amount,bubbles:true,cancelable:true}));
+          var candidates=Array.from(document.querySelectorAll('*')).filter(function(e){var s=getComputedStyle(e);return /(auto|scroll)/.test(s.overflowY)&&e.scrollHeight>e.clientHeight+40;});
+          candidates.sort(function(a,b){return (b.scrollHeight-b.clientHeight)-(a.scrollHeight-a.clientHeight);});
+          candidates.forEach(function(e){e.scrollBy({top:amount,behavior:'smooth'});});
+          if(document.scrollingElement)document.scrollingElement.scrollBy({top:amount,behavior:'smooth'});
+          window.scrollBy({top:amount,behavior:'smooth'});
+          document.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown',code:'ArrowDown',bubbles:true}));
+         })();
+        """.trimIndent(),null)
+       },
        contentPadding=PaddingValues(horizontal=12.dp,vertical=5.dp),
        modifier=Modifier.height(38.dp)
       ) { Text("↓",fontSize=19.sp,fontWeight=FontWeight.Bold) }
