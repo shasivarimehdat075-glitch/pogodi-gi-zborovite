@@ -1578,11 +1578,13 @@ private fun startStation() {
     AndroidView(
      modifier=Modifier.fillMaxWidth().height(420.dp),
      factory={ ctx -> WebView(ctx).apply {
-      settings.javaScriptEnabled=true
-      settings.domStorageEnabled=true
-      settings.mediaPlaybackRequiresUserGesture=true
-      settings.javaScriptCanOpenWindowsAutomatically=false
-      settings.setSupportMultipleWindows(false)
+      settings.apply {
+      javaScriptEnabled=true
+      domStorageEnabled=true
+      mediaPlaybackRequiresUserGesture=true
+      javaScriptCanOpenWindowsAutomatically=false
+      setSupportMultipleWindows(false)
+     }
       webViewClient=WebViewClient()
       webChromeClient=WebChromeClient()
       loadUrl(youtubeSearchUrl)
