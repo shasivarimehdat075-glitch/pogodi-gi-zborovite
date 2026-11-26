@@ -1622,6 +1622,10 @@ private fun startStation() {
               el.removeAttribute('has-side-navigation');
             });
             document.documentElement.style.removeProperty('color-scheme');
+            /* The whole YouTube app is offset inside this WebView. Shift its root left and widen it, rather than styling individual result cards. */
+            var gutterFix=document.getElementById('app-youtube-gutter-fix');
+            if(!gutterFix){gutterFix=document.createElement('style');gutterFix.id='app-youtube-gutter-fix';document.head.appendChild(gutterFix);}
+            gutterFix.textContent='ytm-app{display:block!important;position:relative!important;left:-20vw!important;width:120vw!important;max-width:none!important;min-width:120vw!important;margin:0!important;padding:0!important;transform:none!important}ytm-app>ytm-browse,ytm-app>ytm-search,ytm-app>ytm-watch,ytm-app>ytm-shorts{width:100%!important;max-width:100%!important;margin:0!important;padding:0!important}ytm-pivot-bar-renderer{left:0!important;right:0!important;width:100vw!important}';
             window.scrollTo(0,0);
            })();
           """.trimIndent(),null)
