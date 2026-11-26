@@ -1602,8 +1602,8 @@ private fun startStation() {
         player.settings.mediaPlaybackRequiresUserGesture=true
         player.settings.javaScriptCanOpenWindowsAutomatically=false
         player.settings.setSupportMultipleWindows(false)
-        player.settings.useWideViewPort=true
-        player.settings.loadWithOverviewMode=true
+        player.settings.useWideViewPort=false
+        player.settings.loadWithOverviewMode=false
         player.settings.textZoom=100
         player.webViewClient=object:WebViewClient() {
          override fun onPageFinished(view:WebView?, url:String?) {
