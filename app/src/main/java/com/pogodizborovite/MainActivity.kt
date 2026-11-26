@@ -1631,6 +1631,12 @@ private fun startStation() {
       FilledTonalButton(onClick={musicWebView?.evaluateJavascript("document.querySelector('video')?.currentTime+=15",null)}) { Text("↓ 15 s") }
      }
     } else {
+     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp),verticalAlignment=Alignment.CenterVertically) {
+      OutlinedButton(onClick={ if(musicWebView?.canGoBack()==true) musicWebView?.goBack() },modifier=Modifier.weight(1f)) { Text("←") }
+      OutlinedButton(onClick={ if(musicWebView?.canGoForward()==true) musicWebView?.goForward() },modifier=Modifier.weight(1f)) { Text("→") }
+      OutlinedButton(onClick={ musicWebView?.reload() },modifier=Modifier.weight(1f)) { Text("⟳") }
+      OutlinedButton(onClick={ musicWebView?.loadUrl("https://m.youtube.com") },modifier=Modifier.weight(1f)) { Text("⌂") }
+     }
      AndroidView(
       modifier=Modifier.fillMaxWidth().height(youtubePlayerHeight),
       factory={ ctx ->
