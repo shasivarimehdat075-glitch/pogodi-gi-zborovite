@@ -1535,7 +1535,8 @@ private fun startStation() {
  var youtubeQuery by remember { mutableStateOf("") }
  var youtubeSearchUrl by remember { mutableStateOf("") }
  var musicWebView by remember { mutableStateOf<WebView?>(null) }
- val youtubePlayerHeight = (LocalConfiguration.current.screenHeightDp.dp * 0.62f).coerceIn(380.dp, 560.dp)
+ val youtubePlayerHeight = (LocalConfiguration.current.screenHeightDp.dp * 0.58f).coerceIn(340.dp, 500.dp)
+ val pageScrollState = rememberScrollState()
  var soundVolume by remember { mutableFloatStateOf(settings.getFloat("sound_volume",0.75f)) }
  BackHandler(enabled = youtubeSearchUrl.isNotBlank()) {
   val player = musicWebView
@@ -1556,7 +1557,7 @@ private fun startStation() {
  LaunchedEffect(solved) { if (solved && selected >= 0) { delay(900); val cat=categories[selected]; if (level+1 < cat.puzzles.size) { level++; message=extraText("enter_word",selectedLanguage) } else { selected=-1; message="Категоријата е завршена! Браво! 🎉" }; answer=""; solved=false; hint=false; wrongAttempts=0 } }
  MaterialTheme(colorScheme=if(darkMode) darkColorScheme(primary=Color(0xFF8DE1D2)) else lightColorScheme(primary=Color(0xFF008F83))){
  Box(Modifier.fillMaxSize().background(pageBg)) {
- Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(start=18.dp,end=18.dp,top=18.dp,bottom=88.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(14.dp)){
+ Column(Modifier.fillMaxSize().verticalScroll(pageScrollState).padding(start=18.dp,end=18.dp,top=18.dp,bottom=88.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(14.dp)){
  Text("🧩 "+when(selectedLanguage){"fr"->"DEVINE LES MOTS";"sq"->"GJEJI FJALËT";"en"->"GUESS THE WORDS";else->"ПОГОДИ ГИ ЗБОРОВИТЕ"},color=mainText,fontSize=24.sp,fontWeight=FontWeight.ExtraBold,textAlign=TextAlign.Center)
  Box(Modifier.fillMaxWidth()) {
   OutlinedButton(onClick={languageMenuExpanded=true},modifier=Modifier.fillMaxWidth()) {
@@ -1765,6 +1766,22 @@ Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
   TextButton(onClick={selected=-1}){Text(uiText("back_categories",selectedLanguage))}
  }
  Text(uiText("tagline",selectedLanguage),color=secondaryText,fontSize=13.sp)
+ }
+ Column(
+  modifier=Modifier.align(Alignment.BottomEnd).padding(end=10.dp,bottom=88.dp),
+  verticalArrangement=Arrangement.spacedBy(8.dp),
+  horizontalAlignment=Alignment.CenterHorizontally
+ ) {
+  FilledTonalButton(
+   onClick={scope.launch { pageScrollState.animateScrollTo(0) }},
+   contentPadding=PaddingValues(horizontal=13.dp,vertical=7.dp),
+   modifier=Modifier.height(42.dp)
+  ) { Text("↑",fontSize=20.sp,fontWeight=FontWeight.Bold) }
+  FilledTonalButton(
+   onClick={scope.launch { pageScrollState.animateScrollTo(pageScrollState.maxValue) }},
+   contentPadding=PaddingValues(horizontal=13.dp,vertical=7.dp),
+   modifier=Modifier.height(42.dp)
+  ) { Text("↓",fontSize=20.sp,fontWeight=FontWeight.Bold) }
  }
  Surface(Modifier.align(Alignment.BottomCenter).fillMaxWidth(),color=panel,shadowElevation=8.dp) {
   Row(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal=22.dp,vertical=12.dp),horizontalArrangement=Arrangement.Center,verticalAlignment=Alignment.CenterVertically) {
