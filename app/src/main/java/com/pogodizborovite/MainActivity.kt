@@ -1566,7 +1566,7 @@ private fun startStation() {
    Text("▶ YouTube Music",color=mainText,fontWeight=FontWeight.Bold,fontSize=16.sp)
    Text(when(selectedLanguage){"fr"->"Recherche ta musique préférée";"sq"->"Kërko muzikën tënde të preferuar";"en"->"Search for your favourite music";else->"Пребарај ја омилената музика"},color=secondaryText,fontSize=11.sp)
    OutlinedTextField(value=youtubeQuery,onValueChange={youtubeQuery=it},modifier=Modifier.fillMaxWidth(),singleLine=true,label={Text(when(selectedLanguage){"fr"->"Titre ou artiste";"sq"->"Titulli ose artisti";"en"->"Song or artist";else->"Наслов или изведувач"})},placeholder={Text("Ex. : Sami Yusuf")})
-   Button(onClick={searchYoutubeMusic},enabled=youtubeQuery.isNotBlank(),modifier=Modifier.fillMaxWidth()) { Text("🔎 "+when(selectedLanguage){"fr"->"Rechercher et écouter";"sq"->"Kërko dhe dëgjo";"en"->"Search and listen";else->"Пребарај и слушај"}) }
+   Button(onClick={searchYoutubeMusic()},enabled=youtubeQuery.isNotBlank(),modifier=Modifier.fillMaxWidth()) { Text("🔎 "+when(selectedLanguage){"fr"->"Rechercher et écouter";"sq"->"Kërko dhe dëgjo";"en"->"Search and listen";else->"Пребарај и слушај"}) }
    Text(when(selectedLanguage){"fr"->"Les résultats s’ouvrent dans YouTube Music si l’application est installée.";"sq"->"Rezultatet hapen në YouTube Music nëse aplikacioni është i instaluar.";"en"->"Results open in YouTube Music if the app is installed.";else->"Резултатите се отвораат во YouTube Music ако е инсталирана."},color=secondaryText,fontSize=10.sp)
   }
  }
