@@ -1608,6 +1608,19 @@ private fun startStation() {
         player.webViewClient=object:WebViewClient() {
          override fun onPageFinished(view:WebView?, url:String?) {
           super.onPageFinished(view,url)
+          view?.evaluateJavascript("""
+           (function() {
+            var vp=document.querySelector('meta[name="viewport"]');
+            if(!vp){vp=document.createElement('meta');vp.name='viewport';document.head.appendChild(vp);}
+            vp.content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no';
+            var style=document.getElementById('app-youtube-mobile-fix');
+            if(!style){style=document.createElement('style');style.id='app-youtube-mobile-fix';document.head.appendChild(style);}
+            style.textContent='html,body{width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important;padding:0!important;overflow-x:hidden!important;box-sizing:border-box!important}*,*:before,*:after{box-sizing:border-box!important}ytd-mini-guide-renderer,ytd-guide-renderer,tp-yt-app-drawer,#guide,#secondary{display:none!important}ytd-app,#page-manager,#columns,#primary,#primary-inner,#content,ytm-app,ytm-browse,ytm-search,ytm-section-list-renderer,ytm-rich-grid-renderer,ytm-item-section-renderer{width:100%!important;max-width:100vw!important;min-width:0!important;margin-left:0!important;margin-right:0!important;left:0!important}';
+            window.scrollTo(0,0);
+            document.documentElement.scrollLeft=0;
+            document.body.scrollLeft=0;
+           })();
+          """.trimIndent(),null)
           view?.scrollTo(0,0)
          }
         }
