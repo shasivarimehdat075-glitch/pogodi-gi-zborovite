@@ -1550,20 +1550,10 @@ private fun startStation() {
  fun searchYoutubeMusic() {
   val query=youtubeQuery.trim()
   if(query.isBlank()) return
-  youtubeSearchUrl="newpipe://results"
   selectedStreamUrl=""
   extractorResults=emptyList()
-  extractorStatus=if(selectedLanguage=="fr") "Recherche YouTube…" else "Searching…"
-  scope.launch {
-   try {
-    val found=withContext(Dispatchers.IO) { NewPipeYoutube.search(query) }
-    extractorResults=found
-    extractorStatus=if(found.isEmpty()) "Aucun résultat vidéo." else ""
-   } catch(e:Throwable) {
-    if (e is kotlinx.coroutines.CancellationException) throw e
-    extractorStatus="Recherche impossible (${e.javaClass.simpleName}) : ${e.message ?: "erreur réseau"}"
-   }
-  }
+  extractorStatus=""
+  youtubeSearchUrl="https://www.youtube.com/results?search_query="+java.net.URLEncoder.encode(query,"UTF-8")
  }
  fun play(tone:Int) { playGameSound(context,tone,soundsOn,soundVolume) }
  val pageBg=if(darkMode) Color(0xFF101B3D) else Color(0xFFF3F6FC)
@@ -1640,35 +1630,28 @@ private fun startStation() {
       FilledTonalButton(onClick={musicWebView?.evaluateJavascript("document.querySelector('video')?.currentTime+=15",null)}) { Text("↓ 15 s") }
      }
     } else {
-     if(extractorStatus.isNotBlank()) Text(extractorStatus,color=secondaryText,fontSize=13.sp)
-     extractorResults.forEach { video ->
-      Card(
-       onClick={
-        extractorStatus="Chargement de la vidéo…"
-        scope.launch {
-         try {
-          val stream=withContext(Dispatchers.IO){NewPipeYoutube.getPlayableStream(video.url)}
-          selectedStreamUrl=stream
-          extractorStatus=""
-         } catch(e:Throwable) {
-          if (e is kotlinx.coroutines.CancellationException) throw e
-          extractorStatus="Lecture indisponible (${e.javaClass.simpleName}) : ${e.message ?: "flux non accessible"}"
-         }
-        }
-       },
-       modifier=Modifier.fillMaxWidth(),
-       colors=CardDefaults.cardColors(containerColor=panel),
-       shape=RoundedCornerShape(12.dp)
-      ) {
-       Row(Modifier.fillMaxWidth().padding(8.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(10.dp)) {
-        if(video.thumbnail.isNotBlank()) AsyncImage(model=video.thumbnail,contentDescription=video.title,modifier=Modifier.width(112.dp).height(68.dp),contentScale=ContentScale.Crop)
-        Column(Modifier.weight(1f)) {
-         Text(video.title,color=mainText,fontWeight=FontWeight.SemiBold,fontSize=13.sp,maxLines=2)
-         if(video.uploader.isNotBlank()) Text(video.uploader,color=secondaryText,fontSize=11.sp,maxLines=1)
-        }
+     AndroidView(
+      modifier=Modifier.fillMaxWidth().height(youtubePlayerHeight),
+      factory={ ctx ->
+       WebView(ctx).also { browser ->
+        browser.settings.javaScriptEnabled=true
+        browser.settings.domStorageEnabled=true
+        browser.settings.mediaPlaybackRequiresUserGesture=true
+        browser.webChromeClient=WebChromeClient()
+        browser.webViewClient=WebViewClient()
+        browser.tag=youtubeSearchUrl
+        musicWebView=browser
+        browser.loadUrl(youtubeSearchUrl)
+       }
+      },
+      update={ browser ->
+       if(browser.tag!=youtubeSearchUrl) {
+        browser.tag=youtubeSearchUrl
+        browser.loadUrl(youtubeSearchUrl)
        }
       }
-     }
+     )
+
     }
    }
   }
