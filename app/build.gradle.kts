@@ -6,7 +6,7 @@ plugins {
 android {
     namespace = "com.pogodizborovite"
     compileSdk = 35
-    defaultConfig { applicationId = "com.pogodizborovite"; minSdk = 23; targetSdk = 35; versionCode = 32; versionName = "2.5.6" }
+    defaultConfig { applicationId = "com.pogodizborovite"; minSdk = 23; targetSdk = 35; versionCode = 33; versionName = "2.5.7" }
     signingConfigs {
         create("release") {
             val storePath = System.getenv("RELEASE_STORE_FILE")
