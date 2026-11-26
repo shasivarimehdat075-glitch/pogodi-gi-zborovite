@@ -1751,7 +1751,14 @@ private fun startStation() {
   Text("Score : $tetrisScore",color=gold,fontSize=18.sp,fontWeight=FontWeight.Bold)
   val display=board.map{it.toMutableList()}.also{grid->piece.forEach{(a,b)->if(py+b in 0..17 && px+a in 0..9)grid[py+b][px+a]=2}}
   Column(Modifier.fillMaxWidth().aspectRatio(10f/18f).background(Color(0xFF101827),RoundedCornerShape(8.dp)).padding(3.dp),verticalArrangement=Arrangement.spacedBy(2.dp)){
-   display.forEach{row->Row(Modifier.weight(1f),horizontalArrangement=Arrangement.spacedBy(2.dp)){row.forEach{v->Box(Modifier.weight(1f).fillMaxHeight().background(when(v){1->Color(0xFF46B7A4);2->Color(0xFFFFC857);else->Color(0xFF26344B},RoundedCornerShape(2.dp)))}}}
+   display.forEach { row ->
+    Row(Modifier.weight(1f), horizontalArrangement=Arrangement.spacedBy(2.dp)) {
+     row.forEach { v ->
+      val cellColor = when(v) { 1 -> Color(0xFF46B7A4); 2 -> Color(0xFFFFC857); else -> Color(0xFF26344B) }
+      Box(Modifier.weight(1f).fillMaxHeight().background(cellColor, RoundedCornerShape(2.dp)))
+     }
+    }
+   }
   }
   if(tetrisOver)Text(if(selectedLanguage=="fr")"Partie terminée !" else "Game over!",color=Color(0xFFFF7777),fontWeight=FontWeight.Bold)
   Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){
